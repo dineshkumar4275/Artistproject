@@ -1,0 +1,25 @@
+.about-content {
+  max-width: 700px;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #2a241e;
+}
+
+.about-content p {
+  margin-bottom: 1.2rem;
+}
+
+.about-stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid #ddd8cd;
+}
+
+.about-stats span {
+  background: #ece7dd;
+  padding: 0.4rem 1.2rem;
+  border-radius: 40px;
+  font-size: 0.95rem;
+}

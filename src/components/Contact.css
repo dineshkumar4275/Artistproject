@@ -1,0 +1,38 @@
+.contact-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 24px;
+  max-width: 480px;
+  border: 1px solid #e5dfd6;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.contact-card p {
+  font-size: 1.1rem;
+  margin: 0.8rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.contact-card i {
+  width: 1.6rem;
+  color: #4d3e30;
+}
+
+.social-links {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.8rem;
+}
+
+.social-links a {
+  color: #1c1c1c;
+  font-size: 1.6rem;
+  transition: 0.2s;
+}
+
+.social-links a:hover {
+  color: #c9ad93;
+  transform: scale(1.1);
+}

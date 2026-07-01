@@ -1,0 +1,9 @@
+# www.robotstxt.org
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+
+# Sitemap
+Sitemap: https://framora.com/sitemap.xml
