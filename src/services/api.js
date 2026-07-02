@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Use Vercel backend in production
+// Use localhost when running locally
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  'http://localhost:5000/api';
+
+console.log('API URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -9,7 +15,9 @@ const api = axios.create({
   },
 });
 
-// Get all images
+// ===================
+// GET ALL IMAGES
+// ===================
 export const getImages = async () => {
   try {
     const response = await api.get('/images');
@@ -20,7 +28,9 @@ export const getImages = async () => {
   }
 };
 
-// Upload image file
+// ===================
+// UPLOAD IMAGE FILE
+// ===================
 export const uploadImageFile = async (file, title) => {
   const formData = new FormData();
   formData.append('image', file);
@@ -32,6 +42,7 @@ export const uploadImageFile = async (file, title) => {
         'Content-Type': 'multipart/form-data',
       },
     });
+
     return response.data;
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -39,17 +50,16 @@ export const uploadImageFile = async (file, title) => {
   }
 };
 
-// 🔒 Upload image by URL - POST method
+// ===================
+// UPLOAD IMAGE BY URL
+// ===================
 export const uploadImageByUrl = async (imageUrl, title) => {
   try {
-    const secretKey = import.meta.env.VITE_UPLOAD_SECRET || 'my-super-secret-upload-key-2026-xyz789';
-    
-    // ✅ Using POST method
-    const response = await api.post('/images/url', { 
-      imageUrl, 
+    const response = await api.post('/images/url', {
+      imageUrl,
       title,
-      secret: secretKey
     });
+
     return response.data;
   } catch (error) {
     console.error('Error uploading image by URL:', error);
@@ -57,7 +67,9 @@ export const uploadImageByUrl = async (imageUrl, title) => {
   }
 };
 
-// Delete image
+// ===================
+// DELETE SINGLE IMAGE
+// ===================
 export const deleteImage = async (id) => {
   try {
     const response = await api.delete(`/images/${id}`);
@@ -68,7 +80,9 @@ export const deleteImage = async (id) => {
   }
 };
 
-// Delete all images
+// ===================
+// DELETE ALL IMAGES
+// ===================
 export const deleteAllImages = async () => {
   try {
     const response = await api.delete('/images');
