@@ -1,104 +1,5 @@
-// import React from 'react';
-// import './Home.css';
-
-// function Home({ images, setCurrentPage }) {
-//   return (
-//     <div className="home-page">
-//       {/* Hero Section */}
-//       <section className="hero-section">
-//         <div className="hero">
-//           <h1>Welcome to <strong>FRAMORA</strong></h1>
-//           <p>Capturing moments, creating stories — explore the gallery.</p>
-//           <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
-//             View Gallery →
-//           </button>
-//         </div>
-//       </section>
-
-//       {/* Featured Gallery Section */}
-//       <section className="home-gallery-section">
-//         <div className="section-header">
-//           <h2>Featured Gallery</h2>
-//           <p>Explore our latest works</p>
-//         </div>
-//         <div className="featured-grid">
-//           {images.slice(0, 4).map(img => (
-//             <div key={img.id} className="featured-card">
-//               <div className="featured-image-wrapper">
-//                 <img src={img.url} alt={img.title} />
-//               </div>
-//               <p>{img.title}</p>
-//             </div>
-//           ))}
-//         </div>
-//         <div className="view-all-wrapper">
-//           <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
-//             View All Gallery →
-//           </button>
-//         </div>
-//       </section>
-
-//       {/* About Section */}
-//       <section className="home-about-section">
-//         <div className="section-header">
-//           <h2>About the Artist</h2>
-//           <p>Learn more about my journey</p>
-//         </div>
-//         <div className="about-content">
-//           <p>
-//             I'm a visual artist based in the Pacific Northwest, working with 
-//             photography and digital media. My work explores the interplay of 
-//             light, texture, and everyday moments.
-//           </p>
-//           <p>
-//             This site is a living archive of my recent projects. Feel free to 
-//             browse the gallery and reach out through the contact page.
-//           </p>
-//           <div className="about-stats">
-//             <span>📸 10+ years</span>
-//             <span>🖼️ {images.length} works</span>
-//             <span>🌎 exhibited internationally</span>
-//           </div>
-//           <div className="about-button-wrapper">
-//             <button className="btn-primary" onClick={() => setCurrentPage('about')}>
-//               Read More →
-//             </button>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Contact Section */}
-//       <section className="home-contact-section">
-//         <div className="section-header">
-//           <h2>Get in Touch</h2>
-//           <p>I'd love to hear from you</p>
-//         </div>
-//         <div className="contact-card-wrapper">
-//           <div className="contact-card">
-//             <p><i className="fas fa-envelope"></i> hello@artstudio.com</p>
-//             <p><i className="fas fa-phone"></i> +1 (555) 123-4567</p>
-//             <p><i className="fas fa-map-pin"></i> Seattle, WA</p>
-//             <div className="social-links">
-//               <a href="#"><i className="fab fa-instagram"></i></a>
-//               <a href="#"><i className="fab fa-behance"></i></a>
-//               <a href="#"><i className="fab fa-github"></i></a>
-//             </div>
-//             <div className="contact-button-wrapper">
-//               <button className="btn-primary" onClick={() => setCurrentPage('contact')}>
-//                 Contact Me →
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-//     </div>
-//   );
-// }
-
-// export default Home;
-
 import React, { useState, useEffect, useRef } from 'react';
-import { FaChevronLeft, FaChevronRight, FaExpand } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaExpand, FaEnvelope, FaPhone, FaMapMarkerAlt, FaInstagram, FaBehance, FaLinkedin } from 'react-icons/fa';
 import './Home.css';
 
 function Home({ images, setCurrentPage }) {
@@ -159,12 +60,17 @@ function Home({ images, setCurrentPage }) {
     return featuredImages.slice(start, start + slidesToShow);
   };
 
+  // Helper function to get image URL
+  const getImageUrl = (image) => {
+    return image.url || image.imageUrl || '';
+  };
+
   return (
     <div className="home-page">
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero">
-          <h1>Welcome to <strong>ArtStudio</strong></h1>
+          <h1>Welcome to <strong>FRAMORA</strong></h1>
           <p>Capturing moments, creating stories — explore the gallery.</p>
           <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
             View Gallery →
@@ -203,7 +109,13 @@ function Home({ images, setCurrentPage }) {
                 {getVisibleImages().map((img) => (
                   <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
                     <div className="featured-image-wrapper">
-                      <img src={img.url} alt={img.title} />
+                      <img 
+                        src={getImageUrl(img)} 
+                        alt={img.title} 
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
+                        }}
+                      />
                       <div className="featured-overlay">
                         <span className="featured-number">#{img.id}</span>
                         <h3>{img.title}</h3>
@@ -247,8 +159,8 @@ function Home({ images, setCurrentPage }) {
         </div>
         <div className="about-content">
           <p>
-            I'm a visual artist based in the Pacific Northwest, working with 
-            photography and digital media. My work explores the interplay of 
+            I'm a visual artist based in Chennai, Tamil Nadu, working with 
+            traditional and digital media. My work explores the interplay of 
             light, texture, and everyday moments.
           </p>
           <p>
@@ -276,13 +188,44 @@ function Home({ images, setCurrentPage }) {
         </div>
         <div className="contact-card-wrapper">
           <div className="contact-card">
-            <p><i className="fas fa-envelope"></i> hello@artstudio.com</p>
-            <p><i className="fas fa-phone"></i> +1 (555) 123-4567</p>
-            <p><i className="fas fa-map-pin"></i> Seattle, WA</p>
+            <p>
+              <FaEnvelope /> 
+              <a href="mailto:kameshfineart@gmail.com" className="contact-link">
+                kameshfineart@gmail.com
+              </a>
+            </p>
+            <p>
+              <FaPhone /> 
+              <a href="tel:+919345933994" className="contact-link">
+                +91 93459 33994
+              </a>
+            </p>
+            <p><FaMapMarkerAlt /> Chennai, Tamil Nadu</p>
             <div className="social-links">
-              <a href="#"><i className="fab fa-instagram"></i></a>
-              <a href="#"><i className="fab fa-behance"></i></a>
-              <a href="#"><i className="fab fa-github"></i></a>
+              <a 
+                href="https://www.instagram.com/urbaninkpen?igsh=MTlwbDgzdDgxd2xyMQ%3D%3D&utm_source=qr" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+              >
+                <FaInstagram />
+              </a>
+              <a 
+                href="https://www.behance.net/kameshfineart" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="Behance"
+              >
+                <FaBehance />
+              </a>
+              <a 
+                href="https://www.linkedin.com/in/kamesh-p-a89abb267?utm_source=share_via&utm_content=profile&utm_medium=member_android" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+              >
+                <FaLinkedin />
+              </a>
             </div>
             <div className="contact-button-wrapper">
               <button className="btn-primary" onClick={() => setCurrentPage('contact')}>
@@ -298,7 +241,13 @@ function Home({ images, setCurrentPage }) {
         <div className="image-modal" onClick={closeModal}>
           <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={closeModal}>✕</button>
-            <img src={selectedImage.url} alt={selectedImage.title} />
+            <img 
+              src={getImageUrl(selectedImage)} 
+              alt={selectedImage.title}
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found';
+              }}
+            />
             <div className="modal-info">
               <h3>{selectedImage.title}</h3>
               <span className="modal-number">#{selectedImage.id}</span>

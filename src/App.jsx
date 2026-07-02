@@ -446,8 +446,6 @@
 
 // export default App;
 
-
-
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -461,20 +459,20 @@ import Login from './components/Login';
 import Loading from './components/Loading';
 import ToastProvider from './components/ToastProvider';
 import SEO from './components/SEO';
-import useLocalStorage from './hooks/useLocalStorage';
-import initialImages from './data/initialImages';
+import useImages from '../src/utils/useImages'; // Import useImages hook
 import './App.css';
 
 function App() {
-  const [images, setImages] = useLocalStorage('galleryImages', initialImages);
+  const { images, loading, addImageFromFile, addImageFromUrl, removeImage, clearAllImages } = useImages();
+  const [currentPage, setCurrentPage] = useState('home');
   const [isLoading, setIsLoading] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
-  const currentPage = location.pathname.replace('/', '') || 'home';
+  const currentPageName = location.pathname.replace('/', '') || 'home';
 
-  // Check admin login status on mount
+  // Check admin login status
   useEffect(() => {
     const loggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
     const loginTime = localStorage.getItem('adminLoginTime');
@@ -496,7 +494,6 @@ function App() {
   const handlePageChange = (page) => {
     setIsLoading(true);
     navigate(`/${page === 'home' ? '' : page}`);
-    
     setTimeout(() => {
       setIsLoading(false);
     }, 600);
@@ -518,52 +515,43 @@ function App() {
     navigate('/');
   };
 
-  const addImage = (url, title) => {
-    const newId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1;
-    setImages([...images, { id: newId, url, title, timestamp: Date.now() }]);
-  };
-
-  const deleteImage = (id) => {
-    setImages(images.filter(img => img.id !== id));
-  };
-
   const getSEOData = () => {
     const baseUrl = 'https://framora.com';
     
-    switch(currentPage) {
+    switch(currentPageName) {
       case 'home':
         return {
           title: 'FRAMORA - Art Studio & Photography Portfolio',
-          description: 'Explore stunning art and photography by FRAMORA. Capturing moments, creating stories through visual art and creative expression.',
-          keywords: 'art, photography, portfolio, artist, gallery, visual art, framora, creative',
+          description: 'Explore stunning art and photography by FRAMORA.',
+          keywords: 'art, photography, portfolio, artist, gallery, visual art',
           url: baseUrl
         };
       case 'gallery':
         return {
           title: 'Gallery - FRAMORA Art Portfolio',
-          description: 'Browse through our collection of stunning art and photography. Each piece tells a unique story through visual expression.',
-          keywords: 'art gallery, photography gallery, portfolio, artwork, visual art, framora gallery',
+          description: 'Browse through our collection of stunning art and photography.',
+          keywords: 'art gallery, photography gallery, portfolio, artwork',
           url: `${baseUrl}/gallery`
         };
       case 'about':
         return {
           title: 'About the Artist - FRAMORA',
-          description: 'Learn about the artist behind FRAMORA. A visual artist based in the Pacific Northwest, working with photography and digital media.',
-          keywords: 'artist bio, visual artist, photographer, digital artist, about framora',
+          description: 'Learn about the artist behind FRAMORA.',
+          keywords: 'artist bio, visual artist, photographer, digital artist',
           url: `${baseUrl}/about`
         };
       case 'contact':
         return {
           title: 'Contact - FRAMORA Art Studio',
-          description: 'Get in touch with FRAMORA for commissions, collaborations, or just to say hello. We\'d love to hear from you.',
-          keywords: 'contact artist, art commissions, photography booking, framora contact',
+          description: 'Get in touch with FRAMORA for commissions or collaborations.',
+          keywords: 'contact artist, art commissions, photography booking',
           url: `${baseUrl}/contact`
         };
       case 'admin':
         return {
           title: 'Admin Panel - FRAMORA',
-          description: 'Manage your gallery, add new artwork, and update your portfolio.',
-          keywords: 'admin, manage gallery, upload art, portfolio management',
+          description: 'Manage your gallery and portfolio.',
+          keywords: 'admin, manage gallery, upload art',
           url: `${baseUrl}/admin`
         };
       default:
@@ -578,15 +566,14 @@ function App() {
 
   const seoData = getSEOData();
 
-  // If trying to access admin without login, show login
-  if (currentPage === 'admin' && !isAdminLoggedIn) {
+  if (currentPageName === 'admin' && !isAdminLoggedIn) {
     return (
       <div className="app">
         <Helmet>
           <title>Admin Login - FRAMORA</title>
         </Helmet>
         <Navbar 
-          currentPage={currentPage} 
+          currentPage={currentPageName} 
           setCurrentPage={handlePageChange}
           isAdminLoggedIn={isAdminLoggedIn}
           onLogout={handleLogout}
@@ -617,7 +604,7 @@ function App() {
       />
 
       <Navbar 
-        currentPage={currentPage} 
+        currentPage={currentPageName} 
         setCurrentPage={handlePageChange}
         isAdminLoggedIn={isAdminLoggedIn}
         onLogout={handleLogout}
@@ -637,8 +624,9 @@ function App() {
               isAdminLoggedIn ? (
                 <Admin 
                   images={images} 
-                  addImage={addImage} 
-                  deleteImage={deleteImage}
+                  addImageFromFile={addImageFromFile}
+                  addImageFromUrl={addImageFromUrl}
+                  deleteImage={removeImage}
                   onLogout={handleLogout}
                 />
               ) : (

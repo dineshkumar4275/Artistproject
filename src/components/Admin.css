@@ -58,6 +58,103 @@
   color: #2a241e;
 }
 
+/* ===== UPLOAD TYPE TOGGLE ===== */
+.upload-type-toggle {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  background: #f8f6f2;
+  padding: 0.3rem;
+  border-radius: 40px;
+  border: 1px solid #e5dfd6;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  background: transparent;
+  color: #7a6e60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.toggle-btn:hover {
+  color: #1c1c1c;
+}
+
+.toggle-btn.active {
+  background: #c9ad93;
+  color: #1c1c1c;
+  box-shadow: 0 2px 8px rgba(201, 173, 147, 0.3);
+}
+
+/* ===== URL UPLOAD ===== */
+.url-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.url-input {
+  padding: 0.7rem 1rem;
+  border: 2px solid #d5cfc4;
+  border-radius: 40px;
+  font-size: 1rem;
+  background: #fcfaf7;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.url-input:focus {
+  outline: none;
+  border-color: #c9ad93;
+  box-shadow: 0 0 0 4px rgba(201, 173, 147, 0.1);
+}
+
+.url-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sample-urls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+}
+
+.sample-label {
+  font-size: 0.8rem;
+  color: #7a6e60;
+  margin-right: 0.3rem;
+}
+
+.sample-url-btn {
+  background: #f0ece4;
+  border: 1px solid #e5dfd6;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #2a241e;
+}
+
+.sample-url-btn:hover {
+  background: #c9ad93;
+  border-color: #c9ad93;
+  color: #1c1c1c;
+  transform: scale(1.05);
+}
+
 /* ===== ADMIN FORM ===== */
 .admin-form {
   display: flex;
@@ -68,7 +165,7 @@
 
 .admin-form input[type="text"] {
   padding: 0.7rem 1rem;
-  border: 1px solid #d5cfc4;
+  border: 2px solid #d5cfc4;
   border-radius: 40px;
   font-size: 1rem;
   background: #fcfaf7;
@@ -76,8 +173,8 @@
 }
 
 .admin-form input[type="text"]:focus {
-  outline: 2px solid #c9ad93;
-  border-color: transparent;
+  outline: none;
+  border-color: #c9ad93;
   box-shadow: 0 0 0 4px rgba(201, 173, 147, 0.1);
 }
 
@@ -335,6 +432,21 @@
   .btn-clear {
     justify-content: center;
   }
+
+  .upload-type-toggle {
+    flex-direction: column;
+    border-radius: 16px;
+    gap: 0.3rem;
+  }
+
+  .toggle-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+  }
+
+  .sample-urls {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 480px) {
@@ -397,156 +509,30 @@
     font-size: 0.9rem;
     padding: 0.6rem 1.5rem;
   }
-}
 
-@media (max-width: 360px) {
-  .admin-card {
-    padding: 0.8rem;
-  }
-
-  .admin-list-item {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 0.8rem;
-  }
-
-  .admin-thumb {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    align-self: center;
-  }
-
-  .admin-title {
+  .url-input {
     font-size: 0.9rem;
-    flex-basis: auto;
-    width: 100%;
-    text-align: center;
+    padding: 0.6rem 0.9rem;
   }
 
-  .admin-date {
-    margin-left: 0;
-    align-self: center;
+  .sample-url-btn {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.6rem;
   }
 
-  .admin-list-item .btn-danger {
-    align-self: center;
-    padding: 0.4rem 1rem;
+  .sample-label {
+    font-size: 0.7rem;
   }
 }
-/* Toast Styles */
-.toast-confirm-container {
-  background: #1c1c1c !important;
-  border-radius: 16px !important;
-  padding: 20px !important;
-  min-width: 300px !important;
-  border: 1px solid #c9ad93 !important;
+/* URL Hint */
+.url-hint {
+  margin-top: 0.3rem;
+  padding: 0.3rem 0.5rem;
 }
 
-.toast-confirm {
-  text-align: center;
-}
-
-.toast-confirm p {
-  color: #f0ebe3;
-  font-size: 1.1rem;
-  margin-bottom: 8px;
-}
-
-.toast-confirm .toast-warning-text {
-  color: #ff6b6b;
-  font-size: 0.9rem;
-  margin-bottom: 15px;
-}
-
-.toast-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.toast-confirm-btn {
-  background: #b13e3e;
-  color: white;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.toast-confirm-btn:hover {
-  background: #8f2e2e;
-  transform: scale(1.02);
-}
-
-.toast-cancel-btn {
-  background: #2a2a2a;
-  color: #f0ebe3;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.toast-cancel-btn:hover {
-  background: #3d3d3d;
-  transform: scale(1.02);
-}
-
-/* Custom Toast Notifications */
-.Toastify__toast {
-  border-radius: 12px !important;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif !important;
-}
-
-.Toastify__toast--success {
-  background: #1c1c1c !important;
-  border-left: 4px solid #4caf50 !important;
-}
-
-.Toastify__toast--error {
-  background: #1c1c1c !important;
-  border-left: 4px solid #b13e3e !important;
-}
-
-.Toastify__toast--warning {
-  background: #1c1c1c !important;
-  border-left: 4px solid #ff9800 !important;
-}
-
-.Toastify__toast--info {
-  background: #1c1c1c !important;
-  border-left: 4px solid #2196f3 !important;
-}
-
-.Toastify__progress-bar {
-  background: #c9ad93 !important;
-}
-
-/* Mobile Responsive Toast */
-@media (max-width: 480px) {
-  .toast-confirm-container {
-    min-width: 250px !important;
-    padding: 15px !important;
-  }
-  
-  .toast-confirm p {
-    font-size: 0.95rem;
-  }
-  
-  .toast-buttons {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .toast-confirm-btn,
-  .toast-cancel-btn {
-    width: 100%;
-    padding: 10px;
-  }
+.url-hint p {
+  font-size: 0.75rem;
+  color: #7a6e60;
+  margin: 0;
+  font-style: italic;
 }

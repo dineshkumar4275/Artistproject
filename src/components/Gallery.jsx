@@ -1,67 +1,3 @@
-// import React from 'react';
-// import './Gallery.css';
-
-// function Gallery({ images }) {
-//   // Split images into pairs: left and right
-//   const imagePairs = [];
-//   for (let i = 0; i < images.length; i += 2) {
-//     imagePairs.push({
-//       left: images[i],
-//       right: images[i + 1] || null // null if no right image
-//     });
-//   }
-
-//   return (
-//     <section className="page gallery-page">
-//       <h2 className="page-title">Gallery</h2>
-      
-//       {images.length === 0 ? (
-//         <p className="empty-message">No images yet. Add some via the Admin panel.</p>
-//       ) : (
-//         <div className="gallery-pairs">
-//           {imagePairs.map((pair, index) => (
-//             <div key={index} className="gallery-pair">
-//               {/* Left Image */}
-//               <div className="gallery-image-wrapper left-image">
-//                 <div className="gallery-image-container">
-//                   <img 
-//                     src={pair.left.url} 
-//                     alt={pair.left.title} 
-//                     loading="lazy" 
-//                   />
-//                   <div className="gallery-image-overlay">
-//                     <span className="image-number">#{index * 2 + 1}</span>
-//                     <h3>{pair.left.title}</h3>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* Right Image - Only show if exists */}
-//               {pair.right && (
-//                 <div className="gallery-image-wrapper right-image">
-//                   <div className="gallery-image-container">
-//                     <img 
-//                       src={pair.right.url} 
-//                       alt={pair.right.title} 
-//                       loading="lazy" 
-//                     />
-//                     <div className="gallery-image-overlay">
-//                       <span className="image-number">#{index * 2 + 2}</span>
-//                       <h3>{pair.right.title}</h3>
-//                     </div>
-//                   </div>
-//                 </div>
-//               )}
-//             </div>
-//           ))}
-//         </div>
-//       )}
-//     </section>
-//   );
-// }
-
-// export default Gallery;
-
 import React, { useState, useRef, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight, FaTimes, FaExpand } from 'react-icons/fa';
 import './Gallery.css';
@@ -74,6 +10,8 @@ function Gallery({ images }) {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const modalRef = useRef(null);
+
+  console.log('Gallery received images:', images); // Debug log
 
   // Group images into rows of 2
   const imagePairs = [];
@@ -147,7 +85,6 @@ function Gallery({ images }) {
   useEffect(() => {
     if (autoSlide && images.length > 0) {
       slideInterval.current = setInterval(() => {
-        // Auto scroll through images
         const scrollContainer = document.querySelector('.gallery-pairs');
         if (scrollContainer) {
           scrollContainer.scrollBy({
@@ -160,7 +97,6 @@ function Gallery({ images }) {
     return () => clearInterval(slideInterval.current);
   }, [autoSlide, images]);
 
-  // Find the actual index of image
   const getImageIndex = (image) => {
     return images.findIndex(img => img.id === image.id);
   };
@@ -185,11 +121,15 @@ function Gallery({ images }) {
                       </div>
                     )}
                     <img 
-                      src={pair.left.url} 
+                      src={pair.left.url || pair.left.imageUrl} 
                       alt={pair.left.title} 
                       loading="lazy"
                       className={`gallery-image ${loadingImages[pair.left.id] ? 'image-fade-in' : ''}`}
                       onLoad={() => handleImageLoad(pair.left.id)}
+                      onError={(e) => {
+                        console.error('Image load error:', pair.left.url || pair.left.imageUrl);
+                        e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
+                      }}
                       style={{ display: loadingImages[pair.left.id] ? 'block' : 'none' }}
                     />
                     <div className="gallery-image-overlay">
@@ -212,11 +152,15 @@ function Gallery({ images }) {
                         </div>
                       )}
                       <img 
-                        src={pair.right.url} 
+                        src={pair.right.url || pair.right.imageUrl} 
                         alt={pair.right.title} 
                         loading="lazy"
                         className={`gallery-image ${loadingImages[pair.right.id] ? 'image-fade-in' : ''}`}
                         onLoad={() => handleImageLoad(pair.right.id)}
+                        onError={(e) => {
+                          console.error('Image load error:', pair.right.url || pair.right.imageUrl);
+                          e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
+                        }}
                         style={{ display: loadingImages[pair.right.id] ? 'block' : 'none' }}
                       />
                       <div className="gallery-image-overlay">
@@ -275,9 +219,12 @@ function Gallery({ images }) {
             )}
             
             <img 
-              src={selectedImage.url} 
+              src={selectedImage.url || selectedImage.imageUrl} 
               alt={selectedImage.title} 
               className="modal-image"
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found';
+              }}
             />
             
             <div className="modal-info">
@@ -285,11 +232,6 @@ function Gallery({ images }) {
                 <span className="modal-number">#{currentIndex + 1} / {images.length}</span>
                 <h3>{selectedImage.title}</h3>
               </div>
-              {/* <div className="modal-info-right">
-                <button className="modal-download" onClick={() => window.open(selectedImage.url, '_blank')}>
-                  View Original
-                </button>
-              </div> */}
             </div>
             
             {/* Image counter dots */}
