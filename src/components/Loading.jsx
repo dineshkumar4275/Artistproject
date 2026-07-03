@@ -7,7 +7,7 @@ function Loading({ type = 'page' }) {
       <div className="loading-container">
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <div className="loading-logo">FRAMORA</div>
+          <div className="loading-logo">KameshFineArt</div>
           <p className="loading-text">Loading...</p>
         </div>
       </div>
