@@ -7,11 +7,7 @@ function Loading({ type = 'page' }) {
       <div className="loading-container">
         <div className="loading-spinner">
           <div className="spinner"></div>
-<<<<<<< HEAD
-          <div className="loading-logo">kameshfineart</div>
-=======
           <div className="loading-logo">KameshFineArt</div>
->>>>>>> 7c9af6f44a75486801a1210d33d70f36b3abbcc3
           <p className="loading-text">Loading...</p>
         </div>
       </div>
