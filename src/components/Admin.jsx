@@ -840,14 +840,16 @@ function Admin({ images, addImageFromUrl, deleteImage }) {
     );
   };
 
-  const handleLogout = () => {
-    toast.info('👋 Logging out...');
-    setTimeout(() => {
-      localStorage.removeItem('isAdminLoggedIn');
-      localStorage.removeItem('adminLoginTime');
-      window.location.reload();
-    }, 500);
-  };
+const handleLogout = () => {
+  toast.info('👋 Logging out...');
+
+  localStorage.removeItem('isAdminLoggedIn');
+  localStorage.removeItem('adminLoginTime');
+
+  setTimeout(() => {
+    window.location.href = '/';
+  }, 500);
+};
 
   // Working sample URLs (these are guaranteed to work)
   const sampleUrls = [
