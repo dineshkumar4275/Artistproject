@@ -2,12 +2,12 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 function SEO({ 
-  title = 'FRAMORA - Art Studio & Photography Portfolio',
-  description = 'Explore the stunning art and photography portfolio of FRAMORA. Capturing moments, creating stories through visual art.',
-  keywords = 'art, photography, portfolio, artist, gallery, visual art, framora',
+  title = 'kameshfineart - Art Studio & Photography Portfolio',
+  description = 'Explore the stunning art and photography portfolio of kameshfineart. Capturing moments, creating stories through visual art.',
+  keywords = 'art, photography, portfolio, artist, gallery, visual art, kameshfineart',
   image = '/assets/og-image.jpg',
-  url = 'https://framora.com',
-  author = 'FRAMORA',
+  url = 'https://kameshfineart.com',
+  author = 'kameshfineart',
   type = 'website'
 }) {
   return (
@@ -27,7 +27,7 @@ function SEO({
       <meta property="og:image" content={image} />
       <meta property="og:url" content={url} />
       <meta property="og:type" content={type} />
-      <meta property="og:site_name" content="FRAMORA" />
+      <meta property="og:site_name" content="kameshfineart" />
       <meta property="og:locale" content="en_US" />
 
       {/* Twitter Card */}
@@ -35,8 +35,8 @@ function SEO({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
-      <meta name="twitter:site" content="@framora" />
-      <meta name="twitter:creator" content="@framora" />
+      <meta name="twitter:site" content="@kameshfineart" />
+      <meta name="twitter:creator" content="@kameshfineart" />
 
       {/* Additional SEO */}
       <meta name="theme-color" content="#1c1c1c" />
@@ -48,14 +48,14 @@ function SEO({
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": "FRAMORA",
+          "name": "kameshfineart",
           "description": description,
           "url": url,
           "logo": `${url}/assets/logo.png`,
           "sameAs": [
-            "https://instagram.com/framora",
-            "https://behance.net/framora",
-            "https://github.com/framora"
+            "https://instagram.com/kameshfineart",
+            "https://behance.net/kameshfineart",
+            "https://github.com/kameshfineart"
           ],
           "contactPoint": {
             "@type": "ContactPoint",
@@ -71,7 +71,7 @@ function SEO({
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "ImageGallery",
-          "name": "FRAMORA Art Gallery",
+          "name": "kameshfineart Art Gallery",
           "description": description,
           "url": `${url}/gallery`
         })}

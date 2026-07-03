@@ -95,47 +95,47 @@
 // //   const showBackButton = currentPage !== 'home';
 
 // //   const getSEOData = () => {
-// //     const baseUrl = 'https://framora.com';
+// //     const baseUrl = 'https://kameshfineart.com';
     
 // //     switch(currentPage) {
 // //       case 'home':
 // //         return {
-// //           title: 'FRAMORA - Art Studio & Photography Portfolio',
-// //           description: 'Explore stunning art and photography by FRAMORA. Capturing moments, creating stories through visual art and creative expression.',
-// //           keywords: 'art, photography, portfolio, artist, gallery, visual art, framora, creative',
+// //           title: 'kameshfineart - Art Studio & Photography Portfolio',
+// //           description: 'Explore stunning art and photography by kameshfineart. Capturing moments, creating stories through visual art and creative expression.',
+// //           keywords: 'art, photography, portfolio, artist, gallery, visual art, kameshfineart, creative',
 // //           url: baseUrl
 // //         };
 // //       case 'gallery':
 // //         return {
-// //           title: 'Gallery - FRAMORA Art Portfolio',
+// //           title: 'Gallery - kameshfineart Art Portfolio',
 // //           description: 'Browse through our collection of stunning art and photography. Each piece tells a unique story through visual expression.',
-// //           keywords: 'art gallery, photography gallery, portfolio, artwork, visual art, framora gallery',
+// //           keywords: 'art gallery, photography gallery, portfolio, artwork, visual art, kameshfineart gallery',
 // //           url: `${baseUrl}/gallery`
 // //         };
 // //       case 'about':
 // //         return {
-// //           title: 'About the Artist - FRAMORA',
-// //           description: 'Learn about the artist behind FRAMORA. A visual artist based in the Pacific Northwest, working with photography and digital media.',
-// //           keywords: 'artist bio, visual artist, photographer, digital artist, about framora',
+// //           title: 'About the Artist - kameshfineart',
+// //           description: 'Learn about the artist behind kameshfineart. A visual artist based in the Pacific Northwest, working with photography and digital media.',
+// //           keywords: 'artist bio, visual artist, photographer, digital artist, about kameshfineart',
 // //           url: `${baseUrl}/about`
 // //         };
 // //       case 'contact':
 // //         return {
-// //           title: 'Contact - FRAMORA Art Studio',
-// //           description: 'Get in touch with FRAMORA for commissions, collaborations, or just to say hello. We\'d love to hear from you.',
-// //           keywords: 'contact artist, art commissions, photography booking, framora contact',
+// //           title: 'Contact - kameshfineart Art Studio',
+// //           description: 'Get in touch with kameshfineart for commissions, collaborations, or just to say hello. We\'d love to hear from you.',
+// //           keywords: 'contact artist, art commissions, photography booking, kameshfineart contact',
 // //           url: `${baseUrl}/contact`
 // //         };
 // //       case 'admin':
 // //         return {
-// //           title: 'Admin Panel - FRAMORA',
+// //           title: 'Admin Panel - kameshfineart',
 // //           description: 'Manage your gallery, add new artwork, and update your portfolio.',
 // //           keywords: 'admin, manage gallery, upload art, portfolio management',
 // //           url: `${baseUrl}/admin`
 // //         };
 // //       default:
 // //         return {
-// //           title: 'FRAMORA - Art Studio',
+// //           title: 'kameshfineart - Art Studio',
 // //           description: 'Art and photography portfolio',
 // //           keywords: 'art, photography, portfolio',
 // //           url: baseUrl
@@ -150,7 +150,7 @@
 // //     return (
 // //       <div className="app">
 // //         <Helmet>
-// //           <title>Admin Login - FRAMORA</title>
+// //           <title>Admin Login - kameshfineart</title>
 // //         </Helmet>
 // //         <Navbar 
 // //           currentPage={currentPage} 
@@ -162,7 +162,7 @@
 // //           <Login onLogin={handleLogin} />
 // //         </main>
 // //         <footer className="footer">
-// //           <p>© 2026 FRAMORA · built with React</p>
+// //           <p>© 2026 kameshfineart · built with React</p>
 // //         </footer>
 // //       </div>
 // //     );
@@ -227,7 +227,7 @@
 // //       </main>
       
 // //       <footer className="footer">
-// //         <p>© 2026 FRAMORA · built with React</p>
+// //         <p>© 2026 kameshfineart · built with React</p>
 // //       </footer>
 // //     </div>
 // //   );
@@ -310,47 +310,47 @@
 //   };
 
 //   const getSEOData = () => {
-//     const baseUrl = 'https://framora.com';
+//     const baseUrl = 'https://kameshfineart.com';
     
 //     switch(currentPage) {
 //       case 'home':
 //         return {
-//           title: 'FRAMORA - Art Studio & Photography Portfolio',
-//           description: 'Explore stunning art and photography by FRAMORA. Capturing moments, creating stories through visual art and creative expression.',
-//           keywords: 'art, photography, portfolio, artist, gallery, visual art, framora, creative',
+//           title: 'kameshfineart - Art Studio & Photography Portfolio',
+//           description: 'Explore stunning art and photography by kameshfineart. Capturing moments, creating stories through visual art and creative expression.',
+//           keywords: 'art, photography, portfolio, artist, gallery, visual art, kameshfineart, creative',
 //           url: baseUrl
 //         };
 //       case 'gallery':
 //         return {
-//           title: 'Gallery - FRAMORA Art Portfolio',
+//           title: 'Gallery - kameshfineart Art Portfolio',
 //           description: 'Browse through our collection of stunning art and photography. Each piece tells a unique story through visual expression.',
-//           keywords: 'art gallery, photography gallery, portfolio, artwork, visual art, framora gallery',
+//           keywords: 'art gallery, photography gallery, portfolio, artwork, visual art, kameshfineart gallery',
 //           url: `${baseUrl}/gallery`
 //         };
 //       case 'about':
 //         return {
-//           title: 'About the Artist - FRAMORA',
-//           description: 'Learn about the artist behind FRAMORA. A visual artist based in the Pacific Northwest, working with photography and digital media.',
-//           keywords: 'artist bio, visual artist, photographer, digital artist, about framora',
+//           title: 'About the Artist - kameshfineart',
+//           description: 'Learn about the artist behind kameshfineart. A visual artist based in the Pacific Northwest, working with photography and digital media.',
+//           keywords: 'artist bio, visual artist, photographer, digital artist, about kameshfineart',
 //           url: `${baseUrl}/about`
 //         };
 //       case 'contact':
 //         return {
-//           title: 'Contact - FRAMORA Art Studio',
-//           description: 'Get in touch with FRAMORA for commissions, collaborations, or just to say hello. We\'d love to hear from you.',
-//           keywords: 'contact artist, art commissions, photography booking, framora contact',
+//           title: 'Contact - kameshfineart Art Studio',
+//           description: 'Get in touch with kameshfineart for commissions, collaborations, or just to say hello. We\'d love to hear from you.',
+//           keywords: 'contact artist, art commissions, photography booking, kameshfineart contact',
 //           url: `${baseUrl}/contact`
 //         };
 //       case 'admin':
 //         return {
-//           title: 'Admin Panel - FRAMORA',
+//           title: 'Admin Panel - kameshfineart',
 //           description: 'Manage your gallery, add new artwork, and update your portfolio.',
 //           keywords: 'admin, manage gallery, upload art, portfolio management',
 //           url: `${baseUrl}/admin`
 //         };
 //       default:
 //         return {
-//           title: 'FRAMORA - Art Studio',
+//           title: 'kameshfineart - Art Studio',
 //           description: 'Art and photography portfolio',
 //           keywords: 'art, photography, portfolio',
 //           url: baseUrl
@@ -365,7 +365,7 @@
 //     return (
 //       <div className="app">
 //         <Helmet>
-//           <title>Admin Login - FRAMORA</title>
+//           <title>Admin Login - kameshfineart</title>
 //         </Helmet>
 //         <Navbar 
 //           currentPage={currentPage} 
@@ -377,7 +377,7 @@
 //           <Login onLogin={handleLogin} />
 //         </main>
 //         <footer className="footer">
-//           <p>© 2026 FRAMORA · built with React</p>
+//           <p>© 2026 kameshfineart · built with React</p>
 //         </footer>
 //       </div>
 //     );
@@ -438,7 +438,7 @@
 //       </main>
       
 //       <footer className="footer">
-//         <p>© 2026 FRAMORA · built with React</p>
+//         <p>© 2026 kameshfineart · built with React</p>
 //       </footer>
 //     </div>
 //   );
@@ -516,47 +516,47 @@ function App() {
   };
 
   const getSEOData = () => {
-    const baseUrl = 'https://framora.com';
+    const baseUrl = 'https://kameshfineart.com';
     
     switch(currentPageName) {
       case 'home':
         return {
-          title: 'FRAMORA - Art Studio & Photography Portfolio',
-          description: 'Explore stunning art and photography by FRAMORA.',
+          title: 'kameshfineart - Art Studio & Photography Portfolio',
+          description: 'Explore stunning art and photography by kameshfineart.',
           keywords: 'art, photography, portfolio, artist, gallery, visual art',
           url: baseUrl
         };
       case 'gallery':
         return {
-          title: 'Gallery - FRAMORA Art Portfolio',
+          title: 'Gallery - kameshfineart Art Portfolio',
           description: 'Browse through our collection of stunning art and photography.',
           keywords: 'art gallery, photography gallery, portfolio, artwork',
           url: `${baseUrl}/gallery`
         };
       case 'about':
         return {
-          title: 'About the Artist - FRAMORA',
-          description: 'Learn about the artist behind FRAMORA.',
+          title: 'About the Artist - kameshfineart',
+          description: 'Learn about the artist behind kameshfineart.',
           keywords: 'artist bio, visual artist, photographer, digital artist',
           url: `${baseUrl}/about`
         };
       case 'contact':
         return {
-          title: 'Contact - FRAMORA Art Studio',
-          description: 'Get in touch with FRAMORA for commissions or collaborations.',
+          title: 'Contact - kameshfineart Art Studio',
+          description: 'Get in touch with kameshfineart for commissions or collaborations.',
           keywords: 'contact artist, art commissions, photography booking',
           url: `${baseUrl}/contact`
         };
       case 'admin':
         return {
-          title: 'Admin Panel - FRAMORA',
+          title: 'Admin Panel - kameshfineart',
           description: 'Manage your gallery and portfolio.',
           keywords: 'admin, manage gallery, upload art',
           url: `${baseUrl}/admin`
         };
       default:
         return {
-          title: 'FRAMORA - Art Studio',
+          title: 'kameshfineart - Art Studio',
           description: 'Art and photography portfolio',
           keywords: 'art, photography, portfolio',
           url: baseUrl
@@ -570,7 +570,7 @@ function App() {
     return (
       <div className="app">
         <Helmet>
-          <title>Admin Login - FRAMORA</title>
+          <title>Admin Login - kameshfineart</title>
         </Helmet>
         <Navbar 
           currentPage={currentPageName} 
@@ -583,7 +583,7 @@ function App() {
         </main>
         <ToastProvider />
         <footer className="footer">
-          <p>© 2026 FRAMORA · built with React</p>
+          <p>© 2026 kameshfineart · built with React</p>
         </footer>
       </div>
     );
@@ -640,7 +640,7 @@ function App() {
       <ToastProvider />
       
       <footer className="footer">
-        <p>© 2026 FRAMORA · built with React</p>
+        <p>© 2026 kameshfineart · built with React</p>
       </footer>
     </div>
   );

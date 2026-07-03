@@ -70,7 +70,7 @@ function Home({ images, setCurrentPage }) {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero">
-          <h1>Welcome to <strong>FRAMORA</strong></h1>
+          <h1>Welcome to <strong>kameshfineart</strong></h1>
           <p>Capturing moments, creating stories — explore the gallery.</p>
           <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
             View Gallery →

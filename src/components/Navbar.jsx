@@ -35,7 +35,7 @@
 // //           <a href="/" onClick={handleLogoClick} className="logo-link">
 // //             <img 
 // //               src="/assets/staticwebsite.png" 
-// //               alt="FRAMORA" 
+// //               alt="kameshfineart" 
 // //               className="logo-image"
 // //             />
 // //             {/* <span className="logo-tagline">FRAMING MEMORIES FOREVER</span> */}
@@ -175,7 +175,7 @@
 //           <a href="/" onClick={handleLogoClick} className="logo-link">
 //             <img 
 //               src="/assets/staticwebsite.png" 
-//               alt="FRAMORA" 
+//               alt="kameshfineart" 
 //               className="logo-image"
 //             />
 //             {/* <span className="logo-tagline">FRAMING MEMORIES FOREVER</span> */}
@@ -309,7 +309,7 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
           <a href="/" onClick={handleLogoClick} className="logo-link">
             <img 
               src="/assets/staticwebsite.png" 
-              alt="FRAMORA" 
+              alt="kameshfineart" 
               className="logo-image"
             />
             {/* <span className="logo-tagline">FRAMING MEMORIES FOREVER</span> */}

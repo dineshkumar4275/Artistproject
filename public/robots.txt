@@ -6,4 +6,4 @@ Disallow: /admin/
 Disallow: /private/
 
 # Sitemap
-Sitemap: https://framora.com/sitemap.xml
+Sitemap: https://kameshfineart.com/sitemap.xml
