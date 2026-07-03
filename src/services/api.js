@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Backend API URL
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  'http://localhost:5000/api';
+
+console.log('🌐 API URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -9,20 +14,31 @@ const api = axios.create({
   },
 });
 
-// Get all images
+// =======================
+// GET ALL IMAGES
+// =======================
 export const getImages = async () => {
   try {
     const response = await api.get('/images');
     return response.data;
   } catch (error) {
-    console.error('Error fetching images:', error);
-    throw error.response?.data || error.message;
+    console.error('❌ Error fetching images:', error);
+
+    throw (
+      error.response?.data || {
+        success: false,
+        error: error.message,
+      }
+    );
   }
 };
 
-// Upload image file
+// =======================
+// UPLOAD IMAGE FILE
+// =======================
 export const uploadImageFile = async (file, title) => {
   const formData = new FormData();
+
   formData.append('image', file);
   formData.append('title', title);
 
@@ -32,50 +48,80 @@ export const uploadImageFile = async (file, title) => {
         'Content-Type': 'multipart/form-data',
       },
     });
+
     return response.data;
   } catch (error) {
-    console.error('Error uploading image:', error);
-    throw error.response?.data || error.message;
+    console.error('❌ Error uploading image file:', error);
+
+    throw (
+      error.response?.data || {
+        success: false,
+        error: error.message,
+      }
+    );
   }
 };
 
-// 🔒 Upload image by URL - POST method
+// =======================
+// UPLOAD IMAGE USING URL
+// =======================
 export const uploadImageByUrl = async (imageUrl, title) => {
   try {
-    const secretKey = import.meta.env.VITE_UPLOAD_SECRET || 'my-super-secret-upload-key-2026-xyz789';
-    
-    // ✅ Using POST method
-    const response = await api.post('/images/url', { 
-      imageUrl, 
+    const response = await api.post('/images/url', {
+      imageUrl,
       title,
-      secret: secretKey
     });
+
     return response.data;
   } catch (error) {
-    console.error('Error uploading image by URL:', error);
-    throw error.response?.data || error.message;
+    console.error('❌ Error uploading image URL:', error);
+
+    throw (
+      error.response?.data || {
+        success: false,
+        error: error.message,
+      }
+    );
   }
 };
 
-// Delete image
+// =======================
+// DELETE SINGLE IMAGE
+// =======================
 export const deleteImage = async (id) => {
   try {
     const response = await api.delete(`/images/${id}`);
+
     return response.data;
   } catch (error) {
-    console.error('Error deleting image:', error);
-    throw error.response?.data || error.message;
+    console.error('❌ Error deleting image:', error);
+
+    throw (
+      error.response?.data || {
+        success: false,
+        error: error.message,
+      }
+    );
   }
 };
 
-// Delete all images
+// =======================
+// DELETE ALL IMAGES
+// =======================
 export const deleteAllImages = async () => {
   try {
     const response = await api.delete('/images');
+
     return response.data;
   } catch (error) {
-    console.error('Error deleting all images:', error);
-    throw error.response?.data || error.message;
+    console.error('❌ Error deleting all images:', error);
+
+    throw (
+      error.response?.data || {
+        success: false,
+        error: error.message,
+      }
+    );
   }
 };
 
