@@ -166,7 +166,7 @@ function Home({ images, setCurrentPage }) {
       loop
       playsInline
     >
-      <source src="/assets/featured-video.mp4" type="video/mp4" />
+      <source src="https://www.youtube.com/watch?v=qyvdYnTtBfE" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
   </div>
