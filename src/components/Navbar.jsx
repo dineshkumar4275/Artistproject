@@ -45,12 +45,12 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
       <nav className="navbar">
         <div className="logo">
           <a href="/" onClick={handleLogoClick} className="logo-link">
-            <img 
+            {/* <img 
               src="/assets/staticwebsite.png" 
               alt="FRAMORA" 
               className="logo-image"
-            />
-            {/* <span className="logo-tagline">FRAMING MEMORIES FOREVER</span> */}
+            /> */}
+            <span className="logo-tagline">KameshFineArt</span>
           </a>
         </div>
         
