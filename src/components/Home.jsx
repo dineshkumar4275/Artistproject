@@ -94,17 +94,6 @@ function Home({ images, setCurrentPage }) {
             onMouseLeave={() => setIsHovering(false)}
           >
             <div className="carousel-container">
-              {featuredImages.length > slidesToShow && (
-                <>
-                  <button className="carousel-nav carousel-prev" onClick={prevSlide}>
-                    <FaChevronLeft />
-                  </button>
-                  <button className="carousel-nav carousel-next" onClick={nextSlide}>
-                    <FaChevronRight />
-                  </button>
-                </>
-              )}
-              
               <div className="carousel-track">
                 {getVisibleImages().map((img) => (
                   <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
@@ -128,6 +117,18 @@ function Home({ images, setCurrentPage }) {
                 ))}
               </div>
 
+              {/* Navigation Arrows - Only show if more than 3 images */}
+              {featuredImages.length > slidesToShow && (
+                <div className="carousel-controls">
+                  <button className="carousel-nav carousel-prev" onClick={prevSlide}>
+                    <FaChevronLeft />
+                  </button>
+                  <button className="carousel-nav carousel-next" onClick={nextSlide}>
+                    <FaChevronRight />
+                  </button>
+                </div>
+              )}
+
               {/* Dot indicators */}
               {featuredImages.length > slidesToShow && (
                 <div className="carousel-dots">
@@ -150,40 +151,28 @@ function Home({ images, setCurrentPage }) {
           </button>
         </div>
       </section>
-{/* Featured Video Section */}
-<section className="featured-video-section">
-  <div className="section-header">
-    <h2>Featured Video</h2>
-    <p>Watch our latest artwork showcase</p>
-  </div>
 
-  {/* <div className="video-container">
-    <video
-      className="featured-video"
-      controls
-      autoPlay
-      muted
-      loop
-      playsInline
-    >
-      <source src="https://www.youtube.com/watch?v=qyvdYnTtBfE" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div> */}
+      {/* Featured Video Section */}
+      <section className="featured-video-section">
+        <div className="section-header">
+          <h2>Featured Video</h2>
+          <p>Watch our latest artwork showcase</p>
+        </div>
 
-  <div className="video-container">
-  <iframe
-    className="featured-video"
-    width="100%"
-    height="500"
-    src="https://www.youtube.com/embed/qyvdYnTtBfE"
-    title="Featured Video"
-    frameBorder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowFullScreen
-  ></iframe>
-</div>
-</section>
+        <div className="video-container">
+          <iframe
+            className="featured-video"
+            width="100%"
+            height="500"
+            src="https://www.youtube.com/embed/qyvdYnTtBfE"
+            title="Featured Video"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </section>
+
       {/* About Section */}
       <section className="home-about-section">
         <div className="section-header">
