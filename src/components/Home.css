@@ -341,19 +341,7 @@
 .contact-button-wrapper {
   margin-top: 0.5rem;
 }
-.video-container {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-}
 
-.featured-video {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: 15px;
-  /* object-fit: cover; */
-  background: #000;
-}
 /* ======================================== */
 /* ===== IMAGE MODAL ===== */
 /* ======================================== */
