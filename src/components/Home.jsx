@@ -8,28 +8,10 @@ function Home({ images, setCurrentPage }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const slideInterval = useRef(null);
-  const [slidesToShow, setSlidesToShow] = useState(3);
 
-  // Get featured images (first 8 or all if less)
-  const featuredImages = images.slice(0, 8);
-
-  // Responsive slides to show
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 480) {
-        setSlidesToShow(4); // Mobile: 4 images
-      } else if (window.innerWidth <= 768) {
-        setSlidesToShow(2); // Tablet: 2 images
-      } else {
-        setSlidesToShow(3); // Desktop: 3 images
-      }
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
+  // Get featured images (first 6 or all if less)
+  const featuredImages = images.slice(0, 6);
+  const slidesToShow = Math.min(3, featuredImages.length);
   const totalSlides = Math.ceil(featuredImages.length / slidesToShow);
 
   // Auto-slide
@@ -40,7 +22,7 @@ function Home({ images, setCurrentPage }) {
       }, 4000);
     }
     return () => clearInterval(slideInterval.current);
-  }, [isHovering, featuredImages.length, slidesToShow, totalSlides]);
+  }, [isHovering, featuredImages.length, totalSlides]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -123,7 +105,7 @@ function Home({ images, setCurrentPage }) {
                 </>
               )}
               
-              <div className="carousel-track" style={{ gridTemplateColumns: `repeat(${slidesToShow}, 1fr)` }}>
+              <div className="carousel-track">
                 {getVisibleImages().map((img) => (
                   <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
                     <div className="featured-image-wrapper">
@@ -168,28 +150,40 @@ function Home({ images, setCurrentPage }) {
           </button>
         </div>
       </section>
+{/* Featured Video Section */}
+<section className="featured-video-section">
+  <div className="section-header">
+    <h2>Featured Video</h2>
+    <p>Watch our latest artwork showcase</p>
+  </div>
 
-      {/* Featured Video Section */}
-      <section className="featured-video-section">
-        <div className="section-header">
-          <h2>Featured Video</h2>
-          <p>Watch our latest artwork showcase</p>
-        </div>
+  {/* <div className="video-container">
+    <video
+      className="featured-video"
+      controls
+      autoPlay
+      muted
+      loop
+      playsInline
+    >
+      <source src="https://www.youtube.com/watch?v=qyvdYnTtBfE" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div> */}
 
-        <div className="video-container">
-          <iframe
-            className="featured-video"
-            width="100%"
-            height="500"
-            src="https://www.youtube.com/embed/qyvdYnTtBfE"
-            title="Featured Video"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div>
-      </section>
-
+  <div className="video-container">
+  <iframe
+    className="featured-video"
+    width="100%"
+    height="500"
+    src="https://www.youtube.com/embed/qyvdYnTtBfE"
+    title="Featured Video"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  ></iframe>
+</div>
+</section>
       {/* About Section */}
       <section className="home-about-section">
         <div className="section-header">
