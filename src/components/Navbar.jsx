@@ -35,7 +35,7 @@
 // //           <a href="/" onClick={handleLogoClick} className="logo-link">
 // //             <img 
 // //               src="/assets/staticwebsite.png" 
-// //               alt="kameshfineart" 
+// //               alt="FRAMORA" 
 // //               className="logo-image"
 // //             />
 // //             {/* <span className="logo-tagline">FRAMING MEMORIES FOREVER</span> */}
@@ -175,7 +175,7 @@
 //           <a href="/" onClick={handleLogoClick} className="logo-link">
 //             <img 
 //               src="/assets/staticwebsite.png" 
-//               alt="kameshfineart" 
+//               alt="FRAMORA" 
 //               className="logo-image"
 //             />
 //             {/* <span className="logo-tagline">FRAMING MEMORIES FOREVER</span> */}
@@ -258,16 +258,38 @@
 // }
 
 // export default Navbar;
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaHome, FaImages, FaInfoCircle, FaEnvelope, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaImages, FaInfoCircle, FaEnvelope, FaCog, FaSignOutAlt, FaMoon, FaSun } from 'react-icons/fa';
 import { HiMenu, HiX } from 'react-icons/hi';
 import './Navbar.css';
 
 function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const navigate = useNavigate();
+
+  // Check for saved dark mode preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    if (!isDarkMode) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const handleNavClick = (page) => {
     setCurrentPage(page);
@@ -304,7 +326,7 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
 
   return (
     <>
-      <nav className="navbar">
+      <nav className={`navbar ${isDarkMode ? 'dark' : ''}`}>
         <div className="logo">
           <a href="/" onClick={handleLogoClick} className="logo-link">
             <img 
@@ -312,18 +334,28 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               alt="kameshfineart" 
               className="logo-image"
             />
-            {/* <span className="logo-tagline">FRAMING MEMORIES FOREVER</span> */}
           </a>
         </div>
         
-        <div className="hamburger-wrapper">
+        <div className="nav-right">
+          {/* Dark Mode Toggle */}
           <button 
-            className={`hamburger ${isOpen ? 'active' : ''}`} 
-            onClick={toggleMenu}
-            aria-label="Toggle navigation menu"
+            className={`dark-mode-toggle ${isDarkMode ? 'active' : ''}`} 
+            onClick={toggleDarkMode}
+            aria-label="Toggle dark mode"
           >
-            {isOpen ? <HiX /> : <HiMenu />}
+            {isDarkMode ? <FaSun /> : <FaMoon />}
           </button>
+
+          <div className="hamburger-wrapper">
+            <button 
+              className={`hamburger ${isOpen ? 'active' : ''}`} 
+              onClick={toggleMenu}
+              aria-label="Toggle navigation menu"
+            >
+              {isOpen ? <HiX /> : <HiMenu />}
+            </button>
+          </div>
         </div>
 
         <ul className={`nav-links ${isOpen ? 'open' : ''}`}>
