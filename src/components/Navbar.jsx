@@ -92,6 +92,13 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               ABOUT
             </Link>
           </li>
+          // Add this to your Navbar component's navigation links
+<Nav.Link 
+  className={currentPage === 'photography' ? 'active' : ''}
+  onClick={() => setCurrentPage('photography')}
+>
+  Photography
+</Nav.Link>
           <li>
             <Link 
               to="/contact" 
