@@ -637,7 +637,8 @@
   }
 
   .home-about-section {
-    padding:5rem 1.5rem;
+    padding: 2rem 1.5rem;
+      margin-top: 40px;
   }
 
   .about-stats {
