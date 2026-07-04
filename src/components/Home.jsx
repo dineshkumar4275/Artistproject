@@ -150,7 +150,27 @@ function Home({ images, setCurrentPage }) {
           </button>
         </div>
       </section>
+{/* Featured Video Section */}
+<section className="featured-video-section">
+  <div className="section-header">
+    <h2>Featured Video</h2>
+    <p>Watch our latest artwork showcase</p>
+  </div>
 
+  <div className="video-container">
+    <video
+      className="featured-video"
+      controls
+      autoPlay
+      muted
+      loop
+      playsInline
+    >
+      <source src="/assets/featured-video.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</section>
       {/* About Section */}
       <section className="home-about-section">
         <div className="section-header">

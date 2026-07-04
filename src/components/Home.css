@@ -510,7 +510,40 @@
 /* ======================================== */
 /* ===== RESPONSIVE ===== */
 /* ======================================== */
+/* ============================= */
+/* ===== FEATURED VIDEO ===== */
+/* ============================= */
 
+.featured-video-section {
+  padding: 80px 20px;
+  background: #111;
+  text-align: center;
+}
+
+.video-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.featured-video {
+  width: 100%;
+  max-height: 650px;
+  border-radius: 20px;
+  border: 3px solid #c9ad93;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  object-fit: cover;
+  background: #000;
+}
+
+@media (max-width: 768px) {
+  .featured-video-section {
+    padding: 60px 15px;
+  }
+
+  .featured-video {
+    border-radius: 12px;
+  }
+}
 @media (max-width: 1024px) {
   .carousel-track {
     grid-template-columns: repeat(2, 1fr);
