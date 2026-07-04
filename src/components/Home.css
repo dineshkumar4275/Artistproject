@@ -684,3 +684,209 @@
     font-size: 1rem;
   }
 }
+/* ======================================== */
+/* ===== VIDEO SECTION ===== */
+/* ======================================== */
+.featured-video-section {
+  padding: 2rem 0;
+  margin-bottom: 4rem;
+}
+
+.video-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.video-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.video-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  background: #1c1c1c;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  background: #000;
+  overflow: hidden;
+}
+
+.video-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  z-index: 1;
+}
+
+/* Video Overlay - Shows on hover */
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  cursor: pointer;
+}
+
+.video-overlay:hover {
+  opacity: 1;
+}
+
+.video-play-btn {
+  width: 64px;
+  height: 64px;
+  background: rgba(201, 173, 147, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.8rem;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.video-play-btn:hover {
+  transform: scale(1.15);
+  background: #c9ad93;
+}
+
+.video-info {
+  text-align: center;
+  color: white;
+  padding: 0 1rem;
+}
+
+.video-info h3 {
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin: 0.3rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.video-info p {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ======================================== */
+/* ===== RESPONSIVE VIDEO ===== */
+/* ======================================== */
+
+@media (max-width: 1024px) {
+  .video-row {
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .video-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .video-play-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+  }
+
+  .video-info h3 {
+    font-size: 0.95rem;
+  }
+
+  .video-info p {
+    font-size: 0.7rem;
+  }
+
+  .video-overlay {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+@media (max-width: 480px) {
+  .video-grid {
+    gap: 1rem;
+  }
+
+  .video-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .video-play-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .video-info h3 {
+    font-size: 0.85rem;
+  }
+
+  .video-info p {
+    font-size: 0.65rem;
+  }
+
+  .video-overlay {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .video-card {
+    border-radius: 12px;
+  }
+
+  .video-iframe {
+    pointer-events: auto;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 360px) {
+  .video-play-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .video-info h3 {
+    font-size: 0.75rem;
+  }
+
+  .video-info p {
+    font-size: 0.55rem;
+  }
+}

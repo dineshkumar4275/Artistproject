@@ -1,21 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaExpand, FaEnvelope, FaPhone, FaMapMarkerAlt, FaInstagram, FaBehance, FaLinkedin } from 'react-icons/fa';
+import { FaExpand, FaEnvelope, FaPhone, FaMapMarkerAlt, FaInstagram, FaBehance, FaLinkedin, FaPlay, FaYoutube } from 'react-icons/fa';
 import './Home.css';
 
 function Home({ images, setCurrentPage }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(8);
 
   // Get featured images (first 8)
   const featuredImages = images.slice(0, 8);
 
-  // Group images into rows of 2
-  const imageRows = [];
-  for (let i = 0; i < featuredImages.length; i += 2) {
-    imageRows.push({
-      left: featuredImages[i],
-      right: featuredImages[i + 1] || null
+  // Video data
+  const videos = [
+    {
+      id: 1,
+      title: "Artwork Showcase",
+      description: "Watch our latest artwork creation process",
+      url: "https://www.youtube.com/embed/qyvdYnTtBfE",
+      thumbnail: "https://img.youtube.com/vi/qyvdYnTtBfE/maxresdefault.jpg"
+    },
+    {
+      id: 2,
+      title: "Behind the Scenes",
+      description: "See how we create our masterpieces",
+      url: "https://www.youtube.com/embed/qyvdYnTtBfE",
+      thumbnail: "https://img.youtube.com/vi/qyvdYnTtBfE/maxresdefault.jpg"
+    }
+  ];
+
+  // Group videos into rows of 2
+  const videoRows = [];
+  for (let i = 0; i < videos.length; i += 2) {
+    videoRows.push({
+      left: videos[i],
+      right: videos[i + 1] || null
     });
   }
 
@@ -71,49 +88,24 @@ function Home({ images, setCurrentPage }) {
           <p className="empty-message">No images yet. Add some via the Admin panel.</p>
         ) : (
           <div className="featured-grid">
-            {imageRows.map((row, rowIndex) => (
-              <div key={rowIndex} className="gallery-row">
-                {/* Left Image */}
-                <div className="featured-card" onClick={() => openModal(row.left)}>
-                  <div className="featured-image-wrapper">
-                    <img 
-                      src={getImageUrl(row.left)} 
-                      alt={row.left.title} 
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
-                      }}
-                    />
-                    <div className="featured-overlay">
-                      <span className="featured-number">#{row.left.id}</span>
-                      <h3>{row.left.title}</h3>
-                      <span className="featured-hint">
-                        <FaExpand /> Click to enlarge
-                      </span>
-                    </div>
+            {featuredImages.map((img, index) => (
+              <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
+                <div className="featured-image-wrapper">
+                  <img 
+                    src={getImageUrl(img)} 
+                    alt={img.title} 
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
+                    }}
+                  />
+                  <div className="featured-overlay">
+                    <span className="featured-number">#{img.id}</span>
+                    <h3>{img.title}</h3>
+                    <span className="featured-hint">
+                      <FaExpand /> Click to enlarge
+                    </span>
                   </div>
                 </div>
-
-                {/* Right Image */}
-                {row.right && (
-                  <div className="featured-card" onClick={() => openModal(row.right)}>
-                    <div className="featured-image-wrapper">
-                      <img 
-                        src={getImageUrl(row.right)} 
-                        alt={row.right.title} 
-                        onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
-                        }}
-                      />
-                      <div className="featured-overlay">
-                        <span className="featured-number">#{row.right.id}</span>
-                        <h3>{row.right.title}</h3>
-                        <span className="featured-hint">
-                          <FaExpand /> Click to enlarge
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -129,21 +121,70 @@ function Home({ images, setCurrentPage }) {
       {/* Featured Video Section */}
       <section className="featured-video-section">
         <div className="section-header">
-          <h2>Featured Video</h2>
-          <p>Watch our latest artwork showcase</p>
+          <h2>Featured Videos</h2>
+          <p>Watch our latest artwork showcases</p>
         </div>
 
-        <div className="video-container">
-          <iframe
-            className="featured-video"
-            width="100%"
-            height="500"
-            src="https://www.youtube.com/embed/qyvdYnTtBfE"
-            title="Featured Video"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+        <div className="video-grid">
+          {videoRows.map((row, rowIndex) => (
+            <div key={rowIndex} className="video-row">
+              {/* Left Video */}
+              <div className="video-card">
+                <div className="video-wrapper">
+                  <iframe
+                    className="video-iframe"
+                    src={row.left.url}
+                    title={row.left.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                  ></iframe>
+                  <div className="video-overlay">
+                    <div className="video-play-btn">
+                      <FaPlay />
+                    </div>
+                    <div className="video-info">
+                      <h3>{row.left.title}</h3>
+                      <p>{row.left.description}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Video */}
+              {row.right && (
+                <div className="video-card">
+                  <div className="video-wrapper">
+                    <iframe
+                      className="video-iframe"
+                      src={row.right.url}
+                      title={row.right.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      loading="lazy"
+                    ></iframe>
+                    <div className="video-overlay">
+                      <div className="video-play-btn">
+                        <FaPlay />
+                      </div>
+                      <div className="video-info">
+                        <h3>{row.right.title}</h3>
+                        <p>{row.right.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="view-all-wrapper">
+          <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
+            View More Videos →
+          </button>
         </div>
       </section>
 
