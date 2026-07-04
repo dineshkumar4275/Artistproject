@@ -83,6 +83,16 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               GALLERY
             </Link>
           </li>
+          {/* Photography Link - Fixed */}
+          <li>
+            <Link 
+              to="/photography" 
+              className={currentPage === 'photography' ? 'active' : ''}
+              onClick={() => handleNavClick('photography')}
+            >
+              PHOTOGRAPHY
+            </Link>
+          </li>
           <li>
             <Link 
               to="/about" 
@@ -92,13 +102,6 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               ABOUT
             </Link>
           </li>
-          // Add this to your Navbar component's navigation links
-<Link 
-  className={currentPage === 'photography' ? 'active' : ''}
-  onClick={() => setCurrentPage('photography')}
->
-  Photography
-</Link>
           <li>
             <Link 
               to="/contact" 
