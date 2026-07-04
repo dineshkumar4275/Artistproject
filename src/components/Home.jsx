@@ -157,7 +157,7 @@ function Home({ images, setCurrentPage }) {
     <p>Watch our latest artwork showcase</p>
   </div>
 
-  {/* <div className="video-container">
+  <div className="video-container">
     <video
       className="featured-video"
       controls
@@ -166,12 +166,12 @@ function Home({ images, setCurrentPage }) {
       loop
       playsInline
     >
-      <source src="https://www.youtube.com/watch?v=qyvdYnTtBfE" type="video/mp4" />
+      <source src="" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-  </div> */}
+  </div>
 
-  <div className="video-container">
+  {/* <div className="video-container">
   <iframe
     className="featured-video"
     width="100%"
@@ -182,7 +182,7 @@ function Home({ images, setCurrentPage }) {
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowFullScreen
   ></iframe>
-</div>
+</div> */}
 </section>
       {/* About Section */}
       <section className="home-about-section">
