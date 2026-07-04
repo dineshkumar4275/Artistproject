@@ -100,7 +100,20 @@ function Gallery({ images }) {
   const getImageIndex = (image) => {
     return images.findIndex(img => img.id === image.id);
   };
+// Add this inside Gallery component, before return()
 
+const optimizeImage = (url, width = 800) => {
+  if (!url) return "";
+
+  if (url.includes("cloudinary.com")) {
+    return url.replace(
+      "/upload/",
+      `/upload/f_auto,q_auto,w_${width}/`
+    );
+  }
+
+  return url;
+};
   return (
     <section className="page gallery-page">
       <h2 className="page-title">Gallery</h2>
@@ -120,18 +133,27 @@ function Gallery({ images }) {
                         <div className="image-loading-spinner"></div>
                       </div>
                     )}
-                    <img 
-                      src={pair.left.url || pair.left.imageUrl} 
-                      alt={pair.left.title} 
-                      loading="lazy"
-                      className={`gallery-image ${loadingImages[pair.left.id] ? 'image-fade-in' : ''}`}
-                      onLoad={() => handleImageLoad(pair.left.id)}
-                      onError={(e) => {
-                        console.error('Image load error:', pair.left.url || pair.left.imageUrl);
-                        e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
-                      }}
-                      style={{ display: loadingImages[pair.left.id] ? 'block' : 'none' }}
-                    />
+                  <img
+  src={optimizeImage(pair.left.url || pair.left.imageUrl, 800)}
+  alt={pair.left.title}
+  loading="lazy"
+  fetchPriority={getImageIndex(pair.left) < 2 ? "high" : "auto"}
+  className={`gallery-image ${
+    loadingImages[pair.left.id] ? "image-fade-in" : ""
+  }`}
+  onLoad={() => handleImageLoad(pair.left.id)}
+  onError={(e) => {
+    console.error(
+      "Image load error:",
+      pair.left.url || pair.left.imageUrl
+    );
+    e.target.src =
+      "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
+  }}
+  style={{
+    display: loadingImages[pair.left.id] ? "block" : "none",
+  }}
+/>
                     <div className="gallery-image-overlay">
                       <span className="image-number">#{getImageIndex(pair.left) + 1}</span>
                       <h3>{pair.left.title}</h3>
@@ -151,18 +173,27 @@ function Gallery({ images }) {
                           <div className="image-loading-spinner"></div>
                         </div>
                       )}
-                      <img 
-                        src={pair.right.url || pair.right.imageUrl} 
-                        alt={pair.right.title} 
-                        loading="lazy"
-                        className={`gallery-image ${loadingImages[pair.right.id] ? 'image-fade-in' : ''}`}
-                        onLoad={() => handleImageLoad(pair.right.id)}
-                        onError={(e) => {
-                          console.error('Image load error:', pair.right.url || pair.right.imageUrl);
-                          e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
-                        }}
-                        style={{ display: loadingImages[pair.right.id] ? 'block' : 'none' }}
-                      />
+                   <img
+  src={optimizeImage(pair.right.url || pair.right.imageUrl, 800)}
+  alt={pair.right.title}
+  loading="lazy"
+  fetchPriority={getImageIndex(pair.right) < 2 ? "high" : "auto"}
+  className={`gallery-image ${
+    loadingImages[pair.right.id] ? "image-fade-in" : ""
+  }`}
+  onLoad={() => handleImageLoad(pair.right.id)}
+  onError={(e) => {
+    console.error(
+      "Image load error:",
+      pair.right.url || pair.right.imageUrl
+    );
+    e.target.src =
+      "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
+  }}
+  style={{
+    display: loadingImages[pair.right.id] ? "block" : "none",
+  }}
+/>
                       <div className="gallery-image-overlay">
                         <span className="image-number">#{getImageIndex(pair.right) + 1}</span>
                         <h3>{pair.right.title}</h3>
@@ -218,14 +249,18 @@ function Gallery({ images }) {
               </>
             )}
             
-            <img 
-              src={selectedImage.url || selectedImage.imageUrl} 
-              alt={selectedImage.title} 
-              className="modal-image"
-              onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found';
-              }}
-            />
+          <img
+  src={optimizeImage(
+    selectedImage.url || selectedImage.imageUrl,
+    1600
+  )}
+  alt={selectedImage.title}
+  className="modal-image"
+  onError={(e) => {
+    e.target.src =
+      "https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found";
+  }}
+/>
             
             <div className="modal-info">
               <div className="modal-info-left">
