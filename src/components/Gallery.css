@@ -1,3 +1,5 @@
+/* Gallery.css - Clean version with transparent modal background */
+
 .gallery-page {
   animation: fadeIn 0.5s ease;
 }
@@ -216,7 +218,7 @@
 }
 
 /* ======================================== */
-/* ===== IMAGE MODAL ===== */
+/* ===== IMAGE MODAL - TRANSPARENT ===== */
 /* ======================================== */
 .image-modal {
   position: fixed;
@@ -224,13 +226,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  /* background: rgba(0, 0, 0, 0.92); */
+  background: rgba(0, 0, 0, 0.75);
   z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
   animation: modalFadeIn 0.4s ease;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
   padding: 2rem;
 }
 
@@ -253,9 +255,10 @@
   border-radius: 20px;
   overflow: visible;
   box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
-
 
 @keyframes modalContentFade {
   from {
@@ -270,12 +273,13 @@
 
 .modal-image {
   width: auto;
-  max-width: 95vw;
-  max-height: 90vh;
+  max-width: 90vw;
+  max-height: 85vh;
   display: block;
   margin: auto;
   object-fit: contain;
   border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 /* ===== MODAL CLOSE BUTTON ===== */
@@ -283,7 +287,7 @@
   position: absolute;
   top: 16px;
   right: 16px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
   width: 48px;
@@ -313,7 +317,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
   width: 50px;
@@ -354,9 +358,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  /* background: rgba(0, 0, 0, 0.8); */
+  background: rgba(0, 0, 0, 0.5);
   color: white;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0 0 16px 16px;
+  width: 100%;
+  max-width: 90vw;
+  backdrop-filter: blur(8px);
+  margin-top: -4px;
 }
 
 .modal-info-left {
@@ -393,33 +401,6 @@
   background: #d4b28c;
 }
 
-/* ===== MODAL DOTS ===== */
-/* .modal-dots {
-  display: flex;
-  justify-content: center;
-  gap: 0.6rem;
-  padding: 1rem;
-  /* background: rgba(0, 0, 0, 0.4); */
-/* }  */
-
-.modal-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.modal-dot.active {
-  background: #c9ad93;
-  transform: scale(1.3);
-}
-
-.modal-dot:hover {
-  background: rgba(255, 255, 255, 0.6);
-}
-
 /* ======================================== */
 /* ===== RESPONSIVE ===== */
 /* ======================================== */
@@ -431,6 +412,11 @@
 
   .gallery-image-overlay h3 {
     font-size: 1.2rem;
+  }
+
+  .modal-image {
+    max-width: 95vw;
+    max-height: 75vh;
   }
 }
 
@@ -473,11 +459,12 @@
 
   .image-modal {
     padding: 1rem;
+    background: rgba(0, 0, 0, 0.8);
   }
 
   .modal-image {
     max-width: 100vw;
-    max-height: 60vh;
+    max-height: 65vh;
   }
 
   .modal-close {
@@ -506,19 +493,17 @@
     gap: 0.8rem;
     padding: 1rem;
     text-align: center;
+    max-width: 100vw;
+    border-radius: 0 0 12px 12px;
   }
 
   .modal-info-left h3 {
     font-size: 1.1rem;
   }
 
-  .modal-dots {
-    padding: 0.6rem;
-  }
-
-  .modal-dot {
-    width: 8px;
-    height: 8px;
+  .modal-download {
+    font-size: 0.85rem;
+    padding: 0.5rem 1.2rem;
   }
 }
 
@@ -552,8 +537,22 @@
     gap: 1rem;
   }
 
+  .image-modal {
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.85);
+  }
+
   .modal-image {
-    max-height: 50vh;
+    max-height: 55vh;
+    border-radius: 12px;
+  }
+
+  .modal-close {
+    top: 8px;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
   }
 
   .modal-nav {
@@ -569,17 +568,49 @@
     right: 4px;
   }
 
+  .modal-info {
+    padding: 0.8rem;
+    border-radius: 0 0 12px 12px;
+  }
+
   .modal-info-left h3 {
     font-size: 0.9rem;
   }
 
-  .modal-download {
-    font-size: 0.8rem;
-    padding: 0.4rem 1rem;
+  .modal-number {
+    font-size: 0.7rem;
   }
 
-  .modal-dot {
-    width: 6px;
-    height: 6px;
+  .modal-download {
+    font-size: 0.75rem;
+    padding: 0.4rem 1rem;
+  }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+  .gallery-image-container {
+    height: 150px;
+  }
+
+  .gallery-image-overlay {
+    padding: 0.6rem 0.4rem 0.4rem;
+  }
+
+  .gallery-image-overlay .image-number {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .gallery-image-overlay h3 {
+    font-size: 0.65rem;
+  }
+
+  .gallery-image-overlay .view-hint {
+    font-size: 0.5rem;
+  }
+
+  .modal-image {
+    max-height: 45vh;
   }
 }
