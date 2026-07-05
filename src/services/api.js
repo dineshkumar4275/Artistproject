@@ -1,127 +1,157 @@
-import axios from 'axios';
+// frontend/src/services/api.js
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const UPLOAD_SECRET = import.meta.env.VITE_UPLOAD_SECRET;
 
-// Backend API URL
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  'https://artistproject-backend.vercel.app/api';
-
-console.log('🌐 API URL:', API_BASE_URL);
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
+export const galleryAPI = {
+  // Get gallery images
+  getGallery: async () => {
+    try {
+      const response = await fetch(`${API_URL}/images`);
+      if (!response.ok) throw new Error('Failed to fetch gallery');
+      return await response.json();
+    } catch (error) {
+      console.error('Gallery fetch error:', error);
+      throw error;
+    }
   },
-});
 
-// =======================
-// GET ALL GALLERY IMAGES
-// =======================
-export const getImages = async () => {
-  try {
-    const response = await api.get('/images');
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error fetching images:', error);
-    throw error.response?.data || { success: false, error: error.message };
+  // Get photography images
+  getPhotography: async () => {
+    try {
+      const response = await fetch(`${API_URL}/images/photography`);
+      if (!response.ok) throw new Error('Failed to fetch photography');
+      return await response.json();
+    } catch (error) {
+      console.error('Photography fetch error:', error);
+      throw error;
+    }
+  },
+
+  // Get all images (combined)
+  getAll: async () => {
+    try {
+      const response = await fetch(`${API_URL}/images/all`);
+      if (!response.ok) throw new Error('Failed to fetch all images');
+      return await response.json();
+    } catch (error) {
+      console.error('Fetch all error:', error);
+      throw error;
+    }
+  },
+
+  // Upload gallery image
+  uploadGallery: async (formData, token) => {
+    try {
+      const response = await fetch(`${API_URL}/images`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Upload failed');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+  },
+
+  // Upload photography image
+  uploadPhotography: async (formData, token) => {
+    try {
+      const response = await fetch(`${API_URL}/images/photography`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Upload failed');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Photography upload error:', error);
+      throw error;
+    }
+  },
+
+  // Upload image by URL
+  uploadByUrl: async (imageUrl, title, description = '', isFeatured = false) => {
+    try {
+      const response = await fetch(`${API_URL}/images/url`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          imageUrl,
+          title,
+          description,
+          isFeatured,
+          secret: UPLOAD_SECRET
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Upload failed');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('URL upload error:', error);
+      throw error;
+    }
+  },
+
+  // Update image
+  updateImage: async (id, data, token) => {
+    try {
+      const response = await fetch(`${API_URL}/images/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Update failed');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Update error:', error);
+      throw error;
+    }
+  },
+
+  // Delete image
+  deleteImage: async (id, token) => {
+    try {
+      const response = await fetch(`${API_URL}/images/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Delete failed');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Delete error:', error);
+      throw error;
+    }
   }
 };
-
-// =======================
-// GET PHOTOGRAPHY IMAGES
-// =======================
-export const getPhotographyImages = async () => {
-  try {
-    const response = await api.get('/images/photography');
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error fetching photography images:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// UPLOAD GALLERY IMAGE FILE
-// =======================
-export const uploadImageFile = async (file, title) => {
-  const formData = new FormData();
-  formData.append('image', file);
-  formData.append('title', title);
-
-  try {
-    const response = await api.post('/images', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error uploading image file:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// UPLOAD GALLERY IMAGE USING URL
-// =======================
-export const uploadImageByUrl = async (imageUrl, title) => {
-  try {
-    const response = await api.post('/images/url', {
-      imageUrl,
-      title,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error uploading image URL:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// UPLOAD PHOTOGRAPHY IMAGE - JPEG ONLY
-// =======================
-export const uploadPhotographyImage = async (file, title) => {
-  const formData = new FormData();
-  formData.append('image', file);
-  formData.append('title', title);
-
-  try {
-    const response = await api.post('/images/photography', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error uploading photography image:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// DELETE SINGLE IMAGE
-// =======================
-export const deleteImage = async (id) => {
-  try {
-    const response = await api.delete(`/images/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error deleting image:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// DELETE ALL IMAGES
-// =======================
-export const deleteAllImages = async () => {
-  try {
-    const response = await api.delete('/images');
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error deleting all images:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-export default api;
