@@ -4,19 +4,32 @@ import { Helmet } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Gallery from './components/Gallery';
-import Photography from './components/Photography'; // Add this import
+import Photography from './components/Photography';
 import About from './components/About';
 import Contact from './components/Contact';
 import Admin from './components/Admin';
+import PhotographyAdmin from './components/PhotographyAdmin'; // Import new component
 import Login from './components/Login';
 import Loading from './components/Loading';
 import ToastProvider from './components/ToastProvider';
 import SEO from './components/SEO';
 import useImages from '../src/utils/useImages';
+import usePhotographyImages from '../src/utils/usePhotographyImages'; // New hook
 import './App.css';
 
 function App() {
+  // Gallery images (URL uploads)
   const { images, loading, addImageFromFile, addImageFromUrl, removeImage, clearAllImages } = useImages();
+  
+  // Photography images (JPG file uploads)
+  const { 
+    photographyImages, 
+    photographyLoading, 
+    addPhotographyImage, 
+    removePhotographyImage, 
+    clearAllPhotographyImages 
+  } = usePhotographyImages();
+  
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoading, setIsLoading] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -86,7 +99,7 @@ function App() {
           keywords: 'art gallery, photography gallery, portfolio, artwork',
           url: `${baseUrl}/gallery`
         };
-      case 'photography': // Add this case
+      case 'photography':
         return {
           title: 'Photography - FRAMORA Art Studio',
           description: 'Explore stunning photography collection by FRAMORA.',
@@ -178,8 +191,8 @@ function App() {
             <Route path="/" element={<Home images={images} setCurrentPage={handlePageChange} />} />
             <Route path="/home" element={<Home images={images} setCurrentPage={handlePageChange} />} />
             <Route path="/gallery" element={<Gallery images={images} />} />
-            <Route path="/photography" element={<Photography images={images} />} /> {/* Add this route */}
-            <Route path="/about" element={<About imageCount={images.length} />} />
+            <Route path="/photography" element={<Photography images={photographyImages} />} />
+            <Route path="/about" element={<About imageCount={images.length + photographyImages.length} />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={
               isAdminLoggedIn ? (
@@ -188,6 +201,18 @@ function App() {
                   addImageFromFile={addImageFromFile}
                   addImageFromUrl={addImageFromUrl}
                   deleteImage={removeImage}
+                  onLogout={handleLogout}
+                />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            } />
+            <Route path="/photography-admin" element={
+              isAdminLoggedIn ? (
+                <PhotographyAdmin 
+                  images={photographyImages}
+                  addPhotographyImage={addPhotographyImage}
+                  deleteImage={removePhotographyImage}
                   onLogout={handleLogout}
                 />
               ) : (
