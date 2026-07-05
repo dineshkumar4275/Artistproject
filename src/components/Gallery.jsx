@@ -222,12 +222,12 @@ function Gallery({ images }) {
             />
             
             {/* ===== MODAL INFO - ONLY NUMBER & TITLE ===== */}
-            <div className="modal-info">
+            {/* <div className="">
               <div className="modal-info-left">
                 <span className="modal-number">#{currentIndex + 1} / {images.length}</span>
                 <h3>{selectedImage.title || 'Untitled'}</h3>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}

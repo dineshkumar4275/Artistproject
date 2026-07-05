@@ -189,12 +189,12 @@ function Photography({ images }) {
                 e.target.src = 'https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found';
               }}
             />
-            <div className="modal-info">
+            {/* <div className="modal-info">
               <h3>{selectedImage.title}</h3>
               <span className="modal-counter">
                 {filteredImages.findIndex(img => img.id === selectedImage.id) + 1} / {filteredImages.length}
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       )}

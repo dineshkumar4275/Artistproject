@@ -404,13 +404,13 @@ function Home({ images, setCurrentPage }) {
 
             />
 
-            <div className="modal-info">
+            {/* <div className="modal-info">
 
               <h3>{selectedImage.title}</h3>
 
               <span className="modal-number">#{selectedImage.id}</span>
 
-            </div>
+            </div> */}
 
           </div>
 
