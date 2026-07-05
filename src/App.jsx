@@ -8,7 +8,7 @@ import Photography from './components/Photography';
 import About from './components/About';
 import Contact from './components/Contact';
 import Admin from './components/Admin';
-import PhotographyAdmin from './components/PhotographyAdmin'; // Import
+import Photography from './components/Photography'; // Import
 import Login from './components/Login';
 import Loading from './components/Loading';
 import ToastProvider from './components/ToastProvider';
