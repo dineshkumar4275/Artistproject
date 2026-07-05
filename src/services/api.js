@@ -222,7 +222,7 @@ export const authAPI = {
   }
 };
 
-// Default export
+// Default export for backward compatibility
 export default {
   getImages,
   getPhotographyImages,
@@ -230,5 +230,6 @@ export default {
   uploadPhotographyImage,
   uploadImageByUrl,
   deleteImage,
-  deleteAllImages
+  deleteAllImages,
+  authAPI
 };
