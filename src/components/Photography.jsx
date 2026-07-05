@@ -1,5 +1,6 @@
+// frontend/src/components/Photography.js
 import React, { useState, useEffect } from 'react';
-import { FaExpand, FaSearch, FaTimes } from 'react-icons/fa';
+import { FaExpand, FaSearch, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import './Photography.css';
 
 function Photography({ images }) {
@@ -7,21 +8,29 @@ function Photography({ images }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredImages, setFilteredImages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Helper function to get image URL
   const getImageUrl = (image) => {
+    if (!image) return '';
     return image?.url || image?.imageUrl || '';
   };
 
   // Filter images based on search
   useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredImages(images);
+    if (images && images.length > 0) {
+      if (searchTerm.trim() === '') {
+        setFilteredImages(images);
+      } else {
+        const filtered = images.filter(img => 
+          img.title?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredImages(filtered);
+      }
+      setLoading(false);
     } else {
-      const filtered = images.filter(img => 
-        img.title?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredImages(filtered);
+      setFilteredImages([]);
+      setLoading(false);
     }
   }, [searchTerm, images]);
 
@@ -42,12 +51,15 @@ function Photography({ images }) {
     const handleKeyDown = (e) => {
       if (isModalOpen) {
         if (e.key === 'Escape') closeModal();
-        // Next/Previous navigation
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        if (e.key === 'ArrowRight') {
           const currentIndex = filteredImages.findIndex(img => img.id === selectedImage?.id);
-          if (e.key === 'ArrowRight' && currentIndex < filteredImages.length - 1) {
+          if (currentIndex < filteredImages.length - 1) {
             setSelectedImage(filteredImages[currentIndex + 1]);
-          } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+          }
+        }
+        if (e.key === 'ArrowLeft') {
+          const currentIndex = filteredImages.findIndex(img => img.id === selectedImage?.id);
+          if (currentIndex > 0) {
             setSelectedImage(filteredImages[currentIndex - 1]);
           }
         }
@@ -72,11 +84,22 @@ function Photography({ images }) {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="photography-page">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading photos...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="photography-page">
       {/* Header */}
       <section className="photography-header">
-        <h1>Photography Gallery</h1>
+        <h1>📸 Photography Gallery</h1>
         <p>Explore my collection of photographs</p>
       </section>
 
@@ -95,6 +118,7 @@ function Photography({ images }) {
             <button 
               className="clear-search"
               onClick={() => setSearchTerm('')}
+              aria-label="Clear search"
             >
               <FaTimes />
             </button>
@@ -115,14 +139,14 @@ function Photography({ images }) {
                 <p className="empty-hint">Go to Admin panel to add photos.</p>
               </>
             ) : (
-              <p>No photos match your search criteria.</p>
+              <p>🔍 No photos match your search criteria.</p>
             )}
           </div>
         ) : (
           <div className="photo-grid">
             {filteredImages.map((img) => (
               <div 
-                key={img.id} 
+                key={img.id || img._id} 
                 className="photo-card"
                 onClick={() => openModal(img)}
               >
@@ -137,7 +161,7 @@ function Photography({ images }) {
                   />
                   <div className="photo-overlay">
                     <div className="photo-overlay-content">
-                      <h3>{img.title}</h3>
+                      <h3>{img.title || 'Untitled'}</h3>
                       <span className="view-hint">
                         <FaExpand /> Click to view
                       </span>
@@ -154,7 +178,9 @@ function Photography({ images }) {
       {isModalOpen && selectedImage && (
         <div className="photo-modal" onClick={closeModal}>
           <div className="photo-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={closeModal}>✕</button>
+            <button className="modal-close" onClick={closeModal}>
+              <FaTimes />
+            </button>
             
             {/* Navigation buttons */}
             {filteredImages.length > 1 && (
@@ -166,8 +192,9 @@ function Photography({ images }) {
                     prevImage();
                   }}
                   disabled={filteredImages.findIndex(img => img.id === selectedImage.id) === 0}
+                  aria-label="Previous image"
                 >
-                  ‹
+                  <FaChevronLeft />
                 </button>
                 <button 
                   className="modal-nav next"
@@ -176,25 +203,27 @@ function Photography({ images }) {
                     nextImage();
                   }}
                   disabled={filteredImages.findIndex(img => img.id === selectedImage.id) === filteredImages.length - 1}
+                  aria-label="Next image"
                 >
-                  ›
+                  <FaChevronRight />
                 </button>
               </>
             )}
 
             <img 
               src={getImageUrl(selectedImage)} 
-              alt={selectedImage.title}
+              alt={selectedImage.title || 'Photograph'}
               onError={(e) => {
                 e.target.src = 'https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found';
               }}
             />
-            {/* <div className="modal-info">
-              <h3>{selectedImage.title}</h3>
+            
+            <div className="modal-info">
+              <h3>{selectedImage.title || 'Untitled'}</h3>
               <span className="modal-counter">
                 {filteredImages.findIndex(img => img.id === selectedImage.id) + 1} / {filteredImages.length}
               </span>
-            </div> */}
+            </div>
           </div>
         </div>
       )}
