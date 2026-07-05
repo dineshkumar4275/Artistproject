@@ -62,6 +62,8 @@ function PhotographyAdmin({
           fileInputRef.current.value = '';
         }
         toast.success(`✅ "${photoTitle.trim()}" added to Photography!`);
+      } else {
+        toast.error(result.error || 'Upload failed');
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -118,7 +120,7 @@ function PhotographyAdmin({
   return (
     <section className="admin-page">
       <div className="admin-header">
-        <h2 className="page-title">Photography Admin</h2>
+        <h2 className="page-title">📸 Photography Admin</h2>
         <button className="logout-btn" onClick={handleLogout}>
           <FaSignOutAlt /> <span>Logout</span>
         </button>
@@ -155,7 +157,7 @@ function PhotographyAdmin({
                 </span>
               )}
             </label>
-            <p className="file-hint">📌 Only JPEG/JPG (Max: 10MB)</p>
+            <p className="file-hint">📌 Only JPEG/JPG (Max: 10MB) - Uploads to Cloudinary</p>
           </div>
           
           {photoPreview && (
