@@ -1,9 +1,11 @@
+// frontend/src/components/Admin.js
 import React, { useState, useRef } from 'react';
 import { 
   FaPlus, FaTrash, FaTrashAlt, FaSignOutAlt, 
   FaLink, FaCloudUploadAlt, FaImage, FaCamera 
 } from 'react-icons/fa';
 import useToast from '../hooks/useToast';
+import { uploadPhotographyImage } from '../services/api'; // Import API
 import './Admin.css';
 
 function Admin({ 
@@ -12,7 +14,8 @@ function Admin({
   deleteImage,
   photographyImages = [],
   addPhotographyImage,
-  deletePhotographyImage 
+  deletePhotographyImage,
+  onLogout 
 }) {
   // Gallery URL upload state
   const [imageUrl, setImageUrl] = useState('');
@@ -75,10 +78,11 @@ function Admin({
     }
   };
 
-  // ========== PHOTOGRAPHY FILE UPLOAD FUNCTIONS ==========
+  // ========== PHOTOGRAPHY FILE UPLOAD - UPDATED ==========
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check if JPEG
       if (!file.type.includes('jpeg') && !file.type.includes('jpg')) {
         toast.error('Please select a JPEG image file');
         e.target.value = '';
@@ -92,6 +96,8 @@ function Admin({
       }
       
       setPhotoFile(file);
+      
+      // Show preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoPreview(reader.result);
@@ -103,30 +109,48 @@ function Admin({
   const handlePhotographySubmit = async (e) => {
     e.preventDefault();
     
-    if (photoFile && photoTitle.trim()) {
-      setIsPhotoUploading(true);
-      try {
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          const base64Data = reader.result;
-          await addPhotographyImage(base64Data, photoTitle.trim());
-          setPhotoFile(null);
-          setPhotoTitle('');
-          setPhotoPreview('');
-          if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-          }
-          toast.success('✅ Photography image added successfully!');
-        };
-        reader.readAsDataURL(photoFile);
-      } catch (error) {
-        console.error('Upload error:', error);
-        toast.error(error.message || 'Failed to add photography image');
-      } finally {
-        setIsPhotoUploading(false);
-      }
-    } else {
+    if (!photoFile || !photoTitle.trim()) {
       toast.warning('Please select an image and enter a title');
+      return;
+    }
+
+    setIsPhotoUploading(true);
+    
+    try {
+      // ✅ Send file directly to backend API
+      const formData = new FormData();
+      formData.append('image', photoFile);
+      formData.append('title', photoTitle.trim());
+
+      const response = await fetch('https://artistproject-backend.vercel.app/api/images/photography', {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type header - browser will set it with boundary
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.id) {
+        // Add to local state
+        addPhotographyImage(data);
+        
+        // Clear form
+        setPhotoFile(null);
+        setPhotoTitle('');
+        setPhotoPreview('');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        
+        toast.success(`✅ "${data.title}" added to Photography!`);
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error(error.message || 'Failed to upload photography image');
+    } finally {
+      setIsPhotoUploading(false);
     }
   };
 
@@ -184,7 +208,11 @@ function Admin({
     localStorage.removeItem('isAdminLoggedIn');
     localStorage.removeItem('adminLoginTime');
     setTimeout(() => {
-      window.location.href = '/';
+      if (onLogout) {
+        onLogout();
+      } else {
+        window.location.href = '/';
+      }
     }, 500);
   };
 
