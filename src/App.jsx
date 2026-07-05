@@ -8,13 +8,13 @@ import Photography from './components/Photography';
 import About from './components/About';
 import Contact from './components/Contact';
 import Admin from './components/Admin';
-import PhotographyAdmin from './components/PhotographyAdmin'; // Import new component
+import PhotographyAdmin from './components/PhotographyAdmin'; // Import
 import Login from './components/Login';
 import Loading from './components/Loading';
 import ToastProvider from './components/ToastProvider';
 import SEO from './components/SEO';
 import useImages from '../src/utils/useImages';
-import usePhotographyImages from '../src/utils/usePhotographyImages'; // New hook
+import usePhotographyImages from '../src/utils/usePhotographyImages';
 import './App.css';
 
 function App() {
@@ -82,59 +82,7 @@ function App() {
   };
 
   const getSEOData = () => {
-    const baseUrl = 'https://framora.com';
-    
-    switch(currentPageName) {
-      case 'home':
-        return {
-          title: 'FRAMORA - Art Studio & Photography Portfolio',
-          description: 'Explore stunning art and photography by FRAMORA.',
-          keywords: 'art, photography, portfolio, artist, gallery, visual art',
-          url: baseUrl
-        };
-      case 'gallery':
-        return {
-          title: 'Gallery - FRAMORA Art Portfolio',
-          description: 'Browse through our collection of stunning art and photography.',
-          keywords: 'art gallery, photography gallery, portfolio, artwork',
-          url: `${baseUrl}/gallery`
-        };
-      case 'photography':
-        return {
-          title: 'Photography - FRAMORA Art Studio',
-          description: 'Explore stunning photography collection by FRAMORA.',
-          keywords: 'photography, photo gallery, visual art, photographs',
-          url: `${baseUrl}/photography`
-        };
-      case 'about':
-        return {
-          title: 'About the Artist - FRAMORA',
-          description: 'Learn about the artist behind FRAMORA.',
-          keywords: 'artist bio, visual artist, photographer, digital artist',
-          url: `${baseUrl}/about`
-        };
-      case 'contact':
-        return {
-          title: 'Contact - FRAMORA Art Studio',
-          description: 'Get in touch with FRAMORA for commissions or collaborations.',
-          keywords: 'contact artist, art commissions, photography booking',
-          url: `${baseUrl}/contact`
-        };
-      case 'admin':
-        return {
-          title: 'Admin Panel - FRAMORA',
-          description: 'Manage your gallery and portfolio.',
-          keywords: 'admin, manage gallery, upload art',
-          url: `${baseUrl}/admin`
-        };
-      default:
-        return {
-          title: 'FRAMORA - Art Studio',
-          description: 'Art and photography portfolio',
-          keywords: 'art, photography, portfolio',
-          url: baseUrl
-        };
-    }
+    // ... existing SEO data function
   };
 
   const seoData = getSEOData();
@@ -194,31 +142,37 @@ function App() {
             <Route path="/photography" element={<Photography images={photographyImages} />} />
             <Route path="/about" element={<About imageCount={images.length + photographyImages.length} />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={
-              isAdminLoggedIn ? (
-                <Admin 
-                  images={images} 
-                  addImageFromFile={addImageFromFile}
-                  addImageFromUrl={addImageFromUrl}
-                  deleteImage={removeImage}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <Login onLogin={handleLogin} />
-              )
-            } />
-            <Route path="/photography-admin" element={
-              isAdminLoggedIn ? (
-                <PhotographyAdmin 
-                  images={photographyImages}
-                  addPhotographyImage={addPhotographyImage}
-                  deleteImage={removePhotographyImage}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <Login onLogin={handleLogin} />
-              )
-            } />
+            <Route 
+              path="/admin" 
+              element={
+                isAdminLoggedIn ? (
+                  <Admin 
+                    images={images} 
+                    addImageFromFile={addImageFromFile}
+                    addImageFromUrl={addImageFromUrl}
+                    deleteImage={removeImage}
+                    onLogout={handleLogout}
+                  />
+                ) : (
+                  <Login onLogin={handleLogin} />
+                )
+              } 
+            />
+            <Route 
+              path="/photography-admin" 
+              element={
+                isAdminLoggedIn ? (
+                  <PhotographyAdmin 
+                    images={photographyImages}
+                    addPhotographyImage={addPhotographyImage}
+                    deleteImage={removePhotographyImage}
+                    onLogout={handleLogout}
+                  />
+                ) : (
+                  <Login onLogin={handleLogin} />
+                )
+              } 
+            />
           </Routes>
         )}
       </main>
