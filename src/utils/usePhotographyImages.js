@@ -1,11 +1,6 @@
 // frontend/src/utils/usePhotographyImages.js
 import { useState, useEffect } from 'react';
-import { 
-  getPhotographyImages, 
-  uploadPhotographyImage, 
-  deleteImage, 
-  deleteAllImages 
-} from '../services/api';
+import { getPhotographyImages, deleteImage, deleteAllImages } from '../services/api';
 
 function usePhotographyImages() {
   const [photographyImages, setPhotographyImages] = useState([]);
@@ -31,19 +26,9 @@ function usePhotographyImages() {
     loadImages();
   }, []);
 
-  const addPhotographyImage = async (file, title) => {
-    try {
-      const result = await uploadPhotographyImage(file, title);
-      if (result.id) {
-        setPhotographyImages(prev => [result, ...prev]);
-        return { success: true, image: result };
-      } else {
-        throw new Error('Upload failed');
-      }
-    } catch (error) {
-      console.error('Error uploading photography image:', error);
-      throw error;
-    }
+  // ✅ Add image from API response (called after upload)
+  const addPhotographyImage = (imageData) => {
+    setPhotographyImages(prev => [imageData, ...prev]);
   };
 
   const removePhotographyImage = async (id) => {
