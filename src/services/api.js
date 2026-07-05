@@ -18,11 +18,18 @@ export const galleryAPI = {
   // Get photography images
   getPhotography: async () => {
     try {
+      console.log('📸 Fetching photography images from:', `${API_URL}/images/photography`);
       const response = await fetch(`${API_URL}/images/photography`);
-      if (!response.ok) throw new Error('Failed to fetch photography');
-      return await response.json();
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Photography fetch failed:', response.status, errorText);
+        throw new Error(`Failed to fetch photography: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('✅ Photography data:', data);
+      return data;
     } catch (error) {
-      console.error('Photography fetch error:', error);
+      console.error('❌ Photography fetch error:', error);
       throw error;
     }
   },
@@ -39,7 +46,7 @@ export const galleryAPI = {
     }
   },
 
-  // Upload gallery image
+  // Upload gallery image (file)
   uploadGallery: async (formData, token) => {
     try {
       const response = await fetch(`${API_URL}/images`, {
@@ -61,9 +68,12 @@ export const galleryAPI = {
     }
   },
 
-  // Upload photography image
+  // Upload photography image (file) - JPEG only
   uploadPhotography: async (formData, token) => {
     try {
+      console.log('📤 Uploading to:', `${API_URL}/images/photography`);
+      console.log('🔑 Token:', token);
+      
       const response = await fetch(`${API_URL}/images/photography`, {
         method: 'POST',
         headers: {
@@ -72,18 +82,30 @@ export const galleryAPI = {
         body: formData
       });
       
+      console.log('📊 Response status:', response.status);
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Upload failed');
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || 'Upload failed';
+        } catch (e) {
+          const errorText = await response.text();
+          errorMessage = errorText || 'Upload failed';
+        }
+        throw new Error(errorMessage);
       }
-      return await response.json();
+      
+      const result = await response.json();
+      console.log('✅ Upload successful:', result);
+      return result;
     } catch (error) {
-      console.error('Photography upload error:', error);
+      console.error('❌ Photography upload error:', error);
       throw error;
     }
   },
 
-  // Upload image by URL
+  // Upload image by URL (with secret)
   uploadByUrl: async (imageUrl, title, description = '', isFeatured = false) => {
     try {
       const response = await fetch(`${API_URL}/images/url`, {
@@ -151,6 +173,51 @@ export const galleryAPI = {
       return await response.json();
     } catch (error) {
       console.error('Delete error:', error);
+      throw error;
+    }
+  }
+};
+// frontend/src/services/api.js (add this at the bottom)
+
+export const authAPI = {
+  login: async (email, password) => {
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Login failed');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  },
+
+  register: async (email, password, role = 'user') => {
+    try {
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password, role })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Registration failed');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Registration error:', error);
       throw error;
     }
   }
