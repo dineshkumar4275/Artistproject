@@ -144,7 +144,7 @@ function Home({ images, setCurrentPage }) {
 
                   />
 
-                  <div className="featured-overlay">
+                  {/* <div className="featured-overlay">
 
                     <span className="featured-number">#{img.id}</span>
 
@@ -156,7 +156,7 @@ function Home({ images, setCurrentPage }) {
 
                     </span>
 
-                  </div>
+                  </div> */}
 
                 </div>
 
