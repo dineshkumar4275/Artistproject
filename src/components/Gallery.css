@@ -358,7 +358,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  /* background: rgba(0, 0, 0, 0.5); */
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   border-radius: 0 0 16px 16px;
   width: 100%;
