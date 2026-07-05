@@ -1,4 +1,3 @@
-// frontend/src/utils/usePhotographyImages.js
 import { useState, useEffect } from 'react';
 import { getPhotographyImages, deleteImage, deleteAllImages } from '../services/api';
 
@@ -26,7 +25,7 @@ function usePhotographyImages() {
     loadImages();
   }, []);
 
-  // ✅ Add image from API response (called after upload)
+  // Add image from API response (called after upload)
   const addPhotographyImage = (imageData) => {
     setPhotographyImages(prev => [imageData, ...prev]);
   };
