@@ -11,8 +11,6 @@ function Gallery({ images }) {
   const [touchEnd, setTouchEnd] = useState(0);
   const modalRef = useRef(null);
 
-  console.log('Gallery received images:', images); // Debug log
-
   // Group images into rows of 2
   const imagePairs = [];
   for (let i = 0; i < images.length; i += 2) {
