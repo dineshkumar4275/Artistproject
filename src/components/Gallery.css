@@ -394,13 +394,13 @@
 }
 
 /* ===== MODAL DOTS ===== */
-.modal-dots {
+/* .modal-dots {
   display: flex;
   justify-content: center;
   gap: 0.6rem;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.4);
-}
+  /* background: rgba(0, 0, 0, 0.4); */
+/* }  */
 
 .modal-dot {
   width: 10px;

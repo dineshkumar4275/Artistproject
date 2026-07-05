@@ -209,9 +209,9 @@ const optimizeImage = (url, width = 800) => {
           </div>
 
           {/* Image Count Indicator */}
-          <div className="gallery-indicator">
+          {/* <div className="gallery-indicator">
             <span>{images.length} Photos</span>
-          </div>
+          </div> */}
         </>
       )}
 
@@ -270,7 +270,7 @@ const optimizeImage = (url, width = 800) => {
             </div>
             
             {/* Image counter dots */}
-            <div className="modal-dots">
+            {/* <div className="modal-dots">
               {images.map((_, idx) => (
                 <span 
                   key={idx} 
@@ -278,7 +278,7 @@ const optimizeImage = (url, width = 800) => {
                   onClick={(e) => { e.stopPropagation(); setCurrentIndex(idx); setSelectedImage(images[idx]); }}
                 />
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
       )}
