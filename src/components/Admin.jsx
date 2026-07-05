@@ -1,9 +1,11 @@
+// frontend/src/components/Admin.js
 import React, { useState, useRef } from 'react';
 import { 
   FaPlus, FaTrash, FaTrashAlt, FaSignOutAlt, 
   FaLink, FaCloudUploadAlt, FaImage, FaCamera 
 } from 'react-icons/fa';
 import useToast from '../hooks/useToast';
+import { uploadPhotographyImage } from '../services/api'; // Import API
 import './Admin.css';
 
 function Admin({ 
@@ -76,7 +78,7 @@ function Admin({
     }
   };
 
-  // ========== PHOTOGRAPHY FILE UPLOAD ==========
+  // ========== PHOTOGRAPHY FILE UPLOAD - UPDATED ==========
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -115,15 +117,15 @@ function Admin({
     setIsPhotoUploading(true);
     
     try {
+      // ✅ Send file directly to backend API
       const formData = new FormData();
       formData.append('image', photoFile);
       formData.append('title', photoTitle.trim());
 
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
-      
-      const response = await fetch(`${API_BASE_URL}/images/photography`, {
+      const response = await fetch('https://artistproject-backend.vercel.app/api/images/photography', {
         method: 'POST',
         body: formData,
+        // Don't set Content-Type header - browser will set it with boundary
       });
 
       const data = await response.json();
