@@ -247,14 +247,15 @@
 
 .image-modal-content {
   position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
-  background: #1c1c1c;
+  max-width: 95vw;
+  max-height: 95vh;
+  background: transparent;
   border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-  animation: modalContentFade 0.5s ease;
+  overflow: visible;
+  box-shadow: none;
 }
+
+
 
 @keyframes modalContentFade {
   from {
@@ -268,11 +269,13 @@
 }
 
 .modal-image {
-  max-width: 85vw;
-  max-height: 75vh;
-  object-fit: contain;
+  width: auto;
+  max-width: 95vw;
+  max-height: 90vh;
   display: block;
-  margin: 0 auto;
+  margin: auto;
+  object-fit: contain;
+  border-radius: 16px;
 }
 
 /* ===== MODAL CLOSE BUTTON ===== */
