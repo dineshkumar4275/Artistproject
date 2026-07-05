@@ -7,6 +7,59 @@ import {
 import useToast from '../hooks/useToast';
 import './Admin.css';
 
+// ===== IMAGE COMPRESSION HELPER =====
+const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Resize if needed
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to JPEG with quality
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error('Failed to compress image'));
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = reject;
+    };
+    reader.onerror = reject;
+  });
+};
+
 function Admin({ 
   images, 
   addImageFromUrl, 
@@ -25,8 +78,10 @@ function Admin({
   // Photography file upload state
   const [photoFile, setPhotoFile] = useState(null);
   const [photoTitle, setPhotoTitle] = useState('');
+  const [photoDescription, setPhotoDescription] = useState('');
   const [photoPreview, setPhotoPreview] = useState('');
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
+  const [isCompressing, setIsCompressing] = useState(false);
   const fileInputRef = useRef(null);
   
   const toast = useToast();
@@ -77,31 +132,71 @@ function Admin({
     }
   };
 
-  // ========== PHOTOGRAPHY UPLOAD TO CLOUDINARY ==========
-  const handleFileChange = (e) => {
+  // ========== PHOTOGRAPHY UPLOAD WITH COMPRESSION ==========
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Check if JPEG
-      if (!file.type.includes('jpeg') && !file.type.includes('jpg')) {
-        toast.error('Please select a JPEG image file');
+    if (!file) return;
+
+    // Check if JPEG
+    if (!file.type.includes('jpeg') && !file.type.includes('jpg')) {
+      toast.error('Please select a JPEG image file');
+      e.target.value = '';
+      return;
+    }
+    
+    // Check file size
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error('File size exceeds 20MB. Please choose a smaller image.');
+      e.target.value = '';
+      return;
+    }
+
+    // Show compression status
+    setIsCompressing(true);
+    toast.loading('Compressing image...');
+
+    try {
+      let finalFile = file;
+      
+      // Compress if file is larger than 2MB
+      if (file.size > 2 * 1024 * 1024) {
+        finalFile = await compressImage(file, 1200, 1200, 0.85);
+        console.log(`✅ Compressed: ${(file.size / 1024 / 1024).toFixed(2)}MB → ${(finalFile.size / 1024 / 1024).toFixed(2)}MB`);
+        toast.success(`Image compressed to ${(finalFile.size / 1024 / 1024).toFixed(2)}MB`);
+      } else {
+        toast.success('Image size is good for upload');
+      }
+      
+      // Check final size
+      if (finalFile.size > 10 * 1024 * 1024) {
+        toast.error('Image still exceeds 10MB after compression. Please choose a smaller image.');
         e.target.value = '';
+        setIsCompressing(false);
         return;
       }
       
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('File size exceeds 10MB limit.');
-        e.target.value = '';
-        return;
-      }
+      setPhotoFile(finalFile);
       
+      // Show preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(finalFile);
+      
+    } catch (error) {
+      console.error('Compression error:', error);
+      toast.warning('Could not compress image, uploading original');
       setPhotoFile(file);
       
-      // Show preview (only for display, not saved)
+      // Show preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoPreview(reader.result);
       };
       reader.readAsDataURL(file);
+    } finally {
+      setIsCompressing(false);
     }
   };
 
@@ -113,22 +208,28 @@ function Admin({
       return;
     }
 
+    if (photoFile.size > 10 * 1024 * 1024) {
+      toast.error('Image size exceeds 10MB. Please choose a smaller image.');
+      return;
+    }
+
     setIsPhotoUploading(true);
     
     try {
-      // Upload directly to Cloudinary
-      const result = await addPhotographyImage(photoFile, photoTitle.trim());
+      // Upload with title and description
+      const result = await addPhotographyImage(photoFile, photoTitle.trim(), photoDescription.trim());
       
       if (result.success) {
         // Clear form
         setPhotoFile(null);
         setPhotoTitle('');
+        setPhotoDescription('');
         setPhotoPreview('');
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
         
-        toast.success(`✅ "${photoTitle.trim()}" uploaded to Cloudinary!`);
+        toast.success(`✅ "${photoTitle.trim()}" uploaded successfully!`);
       } else {
         throw new Error(result.error || 'Upload failed');
       }
@@ -159,7 +260,7 @@ function Admin({
       `Delete "${title}"?`,
       () => {
         deletePhotographyImage(id);
-        toast.success(`✅ "${title}" deleted from Cloudinary!`);
+        toast.success(`✅ "${title}" deleted successfully!`);
       },
       () => {
         toast.info(`ℹ️ "${title}" was not deleted`);
@@ -328,7 +429,7 @@ function Admin({
           <h3>Photography</h3>
           <span className="badge">{photographyImages.length}</span>
         </div>
-        <p className="card-subtitle">Upload JPEG images to Cloudinary</p>
+        <p className="card-subtitle">Upload JPEG images (auto-compressed)</p>
         
         <form onSubmit={handlePhotographySubmit} className="admin-form">
           <div className="file-upload-container">
@@ -340,20 +441,20 @@ function Admin({
               ref={fileInputRef}
               required
               className="file-input"
-              disabled={isPhotoUploading}
+              disabled={isPhotoUploading || isCompressing}
             />
-            <label htmlFor="photoUpload" className={`file-label ${isPhotoUploading ? 'disabled' : ''}`}>
+            <label htmlFor="photoUpload" className={`file-label ${isPhotoUploading || isCompressing ? 'disabled' : ''}`}>
               <FaCloudUploadAlt />
               <span className="file-text">
-                {photoFile ? photoFile.name : 'Choose JPEG image...'}
+                {isCompressing ? '🔄 Compressing...' : photoFile ? photoFile.name : 'Choose JPEG image...'}
               </span>
-              {photoFile && (
+              {photoFile && !isCompressing && (
                 <span className="file-size">
-                  ({(photoFile.size / 1024).toFixed(1)} KB)
+                  ({(photoFile.size / 1024 / 1024).toFixed(2)} MB)
                 </span>
               )}
             </label>
-            <p className="file-hint">📌 Only JPEG/JPG (Max: 10MB) - Stored in Cloudinary</p>
+            <p className="file-hint">📌 JPEG only | Max 20MB | Auto-compressed to under 10MB</p>
           </div>
           
           {photoPreview && (
@@ -365,21 +466,36 @@ function Admin({
           <div className="form-row">
             <input
               type="text"
-              placeholder="Photo Title"
+              placeholder="Photo Title *"
               value={photoTitle}
               onChange={(e) => setPhotoTitle(e.target.value)}
               required
               disabled={isPhotoUploading}
               className="title-input"
             />
-            
+          </div>
+          
+          <div className="form-row">
+            <input
+              type="text"
+              placeholder="Photo Description (optional)"
+              value={photoDescription}
+              onChange={(e) => setPhotoDescription(e.target.value)}
+              disabled={isPhotoUploading}
+              className="title-input"
+            />
+          </div>
+          
+          <div className="form-row">
             <button 
               type="submit" 
               className="btn-primary photography-btn"
-              disabled={isPhotoUploading}
+              disabled={isPhotoUploading || isCompressing || !photoFile}
             >
               {isPhotoUploading ? (
                 <span className="spinner"></span>
+              ) : isCompressing ? (
+                '🔄 Compressing...'
               ) : (
                 <>
                   <FaCloudUploadAlt /> Upload to Cloudinary
@@ -408,6 +524,7 @@ function Admin({
                   <img src={img.url} alt={img.title} />
                 </div>
                 <span className="admin-title">{img.title}</span>
+                {img.description && <span className="admin-desc">{img.description}</span>}
                 <button
                   className="btn-danger"
                   onClick={() => handleDeletePhotography(img.id, img.title)}
