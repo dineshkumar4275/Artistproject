@@ -72,7 +72,6 @@ export const galleryAPI = {
   uploadPhotography: async (formData, token) => {
     try {
       console.log('📤 Uploading to:', `${API_URL}/images/photography`);
-      console.log('🔑 Token:', token);
       
       const response = await fetch(`${API_URL}/images/photography`, {
         method: 'POST',
@@ -175,10 +174,31 @@ export const galleryAPI = {
       console.error('Delete error:', error);
       throw error;
     }
+  },
+
+  // Delete all images
+  deleteAllImages: async (token) => {
+    try {
+      const response = await fetch(`${API_URL}/images`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Delete all failed');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Delete all error:', error);
+      throw error;
+    }
   }
 };
-// frontend/src/services/api.js (add this at the bottom)
 
+// Auth API
 export const authAPI = {
   login: async (email, password) => {
     try {
@@ -222,3 +242,6 @@ export const authAPI = {
     }
   }
 };
+
+// Default export for backward compatibility
+export default galleryAPI;
