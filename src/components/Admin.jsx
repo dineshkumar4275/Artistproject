@@ -1,3 +1,4 @@
+// frontend/src/components/Admin.js
 import React, { useState, useRef } from 'react';
 import { 
   FaPlus, FaTrash, FaTrashAlt, FaSignOutAlt, 
@@ -76,7 +77,7 @@ function Admin({
     }
   };
 
-  // ========== PHOTOGRAPHY FILE UPLOAD ==========
+  // ========== PHOTOGRAPHY UPLOAD TO CLOUDINARY ==========
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -95,7 +96,7 @@ function Admin({
       
       setPhotoFile(file);
       
-      // Show preview
+      // Show preview (only for display, not saved)
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoPreview(reader.result);
@@ -115,23 +116,10 @@ function Admin({
     setIsPhotoUploading(true);
     
     try {
-      const formData = new FormData();
-      formData.append('image', photoFile);
-      formData.append('title', photoTitle.trim());
-
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
+      // Upload directly to Cloudinary
+      const result = await addPhotographyImage(photoFile, photoTitle.trim());
       
-      const response = await fetch(`${API_BASE_URL}/images/photography`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-      
-      if (response.ok && data.id) {
-        // Add to local state
-        addPhotographyImage(data);
-        
+      if (result.success) {
         // Clear form
         setPhotoFile(null);
         setPhotoTitle('');
@@ -140,9 +128,9 @@ function Admin({
           fileInputRef.current.value = '';
         }
         
-        toast.success(`✅ "${data.title}" added to Photography!`);
+        toast.success(`✅ "${photoTitle.trim()}" uploaded to Cloudinary!`);
       } else {
-        throw new Error(data.error || 'Upload failed');
+        throw new Error(result.error || 'Upload failed');
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -171,7 +159,7 @@ function Admin({
       `Delete "${title}"?`,
       () => {
         deletePhotographyImage(id);
-        toast.success(`✅ "${title}" deleted successfully!`);
+        toast.success(`✅ "${title}" deleted from Cloudinary!`);
       },
       () => {
         toast.info(`ℹ️ "${title}" was not deleted`);
@@ -340,7 +328,7 @@ function Admin({
           <h3>Photography</h3>
           <span className="badge">{photographyImages.length}</span>
         </div>
-        <p className="card-subtitle">Upload JPEG images</p>
+        <p className="card-subtitle">Upload JPEG images to Cloudinary</p>
         
         <form onSubmit={handlePhotographySubmit} className="admin-form">
           <div className="file-upload-container">
@@ -365,7 +353,7 @@ function Admin({
                 </span>
               )}
             </label>
-            <p className="file-hint">📌 Only JPEG/JPG (Max: 10MB)</p>
+            <p className="file-hint">📌 Only JPEG/JPG (Max: 10MB) - Stored in Cloudinary</p>
           </div>
           
           {photoPreview && (
@@ -394,7 +382,7 @@ function Admin({
                 <span className="spinner"></span>
               ) : (
                 <>
-                  <FaCloudUploadAlt /> Upload
+                  <FaCloudUploadAlt /> Upload to Cloudinary
                 </>
               )}
             </button>

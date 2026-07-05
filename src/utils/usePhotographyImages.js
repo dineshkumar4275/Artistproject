@@ -1,61 +1,73 @@
+// frontend/src/utils/usePhotographyImages.js
 import { useState, useEffect } from 'react';
-import { getPhotographyImages, deleteImage, deleteAllImages } from '../services/api';
+import { uploadToCloudinary } from './cloudinaryUpload';
 
+// Note: No localStorage - everything goes to Cloudinary
 function usePhotographyImages() {
   const [photographyImages, setPhotographyImages] = useState([]);
   const [photographyLoading, setPhotographyLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadImages = async () => {
+  // Load from Cloudinary - You need an API endpoint to fetch
+  // For now, we'll maintain state only
+  useEffect(() => {
+    // If you have a backend API to fetch Cloudinary images
+    // const fetchFromCloudinary = async () => {
+    //   const response = await fetch('/api/images/photography');
+    //   const data = await response.json();
+    //   setPhotographyImages(data);
+    // };
+    // fetchFromCloudinary();
+    
+    setPhotographyLoading(false);
+  }, []);
+
+  // Add image - Direct Cloudinary Upload (No Local Storage)
+  const addPhotographyImage = async (file, title) => {
     try {
-      setPhotographyLoading(true);
-      const data = await getPhotographyImages();
-      setPhotographyImages(Array.isArray(data) ? data : []);
-      setError(null);
+      const result = await uploadToCloudinary(file, title);
+      if (result.success) {
+        // Add to state only - not localStorage
+        setPhotographyImages(prev => [result.image, ...prev]);
+        return result;
+      }
     } catch (error) {
-      console.error('Error loading photography images:', error);
-      setError(error.message || 'Failed to load photography images');
-      setPhotographyImages([]);
-    } finally {
-      setPhotographyLoading(false);
+      console.error('Upload error:', error);
+      throw error;
     }
   };
 
-  useEffect(() => {
-    loadImages();
-  }, []);
-
-  // Add image from API response (called after upload)
-  const addPhotographyImage = (imageData) => {
-    setPhotographyImages(prev => [imageData, ...prev]);
-  };
-
-  const removePhotographyImage = async (id) => {
+  // Delete from Cloudinary - Needs backend API
+  const removePhotographyImage = async (publicId) => {
     try {
-      const result = await deleteImage(id);
-      if (result.success) {
-        setPhotographyImages(prev => prev.filter(img => img.id !== id));
-        return result;
-      } else {
-        throw new Error(result.error || 'Delete failed');
+      // Call your backend to delete from Cloudinary
+      const response = await fetch(`/api/images/${publicId}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPhotographyImages(prev => prev.filter(img => img.id !== publicId));
       }
+      return data;
     } catch (error) {
-      console.error('Error deleting photography image:', error);
+      console.error('Delete error:', error);
       throw error;
     }
   };
 
   const clearAllPhotographyImages = async () => {
     try {
-      const result = await deleteAllImages();
-      if (result.success) {
+      // Delete all from Cloudinary
+      const response = await fetch('/api/images', {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (data.success) {
         setPhotographyImages([]);
-        return result;
-      } else {
-        throw new Error(result.error || 'Clear all failed');
       }
+      return data;
     } catch (error) {
-      console.error('Error clearing photography images:', error);
+      console.error('Clear all error:', error);
       throw error;
     }
   };
@@ -64,7 +76,6 @@ function usePhotographyImages() {
     photographyImages,
     photographyLoading,
     error,
-    loadImages,
     addPhotographyImage,
     removePhotographyImage,
     clearAllPhotographyImages
