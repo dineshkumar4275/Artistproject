@@ -88,12 +88,11 @@
   width: 100%;
   height: auto;
   min-height: 500px;
-  /* background: #111; */
+  background: #111;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 
 /* ===== IMAGE LOADING ===== */
 .image-placeholder-loading {
@@ -124,10 +123,11 @@
 }
 
 /* ===== PHOTOGRAPHY IMAGE ===== */
+
 .photography-image {
   width: 100%;
   height: auto;
-  display: block;
+  max-height: 500px;
   object-fit: contain;
 }
 
