@@ -17,13 +17,9 @@ import './App.css';
 
 // 🔒 Protected Route Component
 const ProtectedRoute = ({ children, isAdminLoggedIn }) => {
-  const location = useLocation();
-  
   if (!isAdminLoggedIn) {
-    // Redirect to login page and save the location they tried to access
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" replace />;
   }
-  
   return children;
 };
 
@@ -32,7 +28,6 @@ const PublicRoute = ({ children, isAdminLoggedIn }) => {
   if (isAdminLoggedIn) {
     return <Navigate to="/admin" replace />;
   }
-  
   return children;
 };
 
@@ -65,8 +60,7 @@ function App() {
   }, []);
 
   const handlePageChange = (page) => {
-    // Only allow navigation if logged in OR going to home/login
-    if (!isAdminLoggedIn && page !== 'home' && page !== 'login') {
+    if (!isAdminLoggedIn && page !== 'home') {
       navigate('/login');
       return;
     }
@@ -82,8 +76,6 @@ function App() {
     setIsAdminLoggedIn(status);
     if (status) {
       navigate('/admin');
-    } else {
-      navigate('/login');
     }
   };
 
@@ -171,14 +163,14 @@ function App() {
           <Loading type="page" />
         ) : (
           <Routes>
-            {/* 🔓 Public Routes - Only accessible when NOT logged in */}
+            {/* 🔓 Public Route - Only login page when not logged in */}
             <Route path="/login" element={
               <PublicRoute isAdminLoggedIn={isAdminLoggedIn}>
                 <Login onLogin={handleLogin} />
               </PublicRoute>
             } />
             
-            {/* 🔒 Protected Routes - Only accessible when logged in */}
+            {/* 🔒 All other routes are protected */}
             <Route path="/" element={
               <ProtectedRoute isAdminLoggedIn={isAdminLoggedIn}>
                 <Home images={images} setCurrentPage={handlePageChange} />
