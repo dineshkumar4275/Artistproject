@@ -532,7 +532,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
             preload="metadata"
           >
             <source
-              src="https://res.cloudinary.com/dj5limxeb/video/upload/v1783237986/WhatsApp_Video_2026-07-04_at_5.18.58_PM_gb6q45.mp4"
+              src="https://res.cloudinary.com/dj5limxeb/video/upload/v1783353086/WhatsApp_Video_2026-07-04_at_5.18.58_PM_gb6q45_ydzrql.mp4"
               type="video/mp4"
             />
             Your browser does not support the video tag.
