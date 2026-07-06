@@ -1,3 +1,4 @@
+// frontend/src/services/api.js
 import axios from 'axios';
 
 // Backend API URL
@@ -13,6 +14,51 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// =======================
+// AUTHENTICATION API
+// =======================
+export const authAPI = {
+  login: async (email, password) => {
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      return response.data;
+    } catch (error) {
+      console.error('❌ Login error:', error);
+      throw error.response?.data || { success: false, error: error.message };
+    }
+  },
+  
+  register: async (userData) => {
+    try {
+      const response = await api.post('/auth/register', userData);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Registration error:', error);
+      throw error.response?.data || { success: false, error: error.message };
+    }
+  },
+  
+  logout: async () => {
+    try {
+      const response = await api.post('/auth/logout');
+      return response.data;
+    } catch (error) {
+      console.error('❌ Logout error:', error);
+      throw error.response?.data || { success: false, error: error.message };
+    }
+  },
+  
+  getCurrentUser: async () => {
+    try {
+      const response = await api.get('/auth/me');
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error getting current user:', error);
+      throw error.response?.data || { success: false, error: error.message };
+    }
+  }
+};
 
 // =======================
 // GET ALL GALLERY IMAGES
