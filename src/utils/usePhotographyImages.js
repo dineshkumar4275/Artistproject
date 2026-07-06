@@ -25,7 +25,6 @@ function usePhotographyImages() {
     }
   }, [toast]);
 
-  // ✅ This accepts a file and uploads it
   const addPhotographyImage = useCallback(async (file, title) => {
     try {
       const loadingId = toast.loading('Uploading photography image...');
