@@ -1,74 +1,76 @@
 // frontend/src/utils/usePhotographyImages.js
 import { useState, useEffect } from 'react';
-import { getPhotographyImages, uploadPhotographyImage, deleteImage, deleteAllImages } from '../services/api';
-import useToast from '../hooks/useToast';
+import { uploadToCloudinary } from './cloudinaryUpload';
 
+// Note: No localStorage - everything goes to Cloudinary
 function usePhotographyImages() {
   const [photographyImages, setPhotographyImages] = useState([]);
   const [photographyLoading, setPhotographyLoading] = useState(true);
   const [error, setError] = useState(null);
-  const toast = useToast();
 
-  // Load photography images from backend
-  const loadPhotographyImages = async () => {
-    try {
-      setPhotographyLoading(true);
-      const data = await getPhotographyImages();
-      setPhotographyImages(data || []);
-      setError(null);
-    } catch (err) {
-      setError(err.message || 'Failed to load photography images');
-      toast.error('Failed to load photography images');
-    } finally {
-      setPhotographyLoading(false);
-    }
-  };
+  // Load from Cloudinary - You need an API endpoint to fetch
+  // For now, we'll maintain state only
+  useEffect(() => {
+    // If you have a backend API to fetch Cloudinary images
+    // const fetchFromCloudinary = async () => {
+    //   const response = await fetch('/api/images/photography');
+    //   const data = await response.json();
+    //   setPhotographyImages(data);
+    // };
+    // fetchFromCloudinary();
+    
+    setPhotographyLoading(false);
+  }, []);
 
-  // Add photography image from file
+  // Add image - Direct Cloudinary Upload (No Local Storage)
   const addPhotographyImage = async (file, title) => {
     try {
-      const loadingId = toast.loading('Uploading photography image...');
-      const result = await uploadPhotographyImage(file, title);
-      toast.dismissById(loadingId);
-      toast.success(`✅ "${title}" uploaded to photography!`);
-      await loadPhotographyImages();
-      return { success: true, data: result };
-    } catch (err) {
-      toast.error(err.message || 'Failed to upload photography image');
-      return { success: false, error: err.message };
+      const result = await uploadToCloudinary(file, title);
+      if (result.success) {
+        // Add to state only - not localStorage
+        setPhotographyImages(prev => [result.image, ...prev]);
+        return result;
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
     }
   };
 
-  // Delete single photography image
-  const removePhotographyImage = async (id) => {
+  // Delete from Cloudinary - Needs backend API
+  const removePhotographyImage = async (publicId) => {
     try {
-      await deleteImage(id);
-      toast.success('✅ Photography image deleted successfully!');
-      await loadPhotographyImages();
-      return { success: true };
-    } catch (err) {
-      toast.error(err.message || 'Failed to delete photography image');
-      return { success: false, error: err.message };
+      // Call your backend to delete from Cloudinary
+      const response = await fetch(`/api/images/${publicId}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPhotographyImages(prev => prev.filter(img => img.id !== publicId));
+      }
+      return data;
+    } catch (error) {
+      console.error('Delete error:', error);
+      throw error;
     }
   };
 
-  // Delete all photography images
   const clearAllPhotographyImages = async () => {
     try {
-      await deleteAllImages();
-      toast.success('✅ All photography images deleted successfully!');
-      await loadPhotographyImages();
-      return { success: true };
-    } catch (err) {
-      toast.error(err.message || 'Failed to delete all photography images');
-      return { success: false, error: err.message };
+      // Delete all from Cloudinary
+      const response = await fetch('/api/images', {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPhotographyImages([]);
+      }
+      return data;
+    } catch (error) {
+      console.error('Clear all error:', error);
+      throw error;
     }
   };
-
-  // Load images on mount
-  useEffect(() => {
-    loadPhotographyImages();
-  }, []);
 
   return {
     photographyImages,
@@ -76,8 +78,7 @@ function usePhotographyImages() {
     error,
     addPhotographyImage,
     removePhotographyImage,
-    clearAllPhotographyImages,
-    refresh: loadPhotographyImages
+    clearAllPhotographyImages
   };
 }
 
