@@ -195,10 +195,28 @@ function App() {
           <Loading type="page" />
         ) : (
           <Routes>
-            <Route path="/" element={<Home images={images} setCurrentPage={handlePageChange} />} />
-            <Route path="/home" element={<Home images={images} setCurrentPage={handlePageChange} />} />
+            {/* ✅ FIXED: Pass photographyImages to Home component */}
+            <Route 
+              path="/" 
+              element={
+                <Home 
+                  images={images} 
+                  photographyImages={photographyImages}
+                  setCurrentPage={handlePageChange} 
+                />
+              } 
+            />
+            <Route 
+              path="/home" 
+              element={
+                <Home 
+                  images={images} 
+                  photographyImages={photographyImages}
+                  setCurrentPage={handlePageChange} 
+                />
+              } 
+            />
             <Route path="/gallery" element={<Gallery images={images} />} />
-            {/* ✅ Photography route - uses photographyImages */}
             <Route path="/photography" element={<Photography images={photographyImages} />} />
             <Route path="/about" element={<About imageCount={images.length + photographyImages.length} />} />
             <Route path="/contact" element={<Contact />} />
