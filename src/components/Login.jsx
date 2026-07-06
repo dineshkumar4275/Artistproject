@@ -1,95 +1,99 @@
-// components/Login.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import useToast from '../hooks/useToast';
-import { authAPI } from '../services/api';
+import { FaUser, FaLock, FaSignInAlt, FaEye, FaEyeSlash, FaExclamationCircle } from 'react-icons/fa';
 import './Login.css';
 
 function Login({ onLogin }) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const toast = useToast();
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (!email || !password) {
-      toast.warning('Please enter both email and password');
-      return;
-    }
+    setError('');
 
-    setLoading(true);
-    
-    try {
-      const result = await authAPI.login(email, password);
-      
-      if (result && result.success && result.token) {
-        // Store token in localStorage
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('adminToken', result.token);
-        localStorage.setItem('isAdminLoggedIn', 'true');
-        localStorage.setItem('adminLoginTime', Date.now().toString());
-        localStorage.setItem('user', JSON.stringify(result.user));
-        
-        toast.success('✅ Login successful!');
-        
-        // Call the onLogin callback
-        if (onLogin) {
-          onLogin(true);
-        }
-        
-        // Navigate to admin dashboard
-        navigate('/admin', { replace: true });
-      } else {
-        toast.error(result?.message || 'Login failed');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error(error.message || 'Login failed. Please check your credentials.');
-    } finally {
-      setLoading(false);
+    const adminUsername = import.meta.env.VITE_ADMIN_USERNAME || 'admin';
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
+
+    if (username === adminUsername && password === adminPassword) {
+      localStorage.setItem('isAdminLoggedIn', 'true');
+      localStorage.setItem('adminLoginTime', Date.now().toString());
+      onLogin(true);
+    } else {
+      setError('Invalid username or password');
+      setPassword('');
     }
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1 className="login-brand">KAMESHFINEART</h1>
-        <h2 className="login-title">Admin Login</h2>
-        
+        <div className="login-header">
+          <div className="login-logo">🔐</div>
+          <h2>Admin Login</h2>
+          <p>Enter your credentials to access the admin panel</p>
+        </div>
+
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
+            <label htmlFor="username">
+              <FaUser /> Username
+            </label>
             <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="username"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
-              className="login-input"
+              autoFocus
             />
           </div>
-          
+
           <div className="form-group">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="login-input"
-            />
+            <label htmlFor="password">
+              <FaLock /> Password
+            </label>
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={toggleShowPassword}
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
-          
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="login-btn"
-          >
-            {loading ? 'Logging in...' : 'Login'}
+
+          {error && (
+            <div className="error-message">
+              <FaExclamationCircle />
+              {error}
+            </div>
+          )}
+
+          <button type="submit" className="login-btn">
+            <FaSignInAlt /> Login
           </button>
         </form>
+
+        {/* <div className="login-footer">
+          <p>Default credentials: admin / admin123</p>
+          <p className="hint">Change these in your .env file</p>
+        </div> */}
       </div>
     </div>
   );
