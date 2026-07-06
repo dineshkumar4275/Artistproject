@@ -87,11 +87,7 @@
 .photography-image-container {
   width: 100%;
   height: auto;
-  min-height: 500px;
-  background: #111;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;
 }
 
 
@@ -127,7 +123,7 @@
 .photography-image {
   width: 100%;
   height: auto;
-  max-height: 500px;
+  display: block;
   object-fit: contain;
 }
 

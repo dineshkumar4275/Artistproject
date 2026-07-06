@@ -297,7 +297,7 @@ function Photography({ images }) {
             />
 
             {/* Modal Info */}
-            <div className="modal-info">
+            {/* <div className="modal-info">
               <div className="modal-info-left">
                 <span className="modal-number">
                   {currentIndex + 1} / {images.length}
@@ -307,7 +307,7 @@ function Photography({ images }) {
                   <p className="modal-description">{selectedImage.description}</p>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
