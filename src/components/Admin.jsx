@@ -8,7 +8,7 @@ import useToast from '../hooks/useToast';
 import './Admin.css';
 
 function Admin({ 
-  images, 
+  images = [], 
   addImageFromUrl, 
   deleteImage,
   photographyImages = [],
@@ -27,7 +27,7 @@ function Admin({
   const [photoTitle, setPhotoTitle] = useState('');
   const [photoPreview, setPhotoPreview] = useState('');
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
-  const [activeTab, setActiveTab] = useState('gallery'); // 'gallery' or 'photography'
+  const [activeTab, setActiveTab] = useState('gallery');
   const fileInputRef = useRef(null);
   
   const toast = useToast();
@@ -59,11 +59,16 @@ function Admin({
       if (isValidUrl(imageUrl)) {
         setIsUploading(true);
         try {
-          await addImageFromUrl(imageUrl.trim(), newImageTitle.trim());
-          setImageUrl('');
-          setNewImageTitle('');
-          setPreviewUrl('');
-          toast.success('✅ Gallery image added successfully!');
+          // ✅ Check if addImageFromUrl exists and is a function
+          if (typeof addImageFromUrl === 'function') {
+            await addImageFromUrl(imageUrl.trim(), newImageTitle.trim());
+            setImageUrl('');
+            setNewImageTitle('');
+            setPreviewUrl('');
+            toast.success('✅ Gallery image added successfully!');
+          } else {
+            toast.error('addImageFromUrl is not available');
+          }
         } catch (error) {
           console.error('Upload error:', error);
           toast.error(error.message || 'Failed to add image');
@@ -117,19 +122,24 @@ function Admin({
     setIsPhotoUploading(true);
     
     try {
-      const result = await addPhotographyImage(photoFile, photoTitle.trim());
-      
-      if (result.success) {
-        // Clear form
-        setPhotoFile(null);
-        setPhotoTitle('');
-        setPhotoPreview('');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+      // ✅ Check if addPhotographyImage exists and is a function
+      if (typeof addPhotographyImage === 'function') {
+        const result = await addPhotographyImage(photoFile, photoTitle.trim());
+        
+        if (result && result.success) {
+          // Clear form
+          setPhotoFile(null);
+          setPhotoTitle('');
+          setPhotoPreview('');
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+          toast.success(`✅ "${photoTitle.trim()}" uploaded to Photography!`);
+        } else {
+          throw new Error(result?.error || 'Upload failed');
         }
-        toast.success(`✅ "${photoTitle.trim()}" uploaded to Photography!`);
       } else {
-        throw new Error(result.error || 'Upload failed');
+        toast.error('addPhotographyImage is not available');
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -144,8 +154,12 @@ function Admin({
     toast.dangerConfirm(
       `Delete "${title}"?`,
       () => {
-        deleteImage(id);
-        toast.success(`✅ "${title}" deleted successfully!`);
+        if (typeof deleteImage === 'function') {
+          deleteImage(id);
+          toast.success(`✅ "${title}" deleted successfully!`);
+        } else {
+          toast.error('Delete function not available');
+        }
       },
       () => {
         toast.info(`ℹ️ "${title}" was not deleted`);
@@ -157,8 +171,12 @@ function Admin({
     toast.dangerConfirm(
       `Delete "${title}"?`,
       () => {
-        deletePhotographyImage(id);
-        toast.success(`✅ "${title}" deleted from Photography!`);
+        if (typeof deletePhotographyImage === 'function') {
+          deletePhotographyImage(id);
+          toast.success(`✅ "${title}" deleted from Photography!`);
+        } else {
+          toast.error('Delete function not available');
+        }
       },
       () => {
         toast.info(`ℹ️ "${title}" was not deleted`);
@@ -179,8 +197,12 @@ function Admin({
     toast.dangerConfirm(
       `Delete all ${items.length} photos?`,
       () => {
-        items.forEach(img => deleteFn(img.id));
-        toast.success(`✅ All ${items.length} photos deleted successfully!`);
+        if (typeof deleteFn === 'function') {
+          items.forEach(img => deleteFn(img.id));
+          toast.success(`✅ All ${items.length} photos deleted successfully!`);
+        } else {
+          toast.error('Delete function not available');
+        }
       },
       () => {
         toast.info('ℹ️ No photos were deleted');
@@ -193,7 +215,7 @@ function Admin({
     localStorage.removeItem('isAdminLoggedIn');
     localStorage.removeItem('adminLoginTime');
     setTimeout(() => {
-      if (onLogout) {
+      if (typeof onLogout === 'function') {
         onLogout();
       } else {
         window.location.href = '/';
@@ -228,13 +250,13 @@ function Admin({
           className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`}
           onClick={() => setActiveTab('gallery')}
         >
-          <FaLink /> Gallery ({images.length})
+          <FaImage /> Gallery ({images ? images.length : 0})
         </button>
         <button 
           className={`tab-btn ${activeTab === 'photography' ? 'active' : ''}`}
           onClick={() => setActiveTab('photography')}
         >
-          <FaCamera /> Photography ({photographyImages.length})
+          <FaCamera /> Photography ({photographyImages ? photographyImages.length : 0})
         </button>
       </div>
 
@@ -244,7 +266,7 @@ function Admin({
           <div className="card-header">
             <FaImage className="card-icon" />
             <h3>Gallery</h3>
-            <span className="badge">{images.length}</span>
+            <span className="badge">{images ? images.length : 0}</span>
           </div>
           <p className="card-subtitle">Add images via URL</p>
           
@@ -308,8 +330,8 @@ function Admin({
           </form>
           
           <div className="admin-stats">
-            <span>Total: <strong>{images.length}</strong></span>
-            {images.length > 0 && (
+            <span>Total: <strong>{images ? images.length : 0}</strong></span>
+            {images && images.length > 0 && (
               <button className="btn-clear" onClick={() => handleClearAll('gallery')}>
                 <FaTrashAlt /> Clear All
               </button>
@@ -317,10 +339,10 @@ function Admin({
           </div>
           
           <div className="admin-list">
-            {images.length === 0 ? (
+            {images && images.length === 0 ? (
               <p className="empty-message">No photos in gallery</p>
             ) : (
-              images.map(img => (
+              images && images.map(img => (
                 <div key={img.id} className="admin-list-item">
                   <div className="admin-thumb">
                     <img src={img.url} alt={img.title} />
@@ -345,7 +367,7 @@ function Admin({
           <div className="card-header">
             <FaCamera className="card-icon" />
             <h3>Photography</h3>
-            <span className="badge">{photographyImages.length}</span>
+            <span className="badge">{photographyImages ? photographyImages.length : 0}</span>
           </div>
           <p className="card-subtitle">Upload JPEG images from your computer</p>
           
@@ -409,8 +431,8 @@ function Admin({
           </form>
           
           <div className="admin-stats">
-            <span>Total: <strong>{photographyImages.length}</strong></span>
-            {photographyImages.length > 0 && (
+            <span>Total: <strong>{photographyImages ? photographyImages.length : 0}</strong></span>
+            {photographyImages && photographyImages.length > 0 && (
               <button className="btn-clear" onClick={() => handleClearAll('photography')}>
                 <FaTrashAlt /> Clear All
               </button>
@@ -418,10 +440,10 @@ function Admin({
           </div>
           
           <div className="admin-list">
-            {photographyImages.length === 0 ? (
+            {photographyImages && photographyImages.length === 0 ? (
               <p className="empty-message">No photos in photography</p>
             ) : (
-              photographyImages.map(img => (
+              photographyImages && photographyImages.map(img => (
                 <div key={img.id} className="admin-list-item">
                   <div className="admin-thumb">
                     <img src={img.url} alt={img.title} />
