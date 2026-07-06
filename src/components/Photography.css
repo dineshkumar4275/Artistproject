@@ -65,7 +65,7 @@
 @keyframes imageAppear {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
@@ -85,12 +85,11 @@
 }
 
 .photography-image-container {
-  position: relative;
   width: 100%;
-  padding-bottom: 75%; /* 4:3 Aspect Ratio */
+  height: auto;
   overflow: hidden;
-  background: #f8f6f2;
 }
+
 
 /* ===== IMAGE LOADING ===== */
 .image-placeholder-loading {
@@ -122,19 +121,14 @@
 
 /* ===== PHOTOGRAPHY IMAGE ===== */
 .photography-image {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 2;
-  will-change: transform;
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .photography-image-wrapper:hover .photography-image {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 /* ===== IMAGE FADE IN ===== */
@@ -173,6 +167,17 @@
 
 .photography-image-wrapper:hover .photography-image-overlay {
   transform: translateY(0);
+}
+
+.photography-image-overlay .image-number {
+  display: inline-block;
+  background: #c9ad93;
+  color: #1c1c1c;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .photography-image-overlay h3 {
@@ -217,7 +222,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.92);
+  background: rgba(0, 0, 0, 0.85);
   z-index: 9999;
   display: flex;
   justify-content: center;
@@ -230,7 +235,7 @@
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
@@ -240,41 +245,36 @@
 
 .photography-modal-content {
   position: relative;
-  max-width: 98vw;
-  max-height: 98vh;
+  max-width: 95vw;
+  max-height: 95vh;
   background: transparent;
+  border-radius: 20px;
+  overflow: visible;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-}
-
-.modal-image-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .modal-image {
   width: auto;
-  max-width: 92vw;
-  max-height: 88vh;
+  max-width: 90vw;
+  max-height: 80vh;
   display: block;
+  margin: auto;
   object-fit: contain;
-  border-radius: 8px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 /* ===== MODAL CLOSE BUTTON ===== */
 .modal-close {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.7);
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.6);
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: none;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -291,7 +291,6 @@
 .modal-close:hover {
   background: #b13e3e;
   transform: rotate(90deg) scale(1.1);
-  border-color: #b13e3e;
 }
 
 .modal-close:active {
@@ -303,11 +302,11 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  width: 56px;
-  height: 56px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   font-size: 1.5rem;
   cursor: pointer;
@@ -326,7 +325,7 @@
 }
 
 .modal-nav:disabled {
-  opacity: 0.2;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
@@ -338,13 +337,54 @@
   right: 16px;
 }
 
+/* ===== MODAL INFO ===== */
+.modal-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 0 0 16px 16px;
+  width: 100%;
+  max-width: 90vw;
+  backdrop-filter: blur(8px);
+  margin-top: -4px;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.modal-info-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.modal-number {
+  font-size: 0.85rem;
+  color: #c9ad93;
+  letter-spacing: 1px;
+}
+
+.modal-info-left h3 {
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.modal-description {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin: 0.3rem 0 0 0;
+}
+
 /* ======================================== */
 /* ===== RESPONSIVE ===== */
 /* ======================================== */
 
 @media (max-width: 1024px) {
   .photography-image-container {
-    padding-bottom: 70%;
+    height: 400px;
   }
 
   .photography-image-overlay h3 {
@@ -353,7 +393,7 @@
 
   .modal-image {
     max-width: 95vw;
-    max-height: 80vh;
+    max-height: 75vh;
   }
 }
 
@@ -364,7 +404,7 @@
   }
 
   .photography-image-container {
-    padding-bottom: 75%;
+    height: 280px;
   }
 
   .photography-image-overlay {
@@ -396,25 +436,26 @@
 
   .photography-modal {
     padding: 1rem;
+    background: rgba(0, 0, 0, 0.8);
   }
 
   .modal-image {
     max-width: 100vw;
-    max-height: 75vh;
+    max-height: 65vh;
   }
 
   .modal-close {
-    top: 12px;
-    right: 12px;
+    top: 10px;
+    right: 10px;
     width: 40px;
     height: 40px;
     font-size: 1.2rem;
   }
 
   .modal-nav {
-    width: 44px;
-    height: 44px;
-    font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
   }
 
   .modal-nav-left {
@@ -422,6 +463,23 @@
   }
   .modal-nav-right {
     right: 8px;
+  }
+
+  .modal-info {
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1rem;
+    text-align: center;
+    max-width: 100vw;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .modal-info-left h3 {
+    font-size: 1.1rem;
+  }
+
+  .modal-description {
+    font-size: 0.8rem;
   }
 }
 
@@ -431,11 +489,16 @@
   }
 
   .photography-image-container {
-    padding-bottom: 80%;
+    height: 200px;
   }
 
   .photography-image-overlay {
     padding: 1rem 0.6rem 0.8rem;
+  }
+
+  .photography-image-overlay .image-number {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.6rem;
   }
 
   .photography-image-overlay h3 {
@@ -452,25 +515,26 @@
 
   .photography-modal {
     padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.85);
   }
 
   .modal-image {
-    max-height: 70vh;
-    border-radius: 8px;
+    max-height: 55vh;
+    border-radius: 12px;
   }
 
   .modal-close {
-    top: 10px;
-    right: 10px;
-    width: 36px;
-    height: 36px;
+    top: 8px;
+    right: 8px;
+    width: 34px;
+    height: 34px;
     font-size: 1rem;
   }
 
   .modal-nav {
-    width: 36px;
-    height: 36px;
-    font-size: 0.9rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
   }
 
   .modal-nav-left {
@@ -480,19 +544,37 @@
     right: 4px;
   }
 
-  .photography-indicator {
-    font-size: 0.75rem;
+  .modal-info {
+    padding: 0.8rem;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .modal-info-left h3 {
+    font-size: 0.9rem;
+  }
+
+  .modal-number {
+    font-size: 0.7rem;
+  }
+
+  .modal-description {
+    font-size: 0.7rem;
   }
 }
 
 /* Extra Small Mobile */
 @media (max-width: 360px) {
   .photography-image-container {
-    padding-bottom: 85%;
+    height: 150px;
   }
 
   .photography-image-overlay {
     padding: 0.6rem 0.4rem 0.4rem;
+  }
+
+  .photography-image-overlay .image-number {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.4rem;
   }
 
   .photography-image-overlay h3 {
@@ -504,12 +586,61 @@
   }
 
   .modal-image {
-    max-height: 60vh;
+    max-height: 45vh;
   }
 
-  .modal-nav {
-    width: 30px;
-    height: 30px;
+  .photography-indicator {
+    font-size: 0.75rem;
+  }
+}
+/* Add this to Photography.css */
+
+/* ===== LOADING MORE INDICATOR ===== */
+.loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  color: #7a6e60;
+  font-size: 0.9rem;
+}
+
+.loading-more .image-loading-spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #f0ece4;
+  border-top: 2px solid #c9ad93;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== RESPONSIVE UPDATES ===== */
+@media (max-width: 768px) {
+  .loading-more {
+    font-size: 0.8rem;
+    padding: 1.5rem 0;
+  }
+  
+  .loading-more .image-loading-spinner-small {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-more {
     font-size: 0.7rem;
+    padding: 1rem 0;
+  }
+  
+  .loading-more .image-loading-spinner-small {
+    width: 16px;
+    height: 16px;
   }
 }
