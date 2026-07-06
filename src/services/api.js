@@ -152,7 +152,7 @@ export const uploadImageByUrl = async (imageUrl, title) => {
 };
 
 // =======================
-// UPLOAD PHOTOGRAPHY IMAGE - JPEG ONLY (ONCE)
+// UPLOAD PHOTOGRAPHY IMAGE - JPEG ONLY
 // =======================
 export const uploadPhotographyImage = async (file, title) => {
   const formData = new FormData();
@@ -217,4 +217,5 @@ export const deleteAllImages = async () => {
   }
 };
 
+// ✅ SINGLE DEFAULT EXPORT - NO DUPLICATE FUNCTIONS
 export default api;
