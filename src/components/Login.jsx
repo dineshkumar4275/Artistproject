@@ -56,9 +56,10 @@ function Login({ onLogin }) {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>Admin Login</h2>
-        <p className="login-subtitle">Please login to access the admin panel</p>
-        <form onSubmit={handleSubmit}>
+        <h1 className="login-brand">KAMESHFINEART</h1>
+        <h2 className="login-title">Admin Login</h2>
+        
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <input
               type="email"
@@ -66,8 +67,10 @@ function Login({ onLogin }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="login-input"
             />
           </div>
+          
           <div className="form-group">
             <input
               type="password"
@@ -75,17 +78,18 @@ function Login({ onLogin }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="login-input"
             />
           </div>
-          <button type="submit" disabled={loading}>
+          
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="login-btn"
+          >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        <div className="login-info">
-          <p>Demo credentials:</p>
-          <p><strong>Email:</strong> admin@kameshfineart.com</p>
-          <p><strong>Password:</strong> Admin123!</p>
-        </div>
       </div>
     </div>
   );
