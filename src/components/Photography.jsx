@@ -1,5 +1,5 @@
 // frontend/src/components/Photography.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight, FaTimes, FaExpand } from 'react-icons/fa';
 import './Photography.css';
 
@@ -10,17 +10,9 @@ function Photography({ images }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-
-  // ✅ Pre-load images - Start loading all images immediately
-  useEffect(() => {
-    if (images && images.length > 0) {
-      // Preload images in background
-      images.forEach(img => {
-        const imgObj = new Image();
-        imgObj.src = getThumbnailUrl(img.url || img.imageUrl);
-      });
-    }
-  }, [images]);
+  const [visibleImages, setVisibleImages] = useState([]);
+  const observerRef = useRef(null);
+  const modalRef = useRef(null);
 
   // Group images into rows of 2
   const imagePairs = [];
@@ -31,23 +23,24 @@ function Photography({ images }) {
     });
   }
 
-  // ✅ Optimize image URL with smaller size for faster loading
-  const getThumbnailUrl = (url) => {
+  // ✅ Optimize image URL with better quality settings
+  const optimizeImage = (url, width = 600, quality = 80) => {
     if (!url) return "";
     if (url.includes("cloudinary.com")) {
-      // Use smaller size for faster loading
-      return url.replace("/upload/", `/upload/f_auto,q_auto:low,w_500/`);
+      // Use f_auto for format, q_auto for quality, and width for size
+      return url.replace("/upload/", `/upload/f_auto,q_auto:good,w_${width}/`);
     }
     return url;
   };
 
+  // ✅ Get thumbnail URL (smaller for faster loading)
+  const getThumbnailUrl = (url) => {
+    return optimizeImage(url, 400, 70);
+  };
+
   // ✅ Get full image URL (larger for modal)
   const getFullImageUrl = (url) => {
-    if (!url) return "";
-    if (url.includes("cloudinary.com")) {
-      return url.replace("/upload/", `/upload/f_auto,q_auto:good,w_1200/`);
-    }
-    return url;
+    return optimizeImage(url, 1200, 90);
   };
 
   const handleImageLoad = (id) => {
@@ -110,6 +103,55 @@ function Photography({ images }) {
     return images.findIndex(img => img.id === image.id);
   };
 
+  // ✅ Lazy load with Intersection Observer
+  useEffect(() => {
+    if (images.length === 0) return;
+
+    // Only show first 4 images initially
+    setVisibleImages(images.slice(0, 4));
+
+    // Load remaining images lazily
+    const loadMoreImages = () => {
+      const currentCount = visibleImages.length;
+      if (currentCount < images.length) {
+        const nextBatch = images.slice(currentCount, currentCount + 2);
+        setVisibleImages(prev => [...prev, ...nextBatch]);
+      }
+    };
+
+    // Set up intersection observer for lazy loading
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        loadMoreImages();
+      }
+    }, { rootMargin: '200px' });
+
+    // Observe the last visible image
+    const lastImageElement = document.querySelector('.photography-image-wrapper:last-child');
+    if (lastImageElement) {
+      observerRef.current.observe(lastImageElement);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [images, visibleImages.length]);
+
+  // ✅ Use visible images for rendering
+  const visibleImagePairs = [];
+  for (let i = 0; i < visibleImages.length; i += 2) {
+    visibleImagePairs.push({
+      left: visibleImages[i],
+      right: visibleImages[i + 1] || null
+    });
+  }
+
   return (
     <section className="page photography-page">
       <h2 className="page-title">Photography</h2>
@@ -119,7 +161,7 @@ function Photography({ images }) {
       ) : (
         <>
           <div className="photography-pairs">
-            {imagePairs.map((pair, index) => (
+            {visibleImagePairs.map((pair, index) => (
               <div key={index} className="photography-pair">
                 {/* Left Image */}
                 <div className="photography-image-wrapper left-image">
@@ -131,8 +173,9 @@ function Photography({ images }) {
                     )}
                     <img
                       src={getThumbnailUrl(pair.left.url || pair.left.imageUrl)}
-                      alt={pair.left.title || 'Photography'}
-                      loading="eager"
+                      alt={pair.left.title}
+                      loading={index < 2 ? "eager" : "lazy"}
+                      fetchPriority={index < 2 ? "high" : "auto"}
                       className={`photography-image ${
                         loadingImages[pair.left.id] ? "image-fade-in" : ""
                       }`}
@@ -146,6 +189,7 @@ function Photography({ images }) {
                       }}
                     />
                     <div className="photography-image-overlay">
+                      <span className="image-number">#{getImageIndex(pair.left) + 1}</span>
                       <h3>{pair.left.title || 'Untitled'}</h3>
                       <span className="view-hint">
                         <FaExpand /> Click to view
@@ -165,8 +209,8 @@ function Photography({ images }) {
                       )}
                       <img
                         src={getThumbnailUrl(pair.right.url || pair.right.imageUrl)}
-                        alt={pair.right.title || 'Photography'}
-                        loading="eager"
+                        alt={pair.right.title}
+                        loading="lazy"
                         className={`photography-image ${
                           loadingImages[pair.right.id] ? "image-fade-in" : ""
                         }`}
@@ -180,6 +224,7 @@ function Photography({ images }) {
                         }}
                       />
                       <div className="photography-image-overlay">
+                        <span className="image-number">#{getImageIndex(pair.right) + 1}</span>
                         <h3>{pair.right.title || 'Untitled'}</h3>
                         <span className="view-hint">
                           <FaExpand /> Click to view
@@ -191,6 +236,14 @@ function Photography({ images }) {
               </div>
             ))}
           </div>
+
+          {/* Loading indicator for lazy loading */}
+          {visibleImages.length < images.length && (
+            <div className="loading-more">
+              <div className="image-loading-spinner-small"></div>
+              <span>Loading more photos...</span>
+            </div>
+          )}
 
           {/* Image Counter */}
           <div className="photography-indicator">
@@ -233,17 +286,28 @@ function Photography({ images }) {
               </>
             )}
             
-            <div className="modal-image-wrapper">
-              <img
-                src={getFullImageUrl(selectedImage.url || selectedImage.imageUrl)}
-                alt={selectedImage.title || 'Photography'}
-                className="modal-image"
-                loading="eager"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found";
-                }}
-              />
-            </div>
+            <img
+              src={getFullImageUrl(selectedImage.url || selectedImage.imageUrl)}
+              alt={selectedImage.title}
+              className="modal-image"
+              loading="eager"
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found";
+              }}
+            />
+
+            {/* Modal Info */}
+            {/* <div className="modal-info">
+              <div className="modal-info-left">
+                <span className="modal-number">
+                  {currentIndex + 1} / {images.length}
+                </span>
+                <h3>{selectedImage.title || 'Untitled'}</h3>
+                {selectedImage.description && (
+                  <p className="modal-description">{selectedImage.description}</p>
+                )}
+              </div>
+            </div> */}
           </div>
         </div>
       )}
