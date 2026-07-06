@@ -345,5 +345,31 @@ export const deleteAllImages = async () => {
     throw error.response?.data || { success: false, error: error.message };
   }
 };
+// frontend/src/services/api.js - Photography upload function
+export const uploadPhotographyImage = async (file, title) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  formData.append('title', title);
+  formData.append('description', '');
+  formData.append('isFeatured', 'false');
 
+  try {
+    const token = localStorage.getItem('token');
+    console.log('📤 Uploading photography image:', title);
+    console.log('🔑 Token exists:', !!token);
+    
+    const response = await api.post('/images/photography', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': token ? `Bearer ${token}` : undefined,
+      },
+    });
+    console.log('✅ Upload successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error uploading photography image:', error);
+    console.error('❌ Error response:', error.response?.data);
+    throw error.response?.data || { success: false, error: error.message };
+  }
+};
 export default api;
