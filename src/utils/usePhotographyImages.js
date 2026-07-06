@@ -1,5 +1,5 @@
 // frontend/src/utils/usePhotographyImages.js
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getPhotographyImages, uploadPhotographyImage, deleteImage, deleteAllImages } from '../services/api';
 import useToast from '../hooks/useToast';
 
@@ -8,23 +8,42 @@ function usePhotographyImages() {
   const [photographyLoading, setPhotographyLoading] = useState(true);
   const [error, setError] = useState(null);
   const toast = useToast();
+  const isMounted = useRef(true);
+  const hasFetched = useRef(false);
 
+  // Load photography images from backend
   const loadPhotographyImages = useCallback(async () => {
+    // Prevent multiple simultaneous calls
+    if (hasFetched.current && photographyImages.length > 0) {
+      console.log('📸 Already fetched, skipping...');
+      return;
+    }
+    
     try {
       setPhotographyLoading(true);
       setError(null);
+      console.log('📸 Fetching photography images...');
       const data = await getPhotographyImages();
-      console.log('📸 Loaded photography images:', data);
-      setPhotographyImages(data || []);
+      
+      if (isMounted.current) {
+        console.log('📸 Loaded photography images:', data);
+        setPhotographyImages(data || []);
+        hasFetched.current = true;
+      }
     } catch (err) {
       console.error('❌ Load photography error:', err);
-      setError(err.message || 'Failed to load photography images');
-      toast.error('Failed to load photography images');
+      if (isMounted.current) {
+        setError(err.message || 'Failed to load photography images');
+        toast.error('Failed to load photography images');
+      }
     } finally {
-      setPhotographyLoading(false);
+      if (isMounted.current) {
+        setPhotographyLoading(false);
+      }
     }
-  }, [toast]);
+  }, [toast, photographyImages.length]);
 
+  // Add photography image from file
   const addPhotographyImage = useCallback(async (file, title) => {
     try {
       const loadingId = toast.loading('Uploading photography image...');
@@ -36,6 +55,8 @@ function usePhotographyImages() {
       
       if (result && result.id) {
         toast.success(`✅ "${title}" uploaded to Photography!`);
+        // Reset fetch flag to allow refresh
+        hasFetched.current = false;
         await loadPhotographyImages();
         return { success: true, data: result };
       } else {
@@ -49,10 +70,13 @@ function usePhotographyImages() {
     }
   }, [loadPhotographyImages, toast]);
 
+  // Delete single photography image
   const removePhotographyImage = useCallback(async (id) => {
     try {
       await deleteImage(id);
       toast.success('✅ Photography image deleted successfully!');
+      // Reset fetch flag to allow refresh
+      hasFetched.current = false;
       await loadPhotographyImages();
       return { success: true };
     } catch (err) {
@@ -62,10 +86,13 @@ function usePhotographyImages() {
     }
   }, [loadPhotographyImages, toast]);
 
+  // Delete all photography images
   const clearAllPhotographyImages = useCallback(async () => {
     try {
       await deleteAllImages();
       toast.success('✅ All photography images deleted successfully!');
+      // Reset fetch flag to allow refresh
+      hasFetched.current = false;
       await loadPhotographyImages();
       return { success: true };
     } catch (err) {
@@ -75,9 +102,18 @@ function usePhotographyImages() {
     }
   }, [loadPhotographyImages, toast]);
 
+  // Load images on mount - ONLY ONCE
   useEffect(() => {
+    // Reset fetch flag when component mounts
+    hasFetched.current = false;
     loadPhotographyImages();
-  }, [loadPhotographyImages]);
+    
+    // Cleanup
+    return () => {
+      isMounted.current = false;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - ONLY RUN ONCE
 
   return {
     photographyImages,
@@ -86,7 +122,10 @@ function usePhotographyImages() {
     addPhotographyImage,
     removePhotographyImage,
     clearAllPhotographyImages,
-    refresh: loadPhotographyImages
+    refresh: () => {
+      hasFetched.current = false;
+      loadPhotographyImages();
+    }
   };
 }
 
