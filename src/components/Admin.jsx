@@ -1,548 +1,46 @@
-// // import React, { useState, useRef } from 'react';
-// // import { FaCloudUploadAlt, FaPlus, FaTrash, FaTrashAlt, FaSignOutAlt } from 'react-icons/fa';
-// // import useToast from '../hooks/useToast';
-// // import './Admin.css';
-
-// // function Admin({ images, addImage, deleteImage }) {
-// //   const [newImageFile, setNewImageFile] = useState(null);
-// //   const [newImageTitle, setNewImageTitle] = useState('');
-// //   const [previewUrl, setPreviewUrl] = useState('');
-// //   const [isUploading, setIsUploading] = useState(false);
-// //   const fileInputRef = useRef(null);
-// //   const toast = useToast();
-
-// //   const handleFileChange = (e) => {
-// //     const file = e.target.files[0];
-// //     if (file) {
-// //       if (file.size > 10 * 1024 * 1024) {
-// //         toast.error('File size exceeds 10MB limit. Please choose a smaller image.');
-// //         e.target.value = '';
-// //         return;
-// //       }
-      
-// //       setNewImageFile(file);
-// //       const reader = new FileReader();
-// //       reader.onloadend = () => {
-// //         setPreviewUrl(reader.result);
-// //       };
-// //       reader.readAsDataURL(file);
-// //     }
-// //   };
-
-// //   const handleSubmit = (e) => {
-// //     e.preventDefault();
-    
-// //     if (newImageFile && newImageTitle.trim()) {
-// //       setIsUploading(true);
-      
-// //       const loadingId = toast.loading('Uploading image...');
-      
-// //       const reader = new FileReader();
-// //       reader.onloadend = () => {
-// //         const imageData = reader.result;
-// //         addImage(imageData, newImageTitle.trim());
-// //         setIsUploading(false);
-        
-// //         setNewImageFile(null);
-// //         setNewImageTitle('');
-// //         setPreviewUrl('');
-// //         if (fileInputRef.current) {
-// //           fileInputRef.current.value = '';
-// //         }
-        
-// //         toast.dismissById(loadingId);
-// //         toast.success(`✅ "${newImageTitle.trim()}" added successfully!`);
-// //       };
-// //       reader.readAsDataURL(newImageFile);
-// //     } else {
-// //       toast.warning('Please select an image and enter a title');
-// //     }
-// //   };
-
-// //   const handleDelete = (id, title) => {
-// //     toast.dangerConfirm(
-// //       `Delete "${title}"?`,
-// //       () => {
-// //         deleteImage(id);
-// //         toast.success(`✅ "${title}" deleted successfully!`);
-// //       },
-// //       () => {
-// //         toast.info(`ℹ️ "${title}" was not deleted`);
-// //       }
-// //     );
-// //   };
-
-// //   const handleClearAll = () => {
-// //     if (images.length === 0) {
-// //       toast.info('No photos to delete');
-// //       return;
-// //     }
-    
-// //     toast.dangerConfirm(
-// //       `Delete all ${images.length} photos?`,
-// //       () => {
-// //         images.forEach(img => deleteImage(img.id));
-// //         toast.success(`✅ All ${images.length} photos deleted successfully!`);
-// //       },
-// //       () => {
-// //         toast.info('ℹ️ No photos were deleted');
-// //       }
-// //     );
-// //   };
-
-// //   const handleLogout = () => {
-// //     toast.info('👋 Logging out...');
-// //     setTimeout(() => {
-// //       localStorage.removeItem('isAdminLoggedIn');
-// //       localStorage.removeItem('adminLoginTime');
-// //       window.location.reload();
-// //     }, 500);
-// //   };
-
-// //   const formatFileSize = (bytes) => {
-// //     if (bytes === 0) return '0 Bytes';
-// //     const k = 1024;
-// //     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-// //     const i = Math.floor(Math.log(bytes) / Math.log(k));
-// //     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-// //   };
-
-// //   return (
-// //     <section className="page">
-// //       <div className="admin-header">
-// //         <h2 className="page-title">Admin Panel</h2>
-// //         <button className="logout-btn" onClick={handleLogout}>
-// //           <FaSignOutAlt /> Logout
-// //         </button>
-// //       </div>
-
-// //       <div className="admin-card">
-// //         <h3>Add New Photo</h3>
-// //         <form onSubmit={handleSubmit} className="admin-form">
-// //           <div className="file-upload-container">
-// //             <input
-// //               type="file"
-// //               id="imageUpload"
-// //               accept="image/*"
-// //               onChange={handleFileChange}
-// //               ref={fileInputRef}
-// //               required
-// //               className="file-input"
-// //               disabled={isUploading}
-// //             />
-// //             <label htmlFor="imageUpload" className={`file-label ${isUploading ? 'disabled' : ''}`}>
-// //               <FaCloudUploadAlt />
-// //               {newImageFile ? newImageFile.name : 'Choose an image...'}
-// //               {newImageFile && (
-// //                 <span className="file-size">({formatFileSize(newImageFile.size)})</span>
-// //               )}
-// //             </label>
-// //           </div>
-          
-// //           {previewUrl && (
-// //             <div className="image-preview">
-// //               <img src={previewUrl} alt="Preview" />
-// //             </div>
-// //           )}
-          
-// //           <input
-// //             type="text"
-// //             placeholder="Image Title"
-// //             value={newImageTitle}
-// //             onChange={(e) => setNewImageTitle(e.target.value)}
-// //             required
-// //             disabled={isUploading}
-// //           />
-          
-// //           <button 
-// //             type="submit" 
-// //             className="btn-primary"
-// //             disabled={isUploading}
-// //           >
-// //             {isUploading ? (
-// //               <>
-// //                 <span className="upload-spinner"></span>
-// //                 Uploading...
-// //               </>
-// //             ) : (
-// //               <>
-// //                 <FaPlus /> Add Photo
-// //               </>
-// //             )}
-// //           </button>
-// //         </form>
-        
-// //         <hr />
-        
-// //         <div className="admin-stats">
-// //           <span>Total Photos: <strong>{images.length}</strong></span>
-// //           {images.length > 0 && (
-// //             <button className="btn-clear" onClick={handleClearAll}>
-// //               <FaTrashAlt /> Clear All
-// //             </button>
-// //           )}
-// //         </div>
-        
-// //         <h4>Manage Existing Photos</h4>
-// //         <div className="admin-list">
-// //           {images.length === 0 ? (
-// //             <p className="empty-message">No photos in gallery. Upload your first image!</p>
-// //           ) : (
-// //             images.map(img => (
-// //               <div key={img.id} className="admin-list-item">
-// //                 <div className="admin-thumb">
-// //                   <img src={img.url} alt={img.title} />
-// //                 </div>
-// //                 <span className="admin-title">{img.title}</span>
-// //                 <span className="admin-date">
-// //                   {new Date(img.timestamp || Date.now()).toLocaleDateString()}
-// //                 </span>
-// //                 <button
-// //                   className="btn-danger"
-// //                   onClick={() => handleDelete(img.id, img.title)}
-// //                 >
-// //                   <FaTrash />
-// //                 </button>
-// //               </div>
-// //             ))
-// //           )}
-// //         </div>
-// //       </div>
-// //     </section>
-// //   );
-// // }
-
-// // export default Admin;
-
-
-
-// import React, { useState, useRef } from 'react';
-// import { FaCloudUploadAlt, FaPlus, FaTrash, FaTrashAlt, FaSignOutAlt, FaLink } from 'react-icons/fa';
-// import useToast from '../hooks/useToast';
-// import './Admin.css';
-
-// function Admin({ images, addImageFromFile, addImageFromUrl, deleteImage }) {
-//   const [newImageFile, setNewImageFile] = useState(null);
-//   const [newImageTitle, setNewImageTitle] = useState('');
-//   const [previewUrl, setPreviewUrl] = useState('');
-//   const [isUploading, setIsUploading] = useState(false);
-//   const [uploadType, setUploadType] = useState('file');
-//   const [imageUrl, setImageUrl] = useState('');
-//   const fileInputRef = useRef(null);
-//   const toast = useToast();
-
-//   const handleFileChange = (e) => {
-//     const file = e.target.files[0];
-//     if (file) {
-//       if (file.size > 10 * 1024 * 1024) {
-//         toast.error('File size exceeds 10MB limit.');
-//         e.target.value = '';
-//         return;
-//       }
-      
-//       setNewImageFile(file);
-//       const reader = new FileReader();
-//       reader.onloadend = () => {
-//         setPreviewUrl(reader.result);
-//       };
-//       reader.readAsDataURL(file);
-//     }
-//   };
-
-//   const handleUrlChange = (e) => {
-//     const url = e.target.value;
-//     setImageUrl(url);
-//     if (url && isValidUrl(url)) {
-//       setPreviewUrl(url);
-//     } else {
-//       setPreviewUrl('');
-//     }
-//   };
-
-//   const isValidUrl = (string) => {
-//     try {
-//       new URL(string);
-//       return true;
-//     } catch (_) {
-//       return false;
-//     }
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-    
-//     if (uploadType === 'file') {
-//       if (newImageFile && newImageTitle.trim()) {
-//         setIsUploading(true);
-//         try {
-//           await addImageFromFile(newImageFile, newImageTitle.trim());
-//           setNewImageFile(null);
-//           setNewImageTitle('');
-//           setPreviewUrl('');
-//           if (fileInputRef.current) {
-//             fileInputRef.current.value = '';
-//           }
-//         } catch (error) {
-//           console.error('Upload error:', error);
-//         } finally {
-//           setIsUploading(false);
-//         }
-//       } else {
-//         toast.warning('Please select an image and enter a title');
-//       }
-//     } else {
-//       if (imageUrl.trim() && newImageTitle.trim()) {
-//         if (isValidUrl(imageUrl)) {
-//           setIsUploading(true);
-//           try {
-//             await addImageFromUrl(imageUrl.trim(), newImageTitle.trim());
-//             setImageUrl('');
-//             setNewImageTitle('');
-//             setPreviewUrl('');
-//           } catch (error) {
-//             console.error('Upload error:', error);
-//           } finally {
-//             setIsUploading(false);
-//           }
-//         } else {
-//           toast.error('Please enter a valid URL');
-//         }
-//       } else {
-//         toast.warning('Please enter both URL and title');
-//       }
-//     }
-//   };
-
-//   const handleDelete = (id, title) => {
-//     toast.dangerConfirm(
-//       `Delete "${title}"?`,
-//       () => {
-//         deleteImage(id);
-//       },
-//       () => {
-//         toast.info(`ℹ️ "${title}" was not deleted`);
-//       }
-//     );
-//   };
-
-//   const handleClearAll = () => {
-//     if (images.length === 0) {
-//       toast.info('No photos to delete');
-//       return;
-//     }
-    
-//     toast.dangerConfirm(
-//       `Delete all ${images.length} photos?`,
-//       () => {
-//         images.forEach(img => deleteImage(img.id));
-//       },
-//       () => {
-//         toast.info('ℹ️ No photos were deleted');
-//       }
-//     );
-//   };
-
-//   const handleLogout = () => {
-//     toast.info('👋 Logging out...');
-//     setTimeout(() => {
-//       localStorage.removeItem('isAdminLoggedIn');
-//       localStorage.removeItem('adminLoginTime');
-//       window.location.reload();
-//     }, 500);
-//   };
-
-//   const formatFileSize = (bytes) => {
-//     if (bytes === 0) return '0 Bytes';
-//     const k = 1024;
-//     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-//     const i = Math.floor(Math.log(bytes) / Math.log(k));
-//     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-//   };
-
-//   const sampleUrls = [
-//     'https://picsum.photos/id/1015/400/300',
-//     'https://picsum.photos/id/1016/400/300',
-//     'https://picsum.photos/id/1018/400/300',
-//   ];
-
-//   const fillSampleUrl = (url) => {
-//     setImageUrl(url);
-//     setPreviewUrl(url);
-//     setUploadType('url');
-//   };
-
-//   return (
-//     <section className="page">
-//       <div className="admin-header">
-//         <h2 className="page-title">Admin Panel</h2>
-//         <button className="logout-btn" onClick={handleLogout}>
-//           <FaSignOutAlt /> Logout
-//         </button>
-//       </div>
-
-//       <div className="admin-card">
-//         <h3>Add New Photo</h3>
-        
-//         <div className="upload-type-toggle">
-//           <button 
-//             className={`toggle-btn ${uploadType === 'file' ? 'active' : ''}`}
-//             onClick={() => {
-//               setUploadType('file');
-//               setPreviewUrl('');
-//               setImageUrl('');
-//             }}
-//           >
-//             <FaCloudUploadAlt /> File Upload
-//           </button>
-//           <button 
-//             className={`toggle-btn ${uploadType === 'url' ? 'active' : ''}`}
-//             onClick={() => {
-//               setUploadType('url');
-//               setPreviewUrl('');
-//               setNewImageFile(null);
-//               if (fileInputRef.current) {
-//                 fileInputRef.current.value = '';
-//               }
-//             }}
-//           >
-//             <FaLink /> URL Upload
-//           </button>
-//         </div>
-
-//         <form onSubmit={handleSubmit} className="admin-form">
-//           {uploadType === 'file' ? (
-//             <div className="file-upload-container">
-//               <input
-//                 type="file"
-//                 id="imageUpload"
-//                 accept="image/*"
-//                 onChange={handleFileChange}
-//                 ref={fileInputRef}
-//                 required
-//                 className="file-input"
-//                 disabled={isUploading}
-//               />
-//               <label htmlFor="imageUpload" className={`file-label ${isUploading ? 'disabled' : ''}`}>
-//                 <FaCloudUploadAlt />
-//                 {newImageFile ? newImageFile.name : 'Choose an image...'}
-//                 {newImageFile && (
-//                   <span className="file-size">({formatFileSize(newImageFile.size)})</span>
-//                 )}
-//               </label>
-//             </div>
-//           ) : (
-//             <div className="url-upload-container">
-//               <input
-//                 type="url"
-//                 placeholder="Enter image URL (e.g., https://example.com/image.jpg)"
-//                 value={imageUrl}
-//                 onChange={handleUrlChange}
-//                 required
-//                 disabled={isUploading}
-//                 className="url-input"
-//               />
-//               <div className="sample-urls">
-//                 <span className="sample-label">Quick add:</span>
-//                 {sampleUrls.map((url, index) => (
-//                   <button
-//                     key={index}
-//                     type="button"
-//                     className="sample-url-btn"
-//                     onClick={() => fillSampleUrl(url)}
-//                   >
-//                     Sample {index + 1}
-//                   </button>
-//                 ))}
-//               </div>
-//             </div>
-//           )}
-          
-//           {previewUrl && (
-//             <div className="image-preview">
-//               <img src={previewUrl} alt="Preview" />
-//             </div>
-//           )}
-          
-//           <input
-//             type="text"
-//             placeholder="Image Title"
-//             value={newImageTitle}
-//             onChange={(e) => setNewImageTitle(e.target.value)}
-//             required
-//             disabled={isUploading}
-//           />
-          
-//           <button 
-//             type="submit" 
-//             className="btn-primary"
-//             disabled={isUploading}
-//           >
-//             {isUploading ? (
-//               <>
-//                 <span className="upload-spinner"></span>
-//                 Uploading...
-//               </>
-//             ) : (
-//               <>
-//                 <FaPlus /> Add Photo
-//               </>
-//             )}
-//           </button>
-//         </form>
-        
-//         <hr />
-        
-//         <div className="admin-stats">
-//           <span>Total Photos: <strong>{images.length}</strong></span>
-//           {images.length > 0 && (
-//             <button className="btn-clear" onClick={handleClearAll}>
-//               <FaTrashAlt /> Clear All
-//             </button>
-//           )}
-//         </div>
-        
-//         <h4>Manage Existing Photos</h4>
-//         <div className="admin-list">
-//           {images.length === 0 ? (
-//             <p className="empty-message">No photos in gallery. Upload your first image!</p>
-//           ) : (
-//             images.map(img => (
-//               <div key={img.id} className="admin-list-item">
-//                 <div className="admin-thumb">
-//                   <img src={img.url} alt={img.title} />
-//                 </div>
-//                 <span className="admin-title">{img.title}</span>
-//                 <span className="admin-date">
-//                   {new Date(img.created_at || Date.now()).toLocaleDateString()}
-//                 </span>
-//                 <button
-//                   className="btn-danger"
-//                   onClick={() => handleDelete(img.id, img.title)}
-//                 >
-//                   <FaTrash />
-//                 </button>
-//               </div>
-//             ))
-//           )}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-// export default Admin;
-
-import React, { useState } from 'react';
-import { FaPlus, FaTrash, FaTrashAlt, FaSignOutAlt, FaLink } from 'react-icons/fa';
+// frontend/src/components/Admin.js
+import React, { useState, useRef } from 'react';
+import { 
+  FaPlus, FaTrash, FaTrashAlt, FaSignOutAlt, 
+  FaLink, FaCloudUploadAlt, FaImage, FaCamera 
+} from 'react-icons/fa';
 import useToast from '../hooks/useToast';
 import './Admin.css';
 
-function Admin({ images, addImageFromUrl, deleteImage }) {
+function Admin({ 
+  images, 
+  addImageFromUrl, 
+  deleteImage,
+  photographyImages = [],
+  addPhotographyImage,
+  deletePhotographyImage,
+  onLogout 
+}) {
+  // Gallery URL upload state
   const [imageUrl, setImageUrl] = useState('');
   const [newImageTitle, setNewImageTitle] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  
+  // Photography file upload state
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoTitle, setPhotoTitle] = useState('');
+  const [photoPreview, setPhotoPreview] = useState('');
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
+  const [activeTab, setActiveTab] = useState('gallery'); // 'gallery' or 'photography'
+  const fileInputRef = useRef(null);
+  
   const toast = useToast();
+
+  // ========== GALLERY URL UPLOAD FUNCTIONS ==========
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
 
   const handleUrlChange = (e) => {
     const url = e.target.value;
@@ -554,16 +52,7 @@ function Admin({ images, addImageFromUrl, deleteImage }) {
     }
   };
 
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
-  const handleSubmit = async (e) => {
+  const handleGallerySubmit = async (e) => {
     e.preventDefault();
     
     if (imageUrl.trim() && newImageTitle.trim()) {
@@ -574,10 +63,10 @@ function Admin({ images, addImageFromUrl, deleteImage }) {
           setImageUrl('');
           setNewImageTitle('');
           setPreviewUrl('');
-          toast.success('✅ Image added successfully!');
+          toast.success('✅ Gallery image added successfully!');
         } catch (error) {
           console.error('Upload error:', error);
-          toast.error('Failed to add image');
+          toast.error(error.message || 'Failed to add image');
         } finally {
           setIsUploading(false);
         }
@@ -589,11 +78,74 @@ function Admin({ images, addImageFromUrl, deleteImage }) {
     }
   };
 
-  const handleDelete = (id, title) => {
+  // ========== PHOTOGRAPHY FILE UPLOAD FUNCTIONS ==========
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check if JPEG
+      if (!file.type.includes('jpeg') && !file.type.includes('jpg')) {
+        toast.error('Please select a JPEG image file');
+        e.target.value = '';
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('File size exceeds 10MB limit.');
+        e.target.value = '';
+        return;
+      }
+      
+      setPhotoFile(file);
+      
+      // Show preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePhotographySubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!photoFile || !photoTitle.trim()) {
+      toast.warning('Please select an image and enter a title');
+      return;
+    }
+
+    setIsPhotoUploading(true);
+    
+    try {
+      const result = await addPhotographyImage(photoFile, photoTitle.trim());
+      
+      if (result.success) {
+        // Clear form
+        setPhotoFile(null);
+        setPhotoTitle('');
+        setPhotoPreview('');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        toast.success(`✅ "${photoTitle.trim()}" uploaded to Photography!`);
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error(error.message || 'Failed to upload photography image');
+    } finally {
+      setIsPhotoUploading(false);
+    }
+  };
+
+  // ========== DELETE FUNCTIONS ==========
+  const handleDeleteGallery = (id, title) => {
     toast.dangerConfirm(
       `Delete "${title}"?`,
       () => {
         deleteImage(id);
+        toast.success(`✅ "${title}" deleted successfully!`);
       },
       () => {
         toast.info(`ℹ️ "${title}" was not deleted`);
@@ -601,16 +153,34 @@ function Admin({ images, addImageFromUrl, deleteImage }) {
     );
   };
 
-  const handleClearAll = () => {
-    if (images.length === 0) {
-      toast.info('No photos to delete');
+  const handleDeletePhotography = (id, title) => {
+    toast.dangerConfirm(
+      `Delete "${title}"?`,
+      () => {
+        deletePhotographyImage(id);
+        toast.success(`✅ "${title}" deleted from Photography!`);
+      },
+      () => {
+        toast.info(`ℹ️ "${title}" was not deleted`);
+      }
+    );
+  };
+
+  const handleClearAll = (type) => {
+    const items = type === 'gallery' ? images : photographyImages;
+    const deleteFn = type === 'gallery' ? deleteImage : deletePhotographyImage;
+    const itemName = type === 'gallery' ? 'gallery' : 'photography';
+    
+    if (items.length === 0) {
+      toast.info(`No ${itemName} photos to delete`);
       return;
     }
     
     toast.dangerConfirm(
-      `Delete all ${images.length} photos?`,
+      `Delete all ${items.length} photos?`,
       () => {
-        images.forEach(img => deleteImage(img.id));
+        items.forEach(img => deleteFn(img.id));
+        toast.success(`✅ All ${items.length} photos deleted successfully!`);
       },
       () => {
         toast.info('ℹ️ No photos were deleted');
@@ -620,132 +190,256 @@ function Admin({ images, addImageFromUrl, deleteImage }) {
 
   const handleLogout = () => {
     toast.info('👋 Logging out...');
+    localStorage.removeItem('isAdminLoggedIn');
+    localStorage.removeItem('adminLoginTime');
     setTimeout(() => {
-      localStorage.removeItem('isAdminLoggedIn');
-      localStorage.removeItem('adminLoginTime');
-      window.location.reload();
+      if (onLogout) {
+        onLogout();
+      } else {
+        window.location.href = '/';
+      }
     }, 500);
   };
 
   const sampleUrls = [
     'https://res.cloudinary.com/dj5limxeb/image/upload/v1782916298/Mother_a3sahc.jpg',
-    'https://picsum.photos/id/1015/400/300',
-    'https://picsum.photos/id/1016/400/300',
-    'https://picsum.photos/id/1018/400/300',
+    'https://picsum.photos/seed/1/800/600',
+    'https://picsum.photos/seed/2/800/600',
   ];
 
   const fillSampleUrl = (url) => {
     setImageUrl(url);
     setPreviewUrl(url);
+    setActiveTab('gallery');
   };
 
   return (
-    <section className="page">
+    <section className="admin-page">
       <div className="admin-header">
         <h2 className="page-title">Admin Panel</h2>
         <button className="logout-btn" onClick={handleLogout}>
-          <FaSignOutAlt /> Logout
+          <FaSignOutAlt /> <span>Logout</span>
         </button>
       </div>
 
-      <div className="admin-card">
-        <h3>Add New Photo via URL</h3>
-        
-        <form onSubmit={handleSubmit} className="admin-form">
-          <div className="url-upload-container">
-            <input
-              type="url"
-              placeholder="Enter image URL (e.g., https://example.com/image.jpg)"
-              value={imageUrl}
-              onChange={handleUrlChange}
-              required
-              disabled={isUploading}
-              className="url-input"
-            />
-            <div className="sample-urls">
-              <span className="sample-label">Quick add:</span>
-              {sampleUrls.map((url, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  className="sample-url-btn"
-                  onClick={() => fillSampleUrl(url)}
-                >
-                  Sample {index + 1}
-                </button>
-              ))}
+      {/* ===== TABS ===== */}
+      <div className="admin-tabs">
+        <button 
+          className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`}
+          onClick={() => setActiveTab('gallery')}
+        >
+          <FaLink /> Gallery ({images.length})
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'photography' ? 'active' : ''}`}
+          onClick={() => setActiveTab('photography')}
+        >
+          <FaCamera /> Photography ({photographyImages.length})
+        </button>
+      </div>
+
+      {/* ===== GALLERY TAB ===== */}
+      {activeTab === 'gallery' && (
+        <div className="admin-card gallery-card">
+          <div className="card-header">
+            <FaImage className="card-icon" />
+            <h3>Gallery</h3>
+            <span className="badge">{images.length}</span>
+          </div>
+          <p className="card-subtitle">Add images via URL</p>
+          
+          <form onSubmit={handleGallerySubmit} className="admin-form">
+            <div className="url-upload-container">
+              <input
+                type="url"
+                placeholder="Enter image URL"
+                value={imageUrl}
+                onChange={handleUrlChange}
+                required
+                disabled={isUploading}
+                className="url-input"
+              />
+              <div className="sample-urls">
+                <span className="sample-label">Quick:</span>
+                {sampleUrls.map((url, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className="sample-url-btn"
+                    onClick={() => fillSampleUrl(url)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
             </div>
+            
+            {previewUrl && (
+              <div className="image-preview">
+                <img src={previewUrl} alt="Preview" />
+              </div>
+            )}
+            
+            <div className="form-row">
+              <input
+                type="text"
+                placeholder="Image Title"
+                value={newImageTitle}
+                onChange={(e) => setNewImageTitle(e.target.value)}
+                required
+                disabled={isUploading}
+                className="title-input"
+              />
+              
+              <button 
+                type="submit" 
+                className="btn-primary"
+                disabled={isUploading}
+              >
+                {isUploading ? (
+                  <span className="spinner"></span>
+                ) : (
+                  <>
+                    <FaLink /> Add
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+          
+          <div className="admin-stats">
+            <span>Total: <strong>{images.length}</strong></span>
+            {images.length > 0 && (
+              <button className="btn-clear" onClick={() => handleClearAll('gallery')}>
+                <FaTrashAlt /> Clear All
+              </button>
+            )}
           </div>
           
-          {previewUrl && (
-            <div className="image-preview">
-              <img src={previewUrl} alt="Preview" />
-            </div>
-          )}
-          
-          <input
-            type="text"
-            placeholder="Image Title"
-            value={newImageTitle}
-            onChange={(e) => setNewImageTitle(e.target.value)}
-            required
-            disabled={isUploading}
-          />
-          
-          <button 
-            type="submit" 
-            className="btn-primary"
-            disabled={isUploading}
-          >
-            {isUploading ? (
-              <>
-                <span className="upload-spinner"></span>
-                Adding...
-              </>
+          <div className="admin-list">
+            {images.length === 0 ? (
+              <p className="empty-message">No photos in gallery</p>
             ) : (
-              <>
-                <FaLink /> Add Photo from URL
-              </>
-            )}
-          </button>
-        </form>
-        
-        <hr />
-        
-        <div className="admin-stats">
-          <span>Total Photos: <strong>{images.length}</strong></span>
-          {images.length > 0 && (
-            <button className="btn-clear" onClick={handleClearAll}>
-              <FaTrashAlt /> Clear All
-            </button>
-          )}
-        </div>
-        
-        <h4>Manage Existing Photos</h4>
-        <div className="admin-list">
-          {images.length === 0 ? (
-            <p className="empty-message">No photos in gallery. Add your first image!</p>
-          ) : (
-            images.map(img => (
-              <div key={img.id} className="admin-list-item">
-                <div className="admin-thumb">
-                  <img src={img.url} alt={img.title} />
+              images.map(img => (
+                <div key={img.id} className="admin-list-item">
+                  <div className="admin-thumb">
+                    <img src={img.url} alt={img.title} />
+                  </div>
+                  <span className="admin-title">{img.title}</span>
+                  <button
+                    className="btn-danger"
+                    onClick={() => handleDeleteGallery(img.id, img.title)}
+                  >
+                    <FaTrash />
+                  </button>
                 </div>
-                <span className="admin-title">{img.title}</span>
-                <span className="admin-date">
-                  {new Date(img.created_at || Date.now()).toLocaleDateString()}
-                </span>
-                <button
-                  className="btn-danger"
-                  onClick={() => handleDelete(img.id, img.title)}
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ===== PHOTOGRAPHY TAB ===== */}
+      {activeTab === 'photography' && (
+        <div className="admin-card photography-card">
+          <div className="card-header">
+            <FaCamera className="card-icon" />
+            <h3>Photography</h3>
+            <span className="badge">{photographyImages.length}</span>
+          </div>
+          <p className="card-subtitle">Upload JPEG images from your computer</p>
+          
+          <form onSubmit={handlePhotographySubmit} className="admin-form">
+            <div className="file-upload-container">
+              <input
+                type="file"
+                id="photoUpload"
+                accept="image/jpeg,image/jpg"
+                onChange={handleFileChange}
+                ref={fileInputRef}
+                required
+                className="file-input"
+                disabled={isPhotoUploading}
+              />
+              <label htmlFor="photoUpload" className={`file-label ${isPhotoUploading ? 'disabled' : ''}`}>
+                <FaCloudUploadAlt />
+                <span className="file-text">
+                  {photoFile ? photoFile.name : 'Choose JPEG image...'}
+                </span>
+                {photoFile && (
+                  <span className="file-size">
+                    ({(photoFile.size / 1024).toFixed(1)} KB)
+                  </span>
+                )}
+              </label>
+              <p className="file-hint">📌 Only JPEG/JPG (Max: 10MB)</p>
+            </div>
+            
+            {photoPreview && (
+              <div className="image-preview">
+                <img src={photoPreview} alt="Preview" />
+              </div>
+            )}
+            
+            <div className="form-row">
+              <input
+                type="text"
+                placeholder="Photo Title"
+                value={photoTitle}
+                onChange={(e) => setPhotoTitle(e.target.value)}
+                required
+                disabled={isPhotoUploading}
+                className="title-input"
+              />
+              
+              <button 
+                type="submit" 
+                className="btn-primary photography-btn"
+                disabled={isPhotoUploading || !photoFile}
+              >
+                {isPhotoUploading ? (
+                  <span className="spinner"></span>
+                ) : (
+                  <>
+                    <FaCloudUploadAlt /> Upload to Photography
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+          
+          <div className="admin-stats">
+            <span>Total: <strong>{photographyImages.length}</strong></span>
+            {photographyImages.length > 0 && (
+              <button className="btn-clear" onClick={() => handleClearAll('photography')}>
+                <FaTrashAlt /> Clear All
+              </button>
+            )}
+          </div>
+          
+          <div className="admin-list">
+            {photographyImages.length === 0 ? (
+              <p className="empty-message">No photos in photography</p>
+            ) : (
+              photographyImages.map(img => (
+                <div key={img.id} className="admin-list-item">
+                  <div className="admin-thumb">
+                    <img src={img.url} alt={img.title} />
+                  </div>
+                  <span className="admin-title">{img.title}</span>
+                  <span className="admin-badge">JPEG</span>
+                  <button
+                    className="btn-danger"
+                    onClick={() => handleDeletePhotography(img.id, img.title)}
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
