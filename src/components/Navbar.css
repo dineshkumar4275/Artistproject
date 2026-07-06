@@ -1,114 +1,149 @@
-/* ===== NAVBAR ===== */
+/* frontend/src/components/Navbar.css */
+
 .navbar {
-  background: #1c1c1c;
-  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 4px solid #c9ad93;
-
-  /* Sticky Header */
+  padding: 1rem 2rem;
+  background: #1c1c1c;
+  color: #f5f2ed;
   position: sticky;
   top: 0;
-  width: 100%;
-
   z-index: 1000;
-  box-sizing: border-box;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* ===== LOGO ===== */
 .logo {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  z-index: 1001;
+  align-items: center;
 }
 
-.logo-image {
-  height: 50px;
-  width: auto;
-  object-fit: contain;
-  display: block;
+.logo-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .logo-tagline {
-  font-size: 0.7rem;
-  letter-spacing: 3px;
-  color: #c9ad93;
+  font-size: 1.5rem;
   font-weight: 300;
-  text-transform: uppercase;
-  margin-top: 2px;
-  opacity: 0.8;
-}
-
-/* ===== HAMBURGER ===== */
-.hamburger-wrapper {
-  display: none;
-  z-index: 1001;
-}
-
-.hamburger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  color: #f0ebe3;
-  font-size: 1.8rem;
+  letter-spacing: 2px;
+  color: #f5f2ed;
   transition: color 0.3s ease;
 }
 
-.hamburger:hover {
+.logo-tagline:hover {
   color: #c9ad93;
 }
 
-/* ===== NAV LINKS ===== */
+/* ===== NAVIGATION LINKS ===== */
 .nav-links {
-  display: flex;
   list-style: none;
-  gap: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
   margin: 0;
   padding: 0;
 }
 
 .nav-links li {
-  margin: 0;
+  display: flex;
+  align-items: center;
 }
 
 .nav-links a {
-  color: #f0ebe3;
+  color: #f5f2ed;
   text-decoration: none;
-  font-size: 1.05rem;
-  padding: 0.3rem 0;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 300;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
 }
 
-.nav-links a:hover,
+/* ===== NAV ICONS ===== */
+.nav-icon {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.nav-links a:hover .nav-icon {
+  transform: scale(1.2);
+}
+
+/* ===== ACTIVE LINK ===== */
 .nav-links a.active {
-  border-bottom-color: #c9ad93;
+  color: #c9ad93;
+  background: rgba(201, 173, 147, 0.1);
+}
+
+.nav-links a.active .nav-icon {
+  color: #c9ad93;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #c9ad93;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  width: 60%;
+}
+
+.nav-links a:hover {
   color: #c9ad93;
 }
 
 /* ===== LOGOUT LINK ===== */
-.logout-item {
-  border-top: 1px solid #2a2a2a !important;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-}
-
 .logout-link {
-  color: #b13e3e !important;
+  color: #dc3232 !important;
 }
 
 .logout-link:hover {
-  color: #ff6b6b !important;
+  color: #ff5555 !important;
+}
+
+.logout-link .nav-icon {
+  color: #dc3232;
+}
+
+/* ===== HAMBURGER MENU ===== */
+.hamburger-wrapper {
+  display: none;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: #f5f2ed;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.hamburger:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hamburger.active {
+  color: #c9ad93;
 }
 
 /* ===== OVERLAY ===== */
@@ -120,35 +155,22 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
+  backdrop-filter: blur(4px);
   animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ======================================== */
 /* ===== RESPONSIVE ===== */
 /* ======================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .hamburger-wrapper {
     display: block;
-  }
-
-  .logo-image {
-    height: 40px;
-  }
-
-  .logo-tagline {
-    font-size: 0.6rem;
-    letter-spacing: 2px;
   }
 
   .nav-links {
@@ -159,12 +181,12 @@
     height: 100vh;
     background: #1c1c1c;
     flex-direction: column;
-    padding: 5rem 2rem 2rem;
-    gap: 0;
-    transition: right 0.3s ease;
-    z-index: 1001;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    padding: 4rem 2rem 2rem;
+    gap: 0.5rem;
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
     overflow-y: auto;
+    z-index: 1000;
   }
 
   .nav-links.open {
@@ -173,90 +195,134 @@
 
   .nav-links li {
     width: 100%;
-    border-bottom: 1px solid #2a2a2a;
-  }
-
-  .nav-links li:last-child {
-    border-bottom: none;
   }
 
   .nav-links a {
-    display: flex;
-    padding: 1rem 0;
+    width: 100%;
+    padding: 0.8rem 1rem;
     font-size: 1rem;
-    border-bottom: none;
-    letter-spacing: 1px;
+    justify-content: flex-start;
+    border-radius: 8px;
   }
 
-  .nav-links a:hover,
+  .nav-links a::after {
+    display: none;
+  }
+
+  .nav-links a:hover {
+    background: rgba(201, 173, 147, 0.1);
+  }
+
   .nav-links a.active {
-    border-bottom: none;
-    background: #2a2a2a;
-    padding-left: 0.5rem;
+    background: rgba(201, 173, 147, 0.15);
+  }
+
+  .nav-links a .nav-icon {
+    font-size: 1.2rem;
+    min-width: 1.5rem;
+  }
+
+  .logout-item {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .navbar {
-    padding: 0.7rem 1rem;
-  }
-
-  .logo-image {
-    height: 32px;
+    padding: 0.8rem 1rem;
   }
 
   .logo-tagline {
-    font-size: 0.5rem;
+    font-size: 1.2rem;
     letter-spacing: 1px;
   }
 
-  .hamburger {
-    font-size: 1.5rem;
-  }
-
   .nav-links {
-    width: 100%;
-    right: -100%;
-    padding: 4rem 1.5rem 2rem;
+    width: 260px;
+    padding: 3.5rem 1.5rem 1.5rem;
   }
 
   .nav-links a {
     font-size: 0.9rem;
-    padding: 0.8rem 0;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .hamburger {
+    font-size: 1.5rem;
+    padding: 0.3rem;
   }
 }
-/* Add to Navbar.css */
 
-.nav-link-disabled {
-  color: #999;
-  cursor: not-allowed;
-  padding: 8px 16px;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 14px;
-  letter-spacing: 1px;
-  transition: color 0.3s ease;
-  position: relative;
+/* ===== SCROLLBAR STYLING ===== */
+.nav-links::-webkit-scrollbar {
+  width: 4px;
 }
 
-.nav-link-disabled::after {
-  content: '🔒';
-  font-size: 12px;
-  margin-left: 4px;
-  opacity: 0.7;
+.nav-links::-webkit-scrollbar-track {
+  background: #2a2a2a;
 }
 
-.nav-link-disabled:hover {
-  color: #aaa;
+.nav-links::-webkit-scrollbar-thumb {
+  background: #c9ad93;
+  border-radius: 4px;
 }
 
-/* Responsive styles for disabled links */
-@media (max-width: 768px) {
-  .nav-link-disabled {
-    padding: 12px 20px;
-    font-size: 16px;
-    width: 100%;
-    text-align: center;
+/* ===== DARK MODE COMPATIBILITY ===== */
+@media (prefers-color-scheme: light) {
+  .navbar {
+    background: #f5f2ed;
+    color: #1c1c1c;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .logo-tagline {
+    color: #1c1c1c;
+  }
+
+  .logo-tagline:hover {
+    color: #c9ad93;
+  }
+
+  .nav-links a {
+    color: #1c1c1c;
+  }
+
+  .nav-links a.active {
+    color: #c9ad93;
+    background: rgba(201, 173, 147, 0.1);
+  }
+
+  .nav-links a:hover {
+    color: #c9ad93;
+  }
+
+  .hamburger {
+    color: #1c1c1c;
+  }
+
+  .nav-links {
+    background: #f5f2ed;
+  }
+
+  .nav-links a.active {
+    background: rgba(201, 173, 147, 0.15);
+  }
+
+  .nav-links a:hover {
+    background: rgba(201, 173, 147, 0.1);
+  }
+
+  .logout-item {
+    border-top-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .overlay {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .nav-links::-webkit-scrollbar-track {
+    background: #e8e0d6;
   }
 }

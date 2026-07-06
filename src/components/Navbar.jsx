@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HiMenu, HiX } from 'react-icons/hi';
+import { 
+  HiMenu, 
+  HiX, 
+  HiHome, 
+  HiPhotograph, 
+  HiCamera, 
+  HiUser, 
+  HiMail, 
+  HiLogin, 
+  HiLogout,
+  HiOutlineUserGroup
+} from 'react-icons/hi';
+import { FaImage, FaCameraRetro } from 'react-icons/fa';
 import './Navbar.css';
 
 function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
@@ -45,11 +57,6 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
       <nav className="navbar">
         <div className="logo">
           <a href="/" onClick={handleLogoClick} className="logo-link">
-            {/* <img 
-              src="/assets/staticwebsite.png" 
-              alt="FRAMORA" 
-              className="logo-image"
-            /> */}
             <span className="logo-tagline">KameshFineArt</span>
           </a>
         </div>
@@ -71,6 +78,7 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               className={currentPage === 'home' ? 'active' : ''}
               onClick={() => handleNavClick('home')}
             >
+              <HiHome className="nav-icon" />
               HOME
             </Link>
           </li>
@@ -80,16 +88,17 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               className={currentPage === 'gallery' ? 'active' : ''}
               onClick={() => handleNavClick('gallery')}
             >
+              <FaImage className="nav-icon" />
               GALLERY
             </Link>
           </li>
-          {/* Photography Link - Fixed */}
           <li>
             <Link 
               to="/photography" 
               className={currentPage === 'photography' ? 'active' : ''}
               onClick={() => handleNavClick('photography')}
             >
+              <FaCameraRetro className="nav-icon" />
               PHOTOGRAPHY
             </Link>
           </li>
@@ -99,6 +108,7 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               className={currentPage === 'about' ? 'active' : ''}
               onClick={() => handleNavClick('about')}
             >
+              <HiUser className="nav-icon" />
               ABOUT
             </Link>
           </li>
@@ -108,6 +118,7 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               className={currentPage === 'contact' ? 'active' : ''}
               onClick={() => handleNavClick('contact')}
             >
+              <HiMail className="nav-icon" />
               CONTACT
             </Link>
           </li>
@@ -117,7 +128,17 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
               className={currentPage === 'admin' ? 'active' : ''}
               onClick={handleAdminClick}
             >
-              {isAdminLoggedIn ? 'ADMIN' : 'LOGIN'}
+              {isAdminLoggedIn ? (
+                <>
+                  <HiOutlineUserGroup className="nav-icon" />
+                  ADMIN
+                </>
+              ) : (
+                <>
+                  <HiLogin className="nav-icon" />
+                  LOGIN
+                </>
+              )}
             </Link>
           </li>
           {isAdminLoggedIn && (
@@ -127,6 +148,7 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
                 onClick={(e) => { e.preventDefault(); handleLogout(); }}
                 className="logout-link"
               >
+                <HiLogout className="nav-icon" />
                 LOGOUT
               </a>
             </li>
