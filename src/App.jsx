@@ -620,19 +620,25 @@ function App() {
             <Route path="/gallery" element={<Gallery images={images} />} />
             <Route path="/about" element={<About imageCount={images.length} />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={
-              isAdminLoggedIn ? (
-                <Admin 
-                  images={images} 
-                  addImageFromFile={addImageFromFile}
-                  addImageFromUrl={addImageFromUrl}
-                  deleteImage={removeImage}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <Login onLogin={handleLogin} />
-              )
-            } />
+           // frontend/src/App.jsx - Update Admin route
+<Route 
+  path="/admin" 
+  element={
+    isAdminLoggedIn ? (
+      <Admin 
+        images={images} 
+        addImageFromUrl={addImageFromUrl}
+        deleteImage={removeImage}
+        photographyImages={photographyImages}
+        addPhotographyImage={addPhotographyImage}
+        deletePhotographyImage={removePhotographyImage}
+        onLogout={handleLogout}
+      />
+    ) : (
+      <Login onLogin={handleLogin} />
+    )
+  } 
+/>
           </Routes>
         )}
       </main>
