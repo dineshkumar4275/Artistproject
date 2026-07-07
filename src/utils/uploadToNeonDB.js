@@ -11,6 +11,9 @@ export const uploadPhotographyToNeon = async (file, title, description) => {
   try {
     const token = localStorage.getItem('token');
     
+    console.log('📤 Uploading to Neon DB...');
+    console.log('📤 Endpoint:', `${API_BASE_URL}/images/photography/neon-upload`);
+    
     const response = await fetch(`${API_BASE_URL}/images/photography/neon-upload`, {
       method: 'POST',
       headers: {
@@ -20,9 +23,10 @@ export const uploadPhotographyToNeon = async (file, title, description) => {
     });
 
     const data = await response.json();
+    console.log('📊 Response:', response.status, data);
     
     if (!response.ok) {
-      throw new Error(data.error || 'Upload failed');
+      throw new Error(data.error || data.details || 'Upload failed');
     }
     
     return data;

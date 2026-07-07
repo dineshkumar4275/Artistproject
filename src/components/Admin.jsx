@@ -1,20 +1,18 @@
 // frontend/src/components/Admin.js
 import React, { useState, useRef } from 'react';
 import { 
-  FaPlus, FaTrash, FaTrashAlt, FaSignOutAlt, 
+  FaTrash, FaTrashAlt, FaSignOutAlt, 
   FaLink, FaCloudUploadAlt, FaImage, FaCamera 
 } from 'react-icons/fa';
 import useToast from '../hooks/useToast';
-import { uploadToCloudinary } from '../utils/cloudinaryUpload';
-import './Admin.css';
 import { uploadPhotographyToNeon } from '../utils/uploadToNeonDB';
+import './Admin.css';
 
 function Admin({ 
   images = [], 
   addImageFromUrl, 
   deleteImage,
   photographyImages = [],
-  addPhotographyImage,
   deletePhotographyImage,
   onLogout,
   refreshPhotography 
@@ -36,7 +34,6 @@ function Admin({
   const fileInputRef = useRef(null);
   
   const toast = useToast();
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
 
   // ========== IMAGE COMPRESSION HELPER ==========
   const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) => {
@@ -140,7 +137,7 @@ function Admin({
     }
   };
 
-  // ========== PHOTOGRAPHY UPLOAD - DIRECT TO CLOUDINARY ==========
+  // ========== PHOTOGRAPHY UPLOAD - NEON DB ==========
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -176,7 +173,7 @@ function Admin({
     }
 
     const finalSizeMB = finalFile.size / (1024 * 1024);
-    if (finalSizeMB > 4) {
+    if (finalSizeMB > 10) {
       toast.error(`Image too large (${finalSizeMB.toFixed(1)}MB). Please choose a smaller image.`);
       e.target.value = '';
       return;
@@ -190,57 +187,52 @@ function Admin({
     };
     reader.readAsDataURL(finalFile);
   };
-// frontend/src/components/Admin.js - Update handlePhotographySubmit
-// frontend/src/components/Admin.js - Update handlePhotographySubmit
 
-
-
-const handlePhotographySubmit = async (e) => {
-  e.preventDefault();
-  
-  if (!photoFile || !photoTitle.trim()) {
-    toast.warning('Please select an image and enter a title');
-    return;
-  }
-
-  setIsPhotoUploading(true);
-  
-  try {
-    // ✅ Upload directly to Neon DB (No Cloudinary)
-    console.log('📤 Uploading to Neon DB...');
-    const result = await uploadPhotographyToNeon(
-      photoFile, 
-      photoTitle.trim(), 
-      photoDescription.trim()
-    );
+  const handlePhotographySubmit = async (e) => {
+    e.preventDefault();
     
-    console.log('✅ Upload result:', result);
-    
-    if (result.success || result.id) {
-      // Clear form
-      setPhotoFile(null);
-      setPhotoTitle('');
-      setPhotoDescription('');
-      setPhotoPreview('');
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      toast.success(`✅ "${photoTitle.trim()}" uploaded successfully!`);
-      
-      // Refresh photography images
-      if (refreshPhotography) {
-        refreshPhotography();
-      }
-    } else {
-      throw new Error(result.error || 'Upload failed');
+    if (!photoFile || !photoTitle.trim()) {
+      toast.warning('Please select an image and enter a title');
+      return;
     }
-  } catch (error) {
-    console.error('❌ Upload error:', error);
-    toast.error(error.message || 'Failed to upload photography image');
-  } finally {
-    setIsPhotoUploading(false);
-  }
-};
+
+    setIsPhotoUploading(true);
+    
+    try {
+      console.log('📤 Uploading to Neon DB...');
+      const result = await uploadPhotographyToNeon(
+        photoFile, 
+        photoTitle.trim(), 
+        photoDescription.trim()
+      );
+      
+      console.log('✅ Upload result:', result);
+      
+      if (result.success || result.id) {
+        // Clear form
+        setPhotoFile(null);
+        setPhotoTitle('');
+        setPhotoDescription('');
+        setPhotoPreview('');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        toast.success(`✅ "${photoTitle.trim()}" uploaded successfully!`);
+        
+        // Refresh photography images
+        if (refreshPhotography) {
+          refreshPhotography();
+        }
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('❌ Upload error:', error);
+      toast.error(error.message || 'Failed to upload photography image');
+    } finally {
+      setIsPhotoUploading(false);
+    }
+  };
 
   // ========== DELETE FUNCTIONS ==========
   const handleDeleteGallery = (id, title) => {
@@ -462,7 +454,7 @@ const handlePhotographySubmit = async (e) => {
             <h3>Photography</h3>
             <span className="badge">{photographyImages ? photographyImages.length : 0}</span>
           </div>
-          <p className="card-subtitle">Upload JPEG images (Direct to Cloudinary)</p>
+          <p className="card-subtitle">Upload JPEG images (Stored in Neon DB)</p>
           
           <form onSubmit={handlePhotographySubmit} className="admin-form">
             <div className="file-upload-container">
@@ -487,7 +479,7 @@ const handlePhotographySubmit = async (e) => {
                   </span>
                 )}
               </label>
-              <p className="file-hint">📌 JPEG only | Auto-compressed | Direct Cloudinary Upload</p>
+              <p className="file-hint">📌 JPEG only | Max 10MB | Stored in Neon DB</p>
             </div>
             
             {photoPreview && (
