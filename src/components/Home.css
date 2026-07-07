@@ -163,7 +163,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover; /* ✅ Changed: fills container completely */
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -201,14 +201,13 @@
 }
 
 /* ======================================== */
-/* ===== PHOTOGRAPHY SECTION - SAME AS GALLERY ===== */
+/* ===== PHOTOGRAPHY SECTION ===== */
 /* ======================================== */
 .home-photography-section {
   margin-bottom: 4rem;
   padding: 0;
 }
 
-/* ✅ Same grid as gallery */
 .photography-featured-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -216,7 +215,6 @@
   margin-top: 0.5rem;
 }
 
-/* ✅ Same card style as gallery */
 .photography-featured-card {
   background: white;
   border-radius: 12px;
@@ -239,7 +237,6 @@
   transform: scale(0.98);
 }
 
-/* ✅ Same image wrapper as gallery */
 .photography-featured-image-wrapper {
   width: 100%;
   padding-top: 75%;
@@ -254,7 +251,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover; /* ✅ Changed: fills container completely */
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -262,7 +259,6 @@
   transform: scale(1.1);
 }
 
-/* ✅ Same overlay style as gallery but with different color */
 .photography-featured-overlay {
   position: absolute;
   bottom: 0;
@@ -298,7 +294,6 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* ✅ Photography button style */
 .photography-btn {
   background: #8b6b4f !important;
 }
@@ -494,7 +489,7 @@
 .image-modal-content img {
   max-width: 90vw;
   max-height: 75vh;
-  object-fit: contain;
+  object-fit: contain; /* ✅ Keep contain for modal (shows full image) */
   display: block;
 }
 
