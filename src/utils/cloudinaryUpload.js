@@ -8,76 +8,59 @@ console.log('📸 Cloudinary Config:', {
   uploadPreset: UPLOAD_PRESET
 });
 
-// List of presets to try (in order)
-const PRESETS_TO_TRY = [
-  UPLOAD_PRESET,
-  'photography_upload',
-  'unsigned_upload',
-  'default',
-  'my_upload_preset'
-];
+export const uploadToCloudinary = async (file, title) => {
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET);
+    formData.append('folder', 'photography');
+    
+    // ✅ Use a clean public_id
+    const cleanTitle = title.replace(/\s+/g, '_').toLowerCase();
+    formData.append('public_id', cleanTitle);
+    formData.append('overwrite', 'true'); // ✅ Overwrite if exists
 
-export const uploadToCloudinary = async (file, title, onProgress) => {
-  let lastError = null;
+    const xhr = new XMLHttpRequest();
+    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+    
+    console.log('📤 Uploading to Cloudinary...');
+    console.log('📤 Upload Preset:', UPLOAD_PRESET);
+    console.log('📤 Public ID:', cleanTitle);
+    
+    xhr.open('POST', url);
 
-  for (const preset of PRESETS_TO_TRY) {
-    try {
-      console.log(`📤 Trying preset: "${preset}"`);
+    xhr.onload = () => {
+      console.log('📊 Response status:', xhr.status);
       
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', preset);
-      formData.append('folder', 'photography');
-      formData.append('public_id', title.replace(/\s+/g, '_').toLowerCase());
-
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-        {
-          method: 'POST',
-          body: formData,
+      if (xhr.status === 200) {
+        try {
+          const data = JSON.parse(xhr.responseText);
+          console.log('✅ Cloudinary upload success:', data.public_id);
+          console.log('✅ Image URL:', data.secure_url);
+          resolve(data);
+        } catch (e) {
+          reject(new Error('Failed to parse Cloudinary response'));
         }
-      );
-
-      const responseText = await response.text();
-      console.log(`📊 Preset "${preset}" response:`, response.status);
-
-      if (response.ok) {
-        console.log(`✅ Upload successful with preset: "${preset}"`);
-        const data = JSON.parse(responseText);
-        return data;
+      } else {
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          errorMessage = errorData.error?.message || errorData.error || errorMessage;
+        } catch (e) {
+          errorMessage = xhr.responseText || errorMessage;
+        }
+        console.error('❌ Cloudinary upload error:', errorMessage);
+        reject(new Error(errorMessage));
       }
+    };
 
-      let errorMsg = `Preset "${preset}" failed`;
-      try {
-        const errorData = JSON.parse(responseText);
-        errorMsg = errorData.error?.message || errorData.error || errorMsg;
-      } catch (e) {
-        errorMsg = responseText || errorMsg;
-      }
-      
-      console.log(`❌ Preset "${preset}" failed:`, errorMsg);
-      lastError = errorMsg;
+    xhr.onerror = () => {
+      console.error('❌ Network error during upload');
+      reject(new Error('Network error during upload'));
+    };
 
-      // If error is "Upload preset not found", try next preset
-      if (errorMsg.includes('Upload preset not found')) {
-        continue;
-      }
-
-      // Other errors - stop trying
-      throw new Error(errorMsg);
-      
-    } catch (error) {
-      console.log(`❌ Preset "${preset}" error:`, error.message);
-      lastError = error.message;
-      
-      // If it's a network error, stop trying
-      if (error.message.includes('Network') || error.message.includes('fetch')) {
-        throw error;
-      }
-    }
-  }
-
-  throw new Error(`All upload presets failed. Last error: ${lastError}. Please create an upload preset named "photography_upload" in Cloudinary.`);
+    xhr.send(formData);
+  });
 };
 
 export default uploadToCloudinary;
