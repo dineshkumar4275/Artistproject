@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight, FaTimes, FaExpand } from 'react-icons/fa';
 import './Photography.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
+
 function Photography({ images }) {
   const [loadingImages, setLoadingImages] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
@@ -16,7 +18,10 @@ function Photography({ images }) {
     if (images && images.length > 0) {
       images.forEach(img => {
         const imgObj = new Image();
-        imgObj.src = getImageUrl(img);
+        const src = getImageUrl(img);
+        if (src) {
+          imgObj.src = src;
+        }
       });
     }
   }, [images]);
@@ -30,17 +35,20 @@ function Photography({ images }) {
     });
   }
 
-  // ✅ Get image URL - works for both Cloudinary and Neon DB
+  // ✅ Get full image URL
   const getImageUrl = (image) => {
     if (!image) return "";
-    // For Neon DB images, use the URL from the API
+    
+    // If it's a Neon DB image with relative URL
     if (image.url && image.url.startsWith('/api/')) {
-      return image.url;
+      return `${API_BASE_URL}${image.url}`;
     }
-    // For Cloudinary images
+    
+    // If it's a Cloudinary image
     if (image.url && image.url.includes('cloudinary.com')) {
       return image.url;
     }
+    
     // Fallback
     return image.url || image.imageUrl || "";
   };

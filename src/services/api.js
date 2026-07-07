@@ -93,10 +93,31 @@ export const getImages = async () => {
 // =======================
 // GET PHOTOGRAPHY IMAGES
 // =======================
+// frontend/src/services/api.js
+
+// =======================
+// GET PHOTOGRAPHY IMAGES
+// =======================
 export const getPhotographyImages = async () => {
   try {
     const response = await api.get('/images/photography');
-    return response.data;
+    const data = response.data;
+    
+    // ✅ Fix: Convert relative URLs to full URLs
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
+    
+    const fixedData = data.map(img => {
+      if (img.url && img.url.startsWith('/api/')) {
+        return {
+          ...img,
+          url: `${API_BASE_URL}${img.url}`,
+          imageUrl: `${API_BASE_URL}${img.url}`
+        };
+      }
+      return img;
+    });
+    
+    return fixedData;
   } catch (error) {
     console.error('❌ Error fetching photography images:', error);
     throw error.response?.data || { success: false, error: error.message };

@@ -1,7 +1,9 @@
 // frontend/src/utils/usePhotographyImages.js
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { getPhotographyImages, uploadPhotographyImage, deleteImage, deleteAllImages } from '../services/api';
+import { getPhotographyImages, deleteImage, deleteAllImages } from '../services/api';
 import useToast from '../hooks/useToast';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
 
 function usePhotographyImages() {
   const [photographyImages, setPhotographyImages] = useState([]);
@@ -25,9 +27,21 @@ function usePhotographyImages() {
       console.log('📸 Fetching photography images...');
       const data = await getPhotographyImages();
       
+      // ✅ Fix: Convert relative URLs to full URLs
+      const fixedData = data.map(img => {
+        if (img.url && img.url.startsWith('/api/')) {
+          return {
+            ...img,
+            url: `${API_BASE_URL}${img.url}`,
+            imageUrl: `${API_BASE_URL}${img.url}`
+          };
+        }
+        return img;
+      });
+      
       if (isMounted.current) {
-        console.log('📸 Loaded photography images:', data);
-        setPhotographyImages(data || []);
+        console.log('📸 Loaded photography images:', fixedData);
+        setPhotographyImages(fixedData || []);
         hasFetched.current = true;
       }
     } catch (err) {
@@ -49,7 +63,22 @@ function usePhotographyImages() {
       const loadingId = toast.loading('Uploading photography image...');
       console.log('📤 Starting upload:', { title, fileSize: file.size });
       
-      const result = await uploadPhotographyImage(file, title);
+      // Upload to Neon DB
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('title', title);
+      formData.append('description', '');
+      
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/images/photography/neon-upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : undefined
+        },
+        body: formData
+      });
+      
+      const result = await response.json();
       
       toast.dismissById(loadingId);
       
@@ -60,8 +89,8 @@ function usePhotographyImages() {
         await loadPhotographyImages();
         return { success: true, data: result };
       } else {
-        toast.error('Upload failed - no response');
-        return { success: false, error: 'Upload failed - no response' };
+        toast.error(result.error || 'Upload failed - no response');
+        return { success: false, error: result.error || 'Upload failed - no response' };
       }
     } catch (err) {
       console.error('❌ Add photography error:', err);
