@@ -18,6 +18,9 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
   // Get featured photography images (first 4)
   const featuredPhotography = photographyImages.slice(0, 4);
 
+  // ✅ Debug: Log images to check URLs
+  console.log('📸 Featured Photography:', featuredPhotography);
+
   const openModal = (image) => {
     setSelectedImage(image);
     setIsModalOpen(true);
@@ -44,10 +47,18 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
   // ✅ Helper function to get image URL - supports both Cloudinary and Neon DB
   const getImageUrl = (image) => {
     if (!image) return '';
+    console.log('🔍 Getting URL for image:', image.id, image.url);
     
     // If it's a Neon DB image with relative URL
     if (image.url && image.url.startsWith('/api/')) {
-      return `${API_BASE_URL}${image.url}`;
+      const fullUrl = `${API_BASE_URL}${image.url}`;
+      console.log('✅ Converted to full URL:', fullUrl);
+      return fullUrl;
+    }
+    
+    // If it's a Cloudinary image
+    if (image.url && image.url.includes('cloudinary.com')) {
+      return image.url;
     }
     
     return image.url || image.imageUrl || '';
@@ -81,6 +92,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
                     src={getImageUrl(img)} 
                     alt={img.title} 
                     onError={(e) => {
+                      console.error('❌ Image load error:', img.id, img.url);
                       e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
                     }}
                   />
@@ -138,6 +150,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
                     src={getImageUrl(img)} 
                     alt={img.title} 
                     onError={(e) => {
+                      console.error('❌ Photography image load error:', img.id, img.url);
                       e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
                     }}
                   />
@@ -255,6 +268,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
               src={getImageUrl(selectedImage)} 
               alt={selectedImage.title}
               onError={(e) => {
+                console.error('❌ Modal image error:', selectedImage.id, selectedImage.url);
                 e.target.src = 'https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found';
               }}
             />
