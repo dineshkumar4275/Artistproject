@@ -984,3 +984,27 @@
     color: #999;
   }
 }
+/* Add to Admin.css */
+.admin-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.admin-desc {
+  font-size: 0.75rem;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .admin-info {
+    min-width: 60px;
+  }
+  .admin-desc {
+    font-size: 0.65rem;
+  }
+}

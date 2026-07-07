@@ -14,7 +14,6 @@ function Photography({ images }) {
   // ✅ Pre-load images - Start loading all images immediately
   useEffect(() => {
     if (images && images.length > 0) {
-      // Preload images in background
       images.forEach(img => {
         const imgObj = new Image();
         imgObj.src = getThumbnailUrl(img.url || img.imageUrl);
@@ -31,17 +30,14 @@ function Photography({ images }) {
     });
   }
 
-  // ✅ Optimize image URL with smaller size for faster loading
   const getThumbnailUrl = (url) => {
     if (!url) return "";
     if (url.includes("cloudinary.com")) {
-      // Use smaller size for faster loading
       return url.replace("/upload/", `/upload/f_auto,q_auto:low,w_500/`);
     }
     return url;
   };
 
-  // ✅ Get full image URL (larger for modal)
   const getFullImageUrl = (url) => {
     if (!url) return "";
     if (url.includes("cloudinary.com")) {
@@ -75,7 +71,6 @@ function Photography({ images }) {
     }
   };
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (isModalOpen) {
@@ -88,7 +83,6 @@ function Photography({ images }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isModalOpen, currentIndex, images.length]);
 
-  // Touch events for mobile
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
@@ -147,6 +141,9 @@ function Photography({ images }) {
                     />
                     <div className="photography-image-overlay">
                       <h3>{pair.left.title || 'Untitled'}</h3>
+                      {pair.left.description && (
+                        <p className="photography-description">{pair.left.description}</p>
+                      )}
                       <span className="view-hint">
                         <FaExpand /> Click to view
                       </span>
@@ -181,6 +178,9 @@ function Photography({ images }) {
                       />
                       <div className="photography-image-overlay">
                         <h3>{pair.right.title || 'Untitled'}</h3>
+                        {pair.right.description && (
+                          <p className="photography-description">{pair.right.description}</p>
+                        )}
                         <span className="view-hint">
                           <FaExpand /> Click to view
                         </span>
@@ -192,14 +192,13 @@ function Photography({ images }) {
             ))}
           </div>
 
-          {/* Image Counter */}
           <div className="photography-indicator">
             {images.length} {images.length === 1 ? 'Photo' : 'Photos'}
           </div>
         </>
       )}
 
-      {/* Modal for full image view */}
+      {/* Modal for full image view with description */}
       {isModalOpen && selectedImage && (
         <div 
           className="photography-modal" 
@@ -213,7 +212,6 @@ function Photography({ images }) {
               <FaTimes />
             </button>
             
-            {/* Navigation Buttons */}
             {images.length > 1 && (
               <>
                 <button 
@@ -243,6 +241,19 @@ function Photography({ images }) {
                   e.target.src = "https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found";
                 }}
               />
+            </div>
+
+            {/* ✅ Modal Description */}
+            <div className="modal-info">
+              <div className="modal-info-left">
+                <span className="modal-number">
+                  {currentIndex + 1} / {images.length}
+                </span>
+                <h3>{selectedImage.title || 'Untitled'}</h3>
+                {selectedImage.description && (
+                  <p className="modal-description">{selectedImage.description}</p>
+                )}
+              </div>
             </div>
           </div>
         </div>

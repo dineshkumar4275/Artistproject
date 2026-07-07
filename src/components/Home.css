@@ -789,3 +789,19 @@
     padding: 0.05rem 0.3rem;
   }
 }
+/* Add to Home.css */
+.photography-featured-desc {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0.2rem 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .photography-featured-desc {
+    font-size: 0.6rem;
+  }
+}

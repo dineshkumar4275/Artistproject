@@ -561,10 +561,14 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
                       e.target.src = 'https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found';
                     }}
                   />
-                  <div className="photography-featured-overlay">
-                    <span className="photography-badge">📸</span>
-                    <h3>{img.title}</h3>
-                  </div>
+               // In the photography featured card overlay
+<div className="photography-featured-overlay">
+  <span className="photography-badge">📸</span>
+  <h3>{img.title}</h3>
+  {img.description && (
+    <p className="photography-featured-desc">{img.description}</p>
+  )}
+</div>
                 </div>
               </div>
             ))}
