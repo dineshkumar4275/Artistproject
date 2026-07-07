@@ -13,7 +13,6 @@ function usePhotographyImages() {
   const isMounted = useRef(true);
   const hasFetched = useRef(false);
 
-  // Load photography images from backend
   const loadPhotographyImages = useCallback(async () => {
     if (hasFetched.current && photographyImages.length > 0) {
       console.log('📸 Already fetched, skipping...');
@@ -26,22 +25,33 @@ function usePhotographyImages() {
       console.log('📸 Fetching photography images...');
       const data = await getPhotographyImages();
       
+      console.log('📸 Raw data from API:', data);
+      
       // ✅ Fix: Convert relative URLs to full URLs
       const fixedData = data.map(img => {
-        if (img.url && img.url.startsWith('/api/')) {
-          const fullUrl = `${API_BASE_URL}${img.url}`;
-          console.log(`✅ Converting URL: ${img.url} → ${fullUrl}`);
-          return {
-            ...img,
-            url: fullUrl,
-            imageUrl: fullUrl
-          };
+        // If URL is empty or undefined, try to construct it
+        let imageUrl = img.url || img.imageUrl || '';
+        
+        if (imageUrl && imageUrl.startsWith('/api/')) {
+          imageUrl = `${API_BASE_URL}${imageUrl}`;
         }
-        return img;
+        
+        // If no URL but we have an ID, construct the URL
+        if (!imageUrl && img.id) {
+          imageUrl = `${API_BASE_URL}/images/photography/image/${img.id}`;
+        }
+        
+        console.log(`🔍 Image ${img.id}: ${img.title} → ${imageUrl}`);
+        
+        return {
+          ...img,
+          url: imageUrl,
+          imageUrl: imageUrl
+        };
       });
       
       if (isMounted.current) {
-        console.log('📸 Loaded photography images:', fixedData);
+        console.log('📸 Final photography images:', fixedData);
         setPhotographyImages(fixedData || []);
         hasFetched.current = true;
       }
@@ -64,7 +74,6 @@ function usePhotographyImages() {
       const loadingId = toast.loading('Uploading photography image...');
       console.log('📤 Starting upload:', { title, fileSize: file.size });
       
-      // Upload to Neon DB
       const formData = new FormData();
       formData.append('image', file);
       formData.append('title', title);
@@ -80,12 +89,12 @@ function usePhotographyImages() {
       });
       
       const result = await response.json();
+      console.log('📊 Upload response:', result);
       
       toast.dismissById(loadingId);
       
       if (result && result.id) {
         toast.success(`✅ "${title}" uploaded to Photography!`);
-        // Reset fetch flag to allow refresh
         hasFetched.current = false;
         await loadPhotographyImages();
         return { success: true, data: result };
@@ -105,7 +114,6 @@ function usePhotographyImages() {
     try {
       await deleteImage(id);
       toast.success('✅ Photography image deleted successfully!');
-      // Reset fetch flag to allow refresh
       hasFetched.current = false;
       await loadPhotographyImages();
       return { success: true };
@@ -121,7 +129,6 @@ function usePhotographyImages() {
     try {
       await deleteAllImages();
       toast.success('✅ All photography images deleted successfully!');
-      // Reset fetch flag to allow refresh
       hasFetched.current = false;
       await loadPhotographyImages();
       return { success: true };
@@ -132,18 +139,14 @@ function usePhotographyImages() {
     }
   }, [loadPhotographyImages, toast]);
 
-  // Load images on mount - ONLY ONCE
   useEffect(() => {
-    // Reset fetch flag when component mounts
     hasFetched.current = false;
     loadPhotographyImages();
-    
-    // Cleanup
     return () => {
       isMounted.current = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - ONLY RUN ONCE
+  }, []);
 
   return {
     photographyImages,
