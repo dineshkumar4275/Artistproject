@@ -7,6 +7,7 @@ import {
 import useToast from '../hooks/useToast';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload';
 import './Admin.css';
+import { uploadPhotographyToNeon } from '../utils/uploadToNeonDB';
 
 function Admin({ 
   images = [], 
@@ -190,6 +191,9 @@ function Admin({
     reader.readAsDataURL(finalFile);
   };
 // frontend/src/components/Admin.js - Update handlePhotographySubmit
+// frontend/src/components/Admin.js - Update handlePhotographySubmit
+
+
 
 const handlePhotographySubmit = async (e) => {
   e.preventDefault();
@@ -199,49 +203,20 @@ const handlePhotographySubmit = async (e) => {
     return;
   }
 
-  // ✅ Check for duplicate title
-  const existing = photographyImages.find(
-    img => img.title.toLowerCase() === photoTitle.trim().toLowerCase()
-  );
-  
-  if (existing) {
-    toast.error(`"${photoTitle.trim()}" already exists! Please use a different title.`);
-    return;
-  }
-
   setIsPhotoUploading(true);
   
   try {
-    // Step 1: Upload to Cloudinary
-    console.log('📤 Uploading to Cloudinary...');
-    const cloudinaryResult = await uploadToCloudinary(photoFile, photoTitle.trim());
-    console.log('✅ Cloudinary upload success:', cloudinaryResult);
+    // ✅ Upload directly to Neon DB (No Cloudinary)
+    console.log('📤 Uploading to Neon DB...');
+    const result = await uploadPhotographyToNeon(
+      photoFile, 
+      photoTitle.trim(), 
+      photoDescription.trim()
+    );
     
-    // Step 2: Save to database
-    const token = localStorage.getItem('token');
-    const requestBody = {
-      title: photoTitle.trim(),
-      description: photoDescription.trim() || '',
-      cloudinary_id: cloudinaryResult.public_id,
-      url: cloudinaryResult.secure_url,
-      type: 'photography'
-    };
+    console.log('✅ Upload result:', result);
     
-    console.log('📤 Saving to database:', requestBody);
-    
-    const response = await fetch(`${API_BASE_URL}/images/photography/save`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(requestBody)
-    });
-
-    const data = await response.json();
-    console.log('📊 Database response:', data);
-    
-    if (data.success || data.id) {
+    if (result.success || result.id) {
       // Clear form
       setPhotoFile(null);
       setPhotoTitle('');
@@ -257,7 +232,7 @@ const handlePhotographySubmit = async (e) => {
         refreshPhotography();
       }
     } else {
-      throw new Error(data.error || 'Save to database failed');
+      throw new Error(result.error || 'Upload failed');
     }
   } catch (error) {
     console.error('❌ Upload error:', error);

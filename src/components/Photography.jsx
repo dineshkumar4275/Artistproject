@@ -10,13 +10,13 @@ function Photography({ images }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [imageErrors, setImageErrors] = useState({});
 
-  // ✅ Pre-load images - Start loading all images immediately
   useEffect(() => {
     if (images && images.length > 0) {
       images.forEach(img => {
         const imgObj = new Image();
-        imgObj.src = getThumbnailUrl(img.url || img.imageUrl);
+        imgObj.src = getImageUrl(img);
       });
     }
   }, [images]);
@@ -30,7 +30,23 @@ function Photography({ images }) {
     });
   }
 
-  const getThumbnailUrl = (url) => {
+  // ✅ Get image URL - works for both Cloudinary and Neon DB
+  const getImageUrl = (image) => {
+    if (!image) return "";
+    // For Neon DB images, use the URL from the API
+    if (image.url && image.url.startsWith('/api/')) {
+      return image.url;
+    }
+    // For Cloudinary images
+    if (image.url && image.url.includes('cloudinary.com')) {
+      return image.url;
+    }
+    // Fallback
+    return image.url || image.imageUrl || "";
+  };
+
+  const getThumbnailUrl = (image) => {
+    const url = getImageUrl(image);
     if (!url) return "";
     if (url.includes("cloudinary.com")) {
       return url.replace("/upload/", `/upload/f_auto,q_auto:low,w_500/`);
@@ -38,7 +54,8 @@ function Photography({ images }) {
     return url;
   };
 
-  const getFullImageUrl = (url) => {
+  const getFullImageUrl = (image) => {
+    const url = getImageUrl(image);
     if (!url) return "";
     if (url.includes("cloudinary.com")) {
       return url.replace("/upload/", `/upload/f_auto,q_auto:good,w_1200/`);
@@ -48,6 +65,11 @@ function Photography({ images }) {
 
   const handleImageLoad = (id) => {
     setLoadingImages(prev => ({ ...prev, [id]: true }));
+  };
+
+  const handleImageError = (id) => {
+    console.error('❌ Image failed to load:', id);
+    setImageErrors(prev => ({ ...prev, [id]: true }));
   };
 
   const openModal = (image, index) => {
@@ -118,36 +140,39 @@ function Photography({ images }) {
                 {/* Left Image */}
                 <div className="photography-image-wrapper left-image">
                   <div className="photography-image-container" onClick={() => openModal(pair.left, getImageIndex(pair.left))}>
-                    {!loadingImages[pair.left.id] && (
+                    {!loadingImages[pair.left.id] && !imageErrors[pair.left.id] && (
                       <div className="image-placeholder-loading">
                         <div className="image-loading-spinner"></div>
                       </div>
                     )}
-                    <img
-                      src={getThumbnailUrl(pair.left.url || pair.left.imageUrl)}
-                      alt={pair.left.title || 'Photography'}
-                      loading="eager"
-                      className={`photography-image ${
-                        loadingImages[pair.left.id] ? "image-fade-in" : ""
-                      }`}
-                      onLoad={() => handleImageLoad(pair.left.id)}
-                      onError={(e) => {
-                        console.error("Image load error:", pair.left.url || pair.left.imageUrl);
-                        e.target.src = "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
-                      }}
-                      style={{
-                        display: loadingImages[pair.left.id] ? "block" : "none",
-                      }}
-                    />
-                  <div className="photography-image-overlay">
-  <h3>{pair.left.title || 'Untitled'}</h3>
-  {pair.left.description && (
-    <p className="photography-description">{pair.left.description}</p>
-  )}
-  <span className="view-hint">
-    <FaExpand /> Click to view
-  </span>
-</div>
+                    {imageErrors[pair.left.id] ? (
+                      <div className="image-error-placeholder">
+                        <span>⚠️ Image not available</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={getThumbnailUrl(pair.left)}
+                        alt={pair.left.title || 'Photography'}
+                        loading="eager"
+                        className={`photography-image ${
+                          loadingImages[pair.left.id] ? "image-fade-in" : ""
+                        }`}
+                        onLoad={() => handleImageLoad(pair.left.id)}
+                        onError={() => handleImageError(pair.left.id)}
+                        style={{
+                          display: loadingImages[pair.left.id] && !imageErrors[pair.left.id] ? "block" : "none",
+                        }}
+                      />
+                    )}
+                    <div className="photography-image-overlay">
+                      <h3>{pair.left.title || 'Untitled'}</h3>
+                      {pair.left.description && (
+                        <p className="photography-description">{pair.left.description}</p>
+                      )}
+                      <span className="view-hint">
+                        <FaExpand /> Click to view
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -155,27 +180,30 @@ function Photography({ images }) {
                 {pair.right && (
                   <div className="photography-image-wrapper right-image">
                     <div className="photography-image-container" onClick={() => openModal(pair.right, getImageIndex(pair.right))}>
-                      {!loadingImages[pair.right.id] && (
+                      {!loadingImages[pair.right.id] && !imageErrors[pair.right.id] && (
                         <div className="image-placeholder-loading">
                           <div className="image-loading-spinner"></div>
                         </div>
                       )}
-                      <img
-                        src={getThumbnailUrl(pair.right.url || pair.right.imageUrl)}
-                        alt={pair.right.title || 'Photography'}
-                        loading="eager"
-                        className={`photography-image ${
-                          loadingImages[pair.right.id] ? "image-fade-in" : ""
-                        }`}
-                        onLoad={() => handleImageLoad(pair.right.id)}
-                        onError={(e) => {
-                          console.error("Image load error:", pair.right.url || pair.right.imageUrl);
-                          e.target.src = "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
-                        }}
-                        style={{
-                          display: loadingImages[pair.right.id] ? "block" : "none",
-                        }}
-                      />
+                      {imageErrors[pair.right.id] ? (
+                        <div className="image-error-placeholder">
+                          <span>⚠️ Image not available</span>
+                        </div>
+                      ) : (
+                        <img
+                          src={getThumbnailUrl(pair.right)}
+                          alt={pair.right.title || 'Photography'}
+                          loading="eager"
+                          className={`photography-image ${
+                            loadingImages[pair.right.id] ? "image-fade-in" : ""
+                          }`}
+                          onLoad={() => handleImageLoad(pair.right.id)}
+                          onError={() => handleImageError(pair.right.id)}
+                          style={{
+                            display: loadingImages[pair.right.id] && !imageErrors[pair.right.id] ? "block" : "none",
+                          }}
+                        />
+                      )}
                       <div className="photography-image-overlay">
                         <h3>{pair.right.title || 'Untitled'}</h3>
                         {pair.right.description && (
@@ -198,7 +226,7 @@ function Photography({ images }) {
         </>
       )}
 
-      {/* Modal for full image view with description */}
+      {/* Modal for full image view */}
       {isModalOpen && selectedImage && (
         <div 
           className="photography-modal" 
@@ -233,17 +261,17 @@ function Photography({ images }) {
             
             <div className="modal-image-wrapper">
               <img
-                src={getFullImageUrl(selectedImage.url || selectedImage.imageUrl)}
+                src={getFullImageUrl(selectedImage)}
                 alt={selectedImage.title || 'Photography'}
                 className="modal-image"
                 loading="eager"
                 onError={(e) => {
+                  console.error('Modal image error:', selectedImage.id);
                   e.target.src = "https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found";
                 }}
               />
             </div>
 
-            {/* ✅ Modal Description */}
             <div className="modal-info">
               <div className="modal-info-left">
                 <span className="modal-number">
