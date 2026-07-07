@@ -15,10 +15,10 @@ export const uploadToCloudinary = async (file, title) => {
     formData.append('upload_preset', UPLOAD_PRESET);
     formData.append('folder', 'photography');
     
-    // ✅ Use a clean public_id
+    // ✅ Use clean public_id
     const cleanTitle = title.replace(/\s+/g, '_').toLowerCase();
     formData.append('public_id', cleanTitle);
-    formData.append('overwrite', 'true'); // ✅ Overwrite if exists
+    formData.append('overwrite', 'true');
 
     const xhr = new XMLHttpRequest();
     const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -36,7 +36,6 @@ export const uploadToCloudinary = async (file, title) => {
         try {
           const data = JSON.parse(xhr.responseText);
           console.log('✅ Cloudinary upload success:', data.public_id);
-          console.log('✅ Image URL:', data.secure_url);
           resolve(data);
         } catch (e) {
           reject(new Error('Failed to parse Cloudinary response'));
