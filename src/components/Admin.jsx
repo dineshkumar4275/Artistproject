@@ -450,33 +450,26 @@ function Admin({
             )}
           </div>
           
-        // In the photography list section, update to show description
-<div className="admin-list">
-  {photographyImages && photographyImages.length === 0 ? (
-    <p className="empty-message">No photos in photography</p>
-  ) : (
-    photographyImages && photographyImages.map(img => (
-      <div key={img.id} className="admin-list-item">
-        <div className="admin-thumb">
-          <img src={img.url} alt={img.title} />
-        </div>
-        <div className="admin-info">
-          <span className="admin-title">{img.title}</span>
-          {img.description && (
-            <span className="admin-desc">{img.description}</span>
-          )}
-        </div>
-        <span className="admin-badge">JPEG</span>
-        <button
-          className="btn-danger"
-          onClick={() => handleDeletePhotography(img.id, img.title)}
-        >
-          <FaTrash />
-        </button>
-      </div>
-    ))
-  )}
-</div>
+          <div className="admin-list">
+            {images && images.length === 0 ? (
+              <p className="empty-message">No photos in gallery</p>
+            ) : (
+              images && images.map(img => (
+                <div key={img.id} className="admin-list-item">
+                  <div className="admin-thumb">
+                    <img src={img.url} alt={img.title} />
+                  </div>
+                  <span className="admin-title">{img.title}</span>
+                  <button
+                    className="btn-danger"
+                    onClick={() => handleDeleteGallery(img.id, img.title)}
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
 
