@@ -36,22 +36,35 @@ function Photography({ images }) {
   }
 
   // ✅ Get full image URL
-  const getImageUrl = (image) => {
-    if (!image) return "";
-    
-    // If it's a Neon DB image with relative URL
-    if (image.url && image.url.startsWith('/api/')) {
+ // frontend/src/components/Photography.jsx - Update getImageUrl
+
+const getImageUrl = (image) => {
+  if (!image) return "";
+  
+  // If there's a direct URL, use it
+  if (image.url) {
+    // If it's a relative URL starting with /api/, make it absolute
+    if (image.url.startsWith('/api/')) {
       return `${API_BASE_URL}${image.url}`;
     }
-    
-    // If it's a Cloudinary image
-    if (image.url && image.url.includes('cloudinary.com')) {
-      return image.url;
+    return image.url;
+  }
+  
+  // If there's an imageUrl, use it
+  if (image.imageUrl) {
+    if (image.imageUrl.startsWith('/api/')) {
+      return `${API_BASE_URL}${image.imageUrl}`;
     }
-    
-    // Fallback
-    return image.url || image.imageUrl || "";
-  };
+    return image.imageUrl;
+  }
+  
+  // If we have an ID, construct the URL
+  if (image.id) {
+    return `${API_BASE_URL}/images/photography/image/${image.id}`;
+  }
+  
+  return "";
+};
 
   const getThumbnailUrl = (image) => {
     const url = getImageUrl(image);
