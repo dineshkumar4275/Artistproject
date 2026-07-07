@@ -139,15 +139,15 @@ function Photography({ images }) {
                         display: loadingImages[pair.left.id] ? "block" : "none",
                       }}
                     />
-                    <div className="photography-image-overlay">
-                      <h3>{pair.left.title || 'Untitled'}</h3>
-                      {pair.left.description && (
-                        <p className="photography-description">{pair.left.description}</p>
-                      )}
-                      <span className="view-hint">
-                        <FaExpand /> Click to view
-                      </span>
-                    </div>
+                  <div className="photography-image-overlay">
+  <h3>{pair.left.title || 'Untitled'}</h3>
+  {pair.left.description && (
+    <p className="photography-description">{pair.left.description}</p>
+  )}
+  <span className="view-hint">
+    <FaExpand /> Click to view
+  </span>
+</div>
                   </div>
                 </div>
 

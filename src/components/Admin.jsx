@@ -189,72 +189,83 @@ function Admin({
     };
     reader.readAsDataURL(finalFile);
   };
+// frontend/src/components/Admin.js - Update handlePhotographySubmit
 
-  const handlePhotographySubmit = async (e) => {
-    e.preventDefault();
+const handlePhotographySubmit = async (e) => {
+  e.preventDefault();
+  
+  if (!photoFile || !photoTitle.trim()) {
+    toast.warning('Please select an image and enter a title');
+    return;
+  }
+
+  // ✅ Check for duplicate title
+  const existing = photographyImages.find(
+    img => img.title.toLowerCase() === photoTitle.trim().toLowerCase()
+  );
+  
+  if (existing) {
+    toast.error(`"${photoTitle.trim()}" already exists! Please use a different title.`);
+    return;
+  }
+
+  setIsPhotoUploading(true);
+  
+  try {
+    // Step 1: Upload to Cloudinary
+    console.log('📤 Uploading to Cloudinary...');
+    const cloudinaryResult = await uploadToCloudinary(photoFile, photoTitle.trim());
+    console.log('✅ Cloudinary upload success:', cloudinaryResult);
     
-    if (!photoFile || !photoTitle.trim()) {
-      toast.warning('Please select an image and enter a title');
-      return;
-    }
-
-    setIsPhotoUploading(true);
+    // Step 2: Save to database
+    const token = localStorage.getItem('token');
+    const requestBody = {
+      title: photoTitle.trim(),
+      description: photoDescription.trim() || '',
+      cloudinary_id: cloudinaryResult.public_id,
+      url: cloudinaryResult.secure_url,
+      type: 'photography'
+    };
     
-    try {
-      // Step 1: Upload to Cloudinary
-      console.log('📤 Uploading to Cloudinary...');
-      const cloudinaryResult = await uploadToCloudinary(photoFile, photoTitle.trim());
-      console.log('✅ Cloudinary upload success:', cloudinaryResult);
-      
-      // Step 2: Save to database
-      const token = localStorage.getItem('token');
-      const requestBody = {
-        title: photoTitle.trim(),
-        description: photoDescription.trim() || '',
-        cloudinary_id: cloudinaryResult.public_id,
-        url: cloudinaryResult.secure_url,
-        type: 'photography'
-      };
-      
-      console.log('📤 Saving to database:', requestBody);
-      
-      const response = await fetch(`${API_BASE_URL}/images/photography/save`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(requestBody)
-      });
+    console.log('📤 Saving to database:', requestBody);
+    
+    const response = await fetch(`${API_BASE_URL}/images/photography/save`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(requestBody)
+    });
 
-      const data = await response.json();
-      console.log('📊 Database response:', data);
-      
-      if (data.success || data.id) {
-        // Clear form
-        setPhotoFile(null);
-        setPhotoTitle('');
-        setPhotoDescription('');
-        setPhotoPreview('');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-        toast.success(`✅ "${photoTitle.trim()}" uploaded successfully!`);
-        
-        // ✅ ONLY refresh, don't call addPhotographyImage again (causes duplicates)
-        if (refreshPhotography) {
-          refreshPhotography();
-        }
-      } else {
-        throw new Error(data.error || 'Save to database failed');
+    const data = await response.json();
+    console.log('📊 Database response:', data);
+    
+    if (data.success || data.id) {
+      // Clear form
+      setPhotoFile(null);
+      setPhotoTitle('');
+      setPhotoDescription('');
+      setPhotoPreview('');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
       }
-    } catch (error) {
-      console.error('❌ Upload error:', error);
-      toast.error(error.message || 'Failed to upload photography image');
-    } finally {
-      setIsPhotoUploading(false);
+      toast.success(`✅ "${photoTitle.trim()}" uploaded successfully!`);
+      
+      // Refresh photography images
+      if (refreshPhotography) {
+        refreshPhotography();
+      }
+    } else {
+      throw new Error(data.error || 'Save to database failed');
     }
-  };
+  } catch (error) {
+    console.error('❌ Upload error:', error);
+    toast.error(error.message || 'Failed to upload photography image');
+  } finally {
+    setIsPhotoUploading(false);
+  }
+};
 
   // ========== DELETE FUNCTIONS ==========
   const handleDeleteGallery = (id, title) => {
