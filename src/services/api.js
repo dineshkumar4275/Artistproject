@@ -91,12 +91,7 @@ export const getImages = async () => {
 };
 
 // =======================
-// GET PHOTOGRAPHY IMAGES
-// =======================
-// frontend/src/services/api.js
-
-// =======================
-// GET PHOTOGRAPHY IMAGES
+// GET PHOTOGRAPHY IMAGES (with URL fix)
 // =======================
 export const getPhotographyImages = async () => {
   try {
@@ -104,8 +99,6 @@ export const getPhotographyImages = async () => {
     const data = response.data;
     
     // ✅ Fix: Convert relative URLs to full URLs
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
-    
     const fixedData = data.map(img => {
       if (img.url && img.url.startsWith('/api/')) {
         return {
@@ -238,5 +231,4 @@ export const deleteAllImages = async () => {
   }
 };
 
-// ✅ SINGLE DEFAULT EXPORT - NO DUPLICATE FUNCTIONS
 export default api;

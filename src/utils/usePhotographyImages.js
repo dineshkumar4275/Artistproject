@@ -15,7 +15,6 @@ function usePhotographyImages() {
 
   // Load photography images from backend
   const loadPhotographyImages = useCallback(async () => {
-    // Prevent multiple simultaneous calls
     if (hasFetched.current && photographyImages.length > 0) {
       console.log('📸 Already fetched, skipping...');
       return;
@@ -30,10 +29,12 @@ function usePhotographyImages() {
       // ✅ Fix: Convert relative URLs to full URLs
       const fixedData = data.map(img => {
         if (img.url && img.url.startsWith('/api/')) {
+          const fullUrl = `${API_BASE_URL}${img.url}`;
+          console.log(`✅ Converting URL: ${img.url} → ${fullUrl}`);
           return {
             ...img,
-            url: `${API_BASE_URL}${img.url}`,
-            imageUrl: `${API_BASE_URL}${img.url}`
+            url: fullUrl,
+            imageUrl: fullUrl
           };
         }
         return img;
