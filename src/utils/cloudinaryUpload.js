@@ -8,114 +8,76 @@ console.log('📸 Cloudinary Config:', {
   uploadPreset: UPLOAD_PRESET
 });
 
-/**
- * Upload image directly to Cloudinary from frontend
- * @param {File} file - The image file
- * @param {string} title - Image title
- * @param {Function} onProgress - Progress callback (optional)
- * @returns {Promise} - Cloudinary upload response
- */
+// List of presets to try (in order)
+const PRESETS_TO_TRY = [
+  UPLOAD_PRESET,
+  'photography_upload',
+  'unsigned_upload',
+  'default',
+  'my_upload_preset'
+];
+
 export const uploadToCloudinary = async (file, title, onProgress) => {
-  return new Promise((resolve, reject) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', UPLOAD_PRESET);
-    formData.append('folder', 'photography');
-    formData.append('public_id', title.replace(/\s+/g, '_').toLowerCase());
+  let lastError = null;
 
-    const xhr = new XMLHttpRequest();
-    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
-    
-    console.log('📤 Uploading to Cloudinary...');
-    console.log('📤 Upload Preset:', UPLOAD_PRESET);
-    
-    xhr.open('POST', url);
-
-    if (onProgress) {
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const progress = Math.round((event.loaded / event.total) * 100);
-          onProgress(progress);
-        }
-      };
-    }
-
-    xhr.onload = () => {
-      console.log('📊 Response status:', xhr.status);
+  for (const preset of PRESETS_TO_TRY) {
+    try {
+      console.log(`📤 Trying preset: "${preset}"`);
       
-      if (xhr.status === 200) {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          console.log('✅ Cloudinary upload success:', data.public_id);
-          resolve(data);
-        } catch (e) {
-          reject(new Error('Failed to parse Cloudinary response'));
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', preset);
+      formData.append('folder', 'photography');
+      formData.append('public_id', title.replace(/\s+/g, '_').toLowerCase());
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
         }
-      } else {
-        let errorMessage = 'Upload failed';
-        try {
-          const errorData = JSON.parse(xhr.responseText);
-          errorMessage = errorData.error?.message || errorData.error || errorMessage;
-        } catch (e) {
-          errorMessage = xhr.responseText || errorMessage;
-        }
-        console.error('❌ Cloudinary upload error:', errorMessage);
-        reject(new Error(errorMessage));
+      );
+
+      const responseText = await response.text();
+      console.log(`📊 Preset "${preset}" response:`, response.status);
+
+      if (response.ok) {
+        console.log(`✅ Upload successful with preset: "${preset}"`);
+        const data = JSON.parse(responseText);
+        return data;
       }
-    };
 
-    xhr.onerror = () => {
-      console.error('❌ Network error during upload');
-      reject(new Error('Network error during upload'));
-    };
-
-    xhr.send(formData);
-  });
-};
-
-/**
- * Upload image using fetch API (simpler version)
- */
-export const uploadToCloudinaryFetch = async (file, title) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', UPLOAD_PRESET);
-  formData.append('folder', 'photography');
-  formData.append('public_id', title.replace(/\s+/g, '_').toLowerCase());
-
-  try {
-    console.log('📤 Uploading with preset:', UPLOAD_PRESET);
-    
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
-
-    const responseText = await response.text();
-    console.log('📊 Response status:', response.status);
-    console.log('📊 Response:', responseText);
-
-    if (!response.ok) {
-      let errorMessage = 'Upload failed';
+      let errorMsg = `Preset "${preset}" failed`;
       try {
         const errorData = JSON.parse(responseText);
-        errorMessage = errorData.error?.message || errorData.error || errorMessage;
+        errorMsg = errorData.error?.message || errorData.error || errorMsg;
       } catch (e) {
-        errorMessage = responseText || errorMessage;
+        errorMsg = responseText || errorMsg;
       }
-      throw new Error(errorMessage);
-    }
+      
+      console.log(`❌ Preset "${preset}" failed:`, errorMsg);
+      lastError = errorMsg;
 
-    const data = JSON.parse(responseText);
-    console.log('✅ Upload success:', data.public_id);
-    return data;
-  } catch (error) {
-    console.error('❌ Upload error:', error);
-    throw error;
+      // If error is "Upload preset not found", try next preset
+      if (errorMsg.includes('Upload preset not found')) {
+        continue;
+      }
+
+      // Other errors - stop trying
+      throw new Error(errorMsg);
+      
+    } catch (error) {
+      console.log(`❌ Preset "${preset}" error:`, error.message);
+      lastError = error.message;
+      
+      // If it's a network error, stop trying
+      if (error.message.includes('Network') || error.message.includes('fetch')) {
+        throw error;
+      }
+    }
   }
+
+  throw new Error(`All upload presets failed. Last error: ${lastError}. Please create an upload preset named "photography_upload" in Cloudinary.`);
 };
 
 export default uploadToCloudinary;
