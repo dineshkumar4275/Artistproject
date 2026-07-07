@@ -144,7 +144,6 @@ function Admin({
     const file = e.target.files[0];
     if (!file) return;
 
-    // Check if JPEG
     if (!file.type.includes('jpeg') && !file.type.includes('jpg')) {
       toast.error('Please select a JPEG image file');
       e.target.value = '';
@@ -156,7 +155,6 @@ function Admin({
 
     let finalFile = file;
     
-    // Compress if > 2MB (to avoid Vercel 4.5MB limit)
     if (fileSizeMB > 2) {
       setIsCompressing(true);
       const loadingId = toast.loading(`Compressing ${fileSizeMB.toFixed(1)}MB image...`);
@@ -176,7 +174,6 @@ function Admin({
       }
     }
 
-    // Check if still too large (> 4MB for Vercel safety)
     const finalSizeMB = finalFile.size / (1024 * 1024);
     if (finalSizeMB > 4) {
       toast.error(`Image too large (${finalSizeMB.toFixed(1)}MB). Please choose a smaller image.`);
@@ -186,7 +183,6 @@ function Admin({
     
     setPhotoFile(finalFile);
     
-    // Show preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setPhotoPreview(reader.result);
@@ -205,29 +201,34 @@ function Admin({
     setIsPhotoUploading(true);
     
     try {
-      // ✅ Step 1: Upload directly to Cloudinary from frontend
+      // Step 1: Upload to Cloudinary
       console.log('📤 Uploading to Cloudinary...');
       const cloudinaryResult = await uploadToCloudinary(photoFile, photoTitle.trim());
       console.log('✅ Cloudinary upload success:', cloudinaryResult);
       
-      // ✅ Step 2: Save to database
+      // Step 2: Save to database
       const token = localStorage.getItem('token');
+      const requestBody = {
+        title: photoTitle.trim(),
+        description: photoDescription.trim() || '',
+        cloudinary_id: cloudinaryResult.public_id,
+        url: cloudinaryResult.secure_url,
+        type: 'photography'
+      };
+      
+      console.log('📤 Saving to database:', requestBody);
+      
       const response = await fetch(`${API_BASE_URL}/images/photography/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          title: photoTitle.trim(),
-          description: photoDescription.trim(),
-          cloudinary_id: cloudinaryResult.public_id,
-          url: cloudinaryResult.secure_url,
-          type: 'photography'
-        })
+        body: JSON.stringify(requestBody)
       });
 
       const data = await response.json();
+      console.log('📊 Database response:', data);
       
       if (data.success || data.id) {
         // Clear form
@@ -240,21 +241,15 @@ function Admin({
         }
         toast.success(`✅ "${photoTitle.trim()}" uploaded successfully!`);
         
-        // Refresh photography images
+        // ✅ ONLY refresh, don't call addPhotographyImage again (causes duplicates)
         if (refreshPhotography) {
           refreshPhotography();
-        } else if (typeof addPhotographyImage === 'function') {
-          // Fallback: try to add via hook
-          const result = await addPhotographyImage(photoFile, photoTitle.trim());
-          if (result && result.success) {
-            toast.success(`✅ "${photoTitle.trim()}" uploaded to Photography!`);
-          }
         }
       } else {
         throw new Error(data.error || 'Save to database failed');
       }
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('❌ Upload error:', error);
       toast.error(error.message || 'Failed to upload photography image');
     } finally {
       setIsPhotoUploading(false);
@@ -575,8 +570,12 @@ function Admin({
                   <div className="admin-thumb">
                     <img src={img.url} alt={img.title} />
                   </div>
-                  <span className="admin-title">{img.title}</span>
-                  {img.description && <span className="admin-desc">{img.description}</span>}
+                  <div className="admin-info">
+                    <span className="admin-title">{img.title}</span>
+                    {img.description && (
+                      <span className="admin-desc">{img.description}</span>
+                    )}
+                  </div>
                   <span className="admin-badge">JPEG</span>
                   <button
                     className="btn-danger"
