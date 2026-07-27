@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+
+// Components
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Gallery from './components/Gallery';
@@ -12,140 +14,128 @@ import Login from './components/Login';
 import Loading from './components/Loading';
 import ToastProvider from './components/ToastProvider';
 import SEO from './components/SEO';
-import useImages from './hooks/useImages';
+
+// Hooks & API
+import { getImages, getPhotographyImages, deleteImage, deletePhotographyImage } from './services/api';
+import useLocalStorage from './hooks/useLocalStorage';
+import showToast from './utils/toastConfig';
 import './App.css';
 
 function App() {
-  const { images, loading, addImageFromFile, addImageFromUrl, removeImage, clearAllImages } = useImages();
-  const [currentPage, setCurrentPage] = useState('home');
-  const [isLoading, setIsLoading] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [photographyImages, setPhotographyImages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-  
+  const [currentPage, setCurrentPage] = useState('home');
+  const [isPageLoading, setIsPageLoading] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
-  const currentPageName = location.pathname.replace('/', '') || 'home';
 
-  // Check admin login status
+  // Load images
+  const loadImages = async () => {
+    setLoading(true);
+    try {
+      const [galleryData, photoData] = await Promise.all([
+        getImages(),
+        getPhotographyImages()
+      ]);
+      setGalleryImages(galleryData || []);
+      setPhotographyImages(photoData || []);
+    } catch (error) {
+      console.error('Failed to load images:', error);
+      showToast.error('Failed to load images');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check admin login
   useEffect(() => {
     const loggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
-    const loginTime = localStorage.getItem('adminLoginTime');
-    
-    if (loggedIn && loginTime) {
-      const timeDiff = Date.now() - parseInt(loginTime);
-      const hoursDiff = timeDiff / (1000 * 60 * 60);
-      
-      if (hoursDiff < 24) {
-        setIsAdminLoggedIn(true);
-      } else {
-        localStorage.removeItem('isAdminLoggedIn');
-        localStorage.removeItem('adminLoginTime');
-        setIsAdminLoggedIn(false);
-      }
-    }
+    setIsAdminLoggedIn(loggedIn);
   }, []);
 
+  useEffect(() => {
+    loadImages();
+  }, []);
+
+  // Navigation
   const handlePageChange = (page) => {
-    setIsLoading(true);
+    setIsPageLoading(true);
     navigate(`/${page === 'home' ? '' : page}`);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
+    setCurrentPage(page);
+    setTimeout(() => setIsPageLoading(false), 500);
   };
 
   const handleLogin = (status) => {
     setIsAdminLoggedIn(status);
-    if (status) {
-      navigate('/admin');
-    } else {
-      navigate('/');
-    }
+    if (status) navigate('/admin');
+    else navigate('/');
   };
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminLoggedIn');
-    localStorage.removeItem('adminLoginTime');
     setIsAdminLoggedIn(false);
     navigate('/');
   };
 
-  const getSEOData = () => {
-    const baseUrl = 'https://kameshfineart.com';
-    
-    switch(currentPageName) {
-      case 'home':
-        return {
-          title: 'kameshfineart - Art Studio & Photography Portfolio | Home',
-          description: 'Welcome to kameshfineart art studio. Explore stunning paintings, digital art, and photography. Discover unique artwork and creative expressions.',
-          keywords: 'art, paintings, digital art, photography, artist portfolio, kameshfineart, art studio, Chennai artist',
-          url: baseUrl
-        };
-      case 'gallery':
-        return {
-          title: 'Art Gallery - kameshfineart | Paintings & Digital Art',
-          description: 'Browse through the stunning art gallery of kameshfineart. View original paintings, digital artwork, and creative visual art pieces.',
-          keywords: 'art gallery, paintings, digital art, artwork, kameshfineart gallery, visual art, fine art',
-          url: `${baseUrl}/gallery`
-        };
-      case 'photography':
-        return {
-          title: 'Photography Portfolio - kameshfineart | Capturing Moments',
-          description: 'Explore the photography portfolio of kameshfineart. Stunning images capturing moments, landscapes, portraits, and creative photography.',
-          keywords: 'photography, photographer, portrait photography, landscape photography, kameshfineart photography',
-          url: `${baseUrl}/photography`
-        };
-      case 'about':
-        return {
-          title: 'About the Artist - kameshfineart | Visual Artist & Photographer',
-          description: 'Learn about kameshfineart, a visual artist and photographer based in Chennai. Discover the creative journey and artistic vision.',
-          keywords: 'artist bio, visual artist, photographer, digital artist, about kameshfineart',
-          url: `${baseUrl}/about`
-        };
-      case 'contact':
-        return {
-          title: 'Contact - kameshfineart | Get in Touch for Art & Photography',
-          description: 'Get in touch with kameshfineart for art commissions, photography services, or collaborations. We\'d love to hear from you.',
-          keywords: 'contact artist, art commissions, photography booking, kameshfineart contact',
-          url: `${baseUrl}/contact`
-        };
-      case 'admin':
-        return {
-          title: 'Admin Panel - kameshfineart',
-          description: 'Manage your gallery, add new artwork, and update your portfolio.',
-          keywords: 'admin, manage gallery, upload art, portfolio management',
-          url: `${baseUrl}/admin`
-        };
-      default:
-        return {
-          title: 'kameshfineart - Art Studio & Photography Portfolio',
-          description: 'Art and photography portfolio',
-          keywords: 'art, photography, portfolio',
-          url: baseUrl
-        };
+  // Delete functions for Admin
+  const handleDeleteGallery = async (id) => {
+    try {
+      await deleteImage(id);
+      setGalleryImages(prev => prev.filter(img => img.id !== id));
+      showToast.success('Image deleted');
+    } catch (error) {
+      showToast.error('Delete failed');
     }
   };
 
-  const seoData = getSEOData();
+  const handleDeletePhotography = async (id) => {
+    try {
+      await deletePhotographyImage(id);
+      setPhotographyImages(prev => prev.filter(img => img.id !== id));
+      showToast.success('Photography deleted');
+    } catch (error) {
+      showToast.error('Delete failed');
+    }
+  };
 
-  if (currentPageName === 'admin' && !isAdminLoggedIn) {
+  // Reorder photography (for Admin drag‑and‑drop)
+  const handleReorderPhotography = (newOrder) => {
+    setPhotographyImages(newOrder);
+    // Optionally persist to backend / localStorage
+  };
+
+  // Add image from URL (for Gallery)
+  const addImageFromUrl = async (url, title) => {
+    // This would call your API – implement if needed.
+    // For now, just refresh the gallery list after upload.
+    await loadImages();
+  };
+
+  // Determine current route
+  const currentRoute = location.pathname.replace('/', '') || 'home';
+
+  // Loading state
+  if (loading) {
     return (
       <div className="app">
-        <Helmet>
-          <title>Admin Login - kameshfineart</title>
-          <meta name="robots" content="noindex, nofollow" />
-        </Helmet>
-        <Navbar 
-          currentPage={currentPageName} 
-          setCurrentPage={handlePageChange}
-          isAdminLoggedIn={isAdminLoggedIn}
-          onLogout={handleLogout}
-        />
+        <Loading type="page" />
+      </div>
+    );
+  }
+
+  // Admin login screen
+  if (currentRoute === 'admin' && !isAdminLoggedIn) {
+    return (
+      <div className="app">
+        <Navbar currentPage="admin" setCurrentPage={handlePageChange} />
         <main className="container">
           <Login onLogin={handleLogin} />
         </main>
         <ToastProvider />
-        <footer className="footer">
-          <p>© 2026 kameshfineart · built with React</p>
-        </footer>
+        <footer className="footer">© 2026 kameshfineart</footer>
       </div>
     );
   }
@@ -154,55 +144,63 @@ function App() {
     <div className="app">
       <Helmet>
         <html lang="en" />
-        <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Helmet>
-      
       <SEO 
-        title={seoData.title}
-        description={seoData.description}
-        keywords={seoData.keywords}
-        url={seoData.url}
+        title="kameshfineart – Art & Photography"
+        description="Art and photography portfolio"
+        url="https://kameshfineart.com"
       />
 
       <Navbar 
-        currentPage={currentPageName} 
+        currentPage={currentRoute}
         setCurrentPage={handlePageChange}
         isAdminLoggedIn={isAdminLoggedIn}
         onLogout={handleLogout}
       />
-      
+
       <main className="container">
-        {isLoading ? (
+        {isPageLoading ? (
           <Loading type="page" />
         ) : (
           <Routes>
-            <Route path="/" element={<Home images={images} setCurrentPage={handlePageChange} />} />
-            <Route path="/home" element={<Home images={images} setCurrentPage={handlePageChange} />} />
-            <Route path="/gallery" element={<Gallery images={images} />} />
-            <Route path="/photography" element={<Photography images={images} />} />
-            <Route path="/about" element={<About imageCount={images.length} />} />
+            <Route path="/" element={
+              <Home 
+                images={galleryImages}
+                photographyImages={photographyImages}
+                setCurrentPage={handlePageChange}
+              />
+            } />
+            <Route path="/home" element={
+              <Home 
+                images={galleryImages}
+                photographyImages={photographyImages}
+                setCurrentPage={handlePageChange}
+              />
+            } />
+            <Route path="/gallery" element={<Gallery images={galleryImages} />} />
+            <Route path="/photography" element={<Photography images={photographyImages} />} />
+            <Route path="/about" element={<About imageCount={galleryImages.length + photographyImages.length} />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={
-              isAdminLoggedIn ? (
-                <Admin 
-                  images={images} 
-                  addImageFromFile={addImageFromFile}
-                  addImageFromUrl={addImageFromUrl}
-                  deleteImage={removeImage}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <Login onLogin={handleLogin} />
-              )
+              <Admin
+                images={galleryImages}
+                photographyImages={photographyImages}
+                addImageFromUrl={addImageFromUrl}
+                deleteImage={handleDeleteGallery}
+                deletePhotographyImage={handleDeletePhotography}
+                onReorderPhotography={handleReorderPhotography}
+                refreshPhotography={loadImages}
+                onLogout={handleLogout}
+              />
             } />
           </Routes>
         )}
       </main>
-      
+
       <ToastProvider />
-      
       <footer className="footer">
-        <p>© 2026 kameshfineart · built with React</p>
+        <p>© 2026 kameshfineart · All rights reserved</p>
       </footer>
     </div>
   );
