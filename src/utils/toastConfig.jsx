@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import useImages from '../hooks/useImages';
 export const defaultToastConfig = {
   position: "top-right",
   autoClose: 3000,
