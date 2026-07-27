@@ -3,7 +3,7 @@ import axios from 'axios';
 // Backend API URL
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  'https://api.kameshfineart.com';
+  'https://api.kameshfineart.com/api';
 
 console.log('🌐 API URL:', API_BASE_URL);
 
