@@ -1,29 +1,79 @@
-// frontend/src/components/Admin.js
 import React, { useState, useRef } from 'react';
-import { 
-  FaTrash, FaTrashAlt, FaSignOutAlt, 
-  FaLink, FaCloudUploadAlt, FaImage, FaCamera 
+import {
+  FaTrash, FaTrashAlt, FaSignOutAlt,
+  FaLink, FaCloudUploadAlt, FaImage, FaCamera, FaGripLines
 } from 'react-icons/fa';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import useToast from '../hooks/useToast';
 import { uploadPhotographyToNeon } from '../utils/uploadToNeonDB';
 import './Admin.css';
 
-function Admin({ 
-  images = [], 
-  addImageFromUrl, 
-  deleteImage,
+// ----- Sortable Item Component -----
+const SortablePhotoItem = ({ id, url, title, onDelete }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: 'grab',
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="admin-list-item">
+      <div className="admin-thumb">
+        <img src={url} alt={title} />
+      </div>
+      <div className="admin-info">
+        <span className="admin-title">{title}</span>
+      </div>
+      <button className="btn-danger" onClick={() => onDelete(id, title)}>
+        <FaTrash />
+      </button>
+    </div>
+  );
+};
+
+// ----- Main Admin Component -----
+function Admin({
+  images = [],
   photographyImages = [],
+  addImageFromUrl,
+  deleteImage,
   deletePhotographyImage,
+  onReorderPhotography,
+  refreshPhotography,
   onLogout,
-  refreshPhotography 
 }) {
-  // Gallery URL upload state
+  // Gallery state
   const [imageUrl, setImageUrl] = useState('');
   const [newImageTitle, setNewImageTitle] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
-  
-  // Photography file upload state
+
+  // Photography state
   const [photoFile, setPhotoFile] = useState(null);
   const [photoTitle, setPhotoTitle] = useState('');
   const [photoDescription, setPhotoDescription] = useState('');
@@ -32,10 +82,18 @@ function Admin({
   const [isCompressing, setIsCompressing] = useState(false);
   const [activeTab, setActiveTab] = useState('gallery');
   const fileInputRef = useRef(null);
-  
+
   const toast = useToast();
 
-  // ========== IMAGE COMPRESSION HELPER ==========
+  // Sensors for DnD
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // ----- Compression -----
   const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -47,7 +105,6 @@ function Admin({
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-
           if (width > maxWidth) {
             height = (height * maxWidth) / width;
             width = maxWidth;
@@ -56,14 +113,12 @@ function Admin({
             width = (width * maxHeight) / height;
             height = maxHeight;
           }
-
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
           ctx.drawImage(img, 0, 0, width, height);
-
           canvas.toBlob(
             (blob) => {
               if (blob) {
@@ -74,7 +129,7 @@ function Admin({
                 );
                 resolve(compressedFile);
               } else {
-                reject(new Error('Failed to compress image'));
+                reject(new Error('Failed to compress'));
               }
             },
             'image/jpeg',
@@ -87,168 +142,133 @@ function Admin({
     });
   };
 
-  // ========== GALLERY URL UPLOAD FUNCTIONS ==========
+  // ----- Gallery URL Upload -----
   const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
+    try { new URL(string); return true; } catch (_) { return false; }
   };
 
   const handleUrlChange = (e) => {
     const url = e.target.value;
     setImageUrl(url);
-    if (url && isValidUrl(url)) {
-      setPreviewUrl(url);
-    } else {
-      setPreviewUrl('');
-    }
+    setPreviewUrl(isValidUrl(url) ? url : '');
   };
 
   const handleGallerySubmit = async (e) => {
     e.preventDefault();
-    
-    if (imageUrl.trim() && newImageTitle.trim()) {
-      if (isValidUrl(imageUrl)) {
-        setIsUploading(true);
-        try {
-          if (typeof addImageFromUrl === 'function') {
-            await addImageFromUrl(imageUrl.trim(), newImageTitle.trim());
-            setImageUrl('');
-            setNewImageTitle('');
-            setPreviewUrl('');
-            toast.success('✅ Gallery image added successfully!');
-          } else {
-            toast.error('addImageFromUrl is not available');
-          }
-        } catch (error) {
-          console.error('Upload error:', error);
-          toast.error(error.message || 'Failed to add image');
-        } finally {
-          setIsUploading(false);
-        }
-      } else {
-        toast.error('Please enter a valid URL');
-      }
-    } else {
-      toast.warning('Please enter both URL and title');
+    if (!imageUrl.trim() || !newImageTitle.trim()) {
+      toast.warning('Please enter URL and title');
+      return;
+    }
+    if (!isValidUrl(imageUrl)) {
+      toast.error('Invalid URL');
+      return;
+    }
+    setIsUploading(true);
+    try {
+      await addImageFromUrl(imageUrl.trim(), newImageTitle.trim());
+      setImageUrl('');
+      setNewImageTitle('');
+      setPreviewUrl('');
+      toast.success('Gallery image added');
+    } catch (error) {
+      toast.error(error.message || 'Upload failed');
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  // ========== PHOTOGRAPHY UPLOAD - NEON DB ==========
+  // ----- Photography Upload (JPEG) -----
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     if (!file.type.includes('jpeg') && !file.type.includes('jpg')) {
-      toast.error('Please select a JPEG image file');
+      toast.error('Please select a JPEG image');
       e.target.value = '';
       return;
     }
-    
-    const fileSizeMB = file.size / (1024 * 1024);
-    console.log(`📁 Original file size: ${fileSizeMB.toFixed(2)} MB`);
-
     let finalFile = file;
-    
+    const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > 2) {
       setIsCompressing(true);
-      const loadingId = toast.loading(`Compressing ${fileSizeMB.toFixed(1)}MB image...`);
-      
+      const loadingId = toast.loading('Compressing...');
       try {
         finalFile = await compressImage(file, 1200, 1200, 0.85);
-        const compressedSizeMB = finalFile.size / (1024 * 1024);
-        console.log(`✅ Compressed: ${fileSizeMB.toFixed(2)}MB → ${compressedSizeMB.toFixed(2)}MB`);
         toast.dismissById(loadingId);
-        toast.success(`Image compressed to ${compressedSizeMB.toFixed(1)}MB`);
+        toast.success(`Compressed to ${(finalFile.size / 1024 / 1024).toFixed(1)}MB`);
       } catch (error) {
-        console.error('Compression error:', error);
         toast.dismissById(loadingId);
-        toast.warning('Could not compress image. Uploading original.');
+        toast.warning('Compression failed, uploading original');
       } finally {
         setIsCompressing(false);
       }
     }
-
     const finalSizeMB = finalFile.size / (1024 * 1024);
     if (finalSizeMB > 10) {
-      toast.error(`Image too large (${finalSizeMB.toFixed(1)}MB). Please choose a smaller image.`);
+      toast.error(`Image too large (${finalSizeMB.toFixed(1)}MB)`);
       e.target.value = '';
       return;
     }
-    
     setPhotoFile(finalFile);
-    
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setPhotoPreview(reader.result);
-    };
+    reader.onloadend = () => setPhotoPreview(reader.result);
     reader.readAsDataURL(finalFile);
   };
 
   const handlePhotographySubmit = async (e) => {
     e.preventDefault();
-    
     if (!photoFile || !photoTitle.trim()) {
-      toast.warning('Please select an image and enter a title');
+      toast.warning('Select image and enter title');
       return;
     }
-
     setIsPhotoUploading(true);
-    
     try {
-      console.log('📤 Uploading to Neon DB...');
       const result = await uploadPhotographyToNeon(
-        photoFile, 
-        photoTitle.trim(), 
+        photoFile,
+        photoTitle.trim(),
         photoDescription.trim()
       );
-      
-      console.log('✅ Upload result:', result);
-      
       if (result.success || result.id) {
-        // Clear form
         setPhotoFile(null);
         setPhotoTitle('');
         setPhotoDescription('');
         setPhotoPreview('');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-        toast.success(`✅ "${photoTitle.trim()}" uploaded successfully!`);
-        
-        // Refresh photography images
-        if (refreshPhotography) {
-          refreshPhotography();
-        }
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        toast.success(`"${photoTitle.trim()}" uploaded to Photography`);
+        if (refreshPhotography) refreshPhotography();
       } else {
         throw new Error(result.error || 'Upload failed');
       }
     } catch (error) {
-      console.error('❌ Upload error:', error);
-      toast.error(error.message || 'Failed to upload photography image');
+      toast.error(error.message || 'Upload failed');
     } finally {
       setIsPhotoUploading(false);
     }
   };
 
-  // ========== DELETE FUNCTIONS ==========
+  // ----- Drag‑and‑Drop handler -----
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      const oldIndex = photographyImages.findIndex((img) => img.id === active.id);
+      const newIndex = photographyImages.findIndex((img) => img.id === over.id);
+      const newOrder = arrayMove(photographyImages, oldIndex, newIndex);
+      if (onReorderPhotography) {
+        onReorderPhotography(newOrder);
+      }
+      // Optionally save to backend or localStorage
+      // localStorage.setItem('photographyOrder', JSON.stringify(newOrder.map(img => img.id)));
+    }
+  };
+
+  // ----- Delete handlers -----
   const handleDeleteGallery = (id, title) => {
     toast.dangerConfirm(
       `Delete "${title}"?`,
       () => {
-        if (typeof deleteImage === 'function') {
-          deleteImage(id);
-          toast.success(`✅ "${title}" deleted successfully!`);
-        } else {
-          toast.error('Delete function not available');
-        }
+        deleteImage(id);
+        toast.success(`"${title}" deleted`);
       },
-      () => {
-        toast.info(`ℹ️ "${title}" was not deleted`);
-      }
+      () => toast.info(`"${title}" kept`)
     );
   };
 
@@ -256,187 +276,129 @@ function Admin({
     toast.dangerConfirm(
       `Delete "${title}"?`,
       () => {
-        if (typeof deletePhotographyImage === 'function') {
-          deletePhotographyImage(id);
-          toast.success(`✅ "${title}" deleted from Photography!`);
-        } else {
-          toast.error('Delete function not available');
-        }
+        deletePhotographyImage(id);
+        toast.success(`"${title}" deleted from Photography`);
       },
-      () => {
-        toast.info(`ℹ️ "${title}" was not deleted`);
-      }
+      () => toast.info(`"${title}" kept`)
     );
   };
 
+  // ----- Clear All -----
   const handleClearAll = (type) => {
     const items = type === 'gallery' ? images : photographyImages;
     const deleteFn = type === 'gallery' ? deleteImage : deletePhotographyImage;
-    const itemName = type === 'gallery' ? 'gallery' : 'photography';
-    
     if (items.length === 0) {
-      toast.info(`No ${itemName} photos to delete`);
+      toast.info(`No ${type} photos`);
       return;
     }
-    
     toast.dangerConfirm(
-      `Delete all ${items.length} photos?`,
+      `Delete all ${items.length} ${type} photos?`,
       () => {
-        if (typeof deleteFn === 'function') {
-          items.forEach(img => deleteFn(img.id));
-          toast.success(`✅ All ${items.length} photos deleted successfully!`);
-        } else {
-          toast.error('Delete function not available');
-        }
+        items.forEach(img => deleteFn(img.id));
+        toast.success(`All ${type} photos deleted`);
       },
-      () => {
-        toast.info('ℹ️ No photos were deleted');
-      }
+      () => toast.info('No photos deleted')
     );
   };
 
+  // ----- Logout -----
   const handleLogout = () => {
-    toast.info('👋 Logging out...');
+    toast.info('Logging out...');
     localStorage.removeItem('isAdminLoggedIn');
-    localStorage.removeItem('adminLoginTime');
     setTimeout(() => {
-      if (typeof onLogout === 'function') {
-        onLogout();
-      } else {
-        window.location.href = '/';
-      }
+      if (onLogout) onLogout();
+      else window.location.href = '/';
     }, 500);
   };
 
+  // Sample URLs for quick fill
   const sampleUrls = [
     'https://res.cloudinary.com/dj5limxeb/image/upload/v1782916298/Mother_a3sahc.jpg',
     'https://picsum.photos/seed/1/800/600',
     'https://picsum.photos/seed/2/800/600',
   ];
 
-  const fillSampleUrl = (url) => {
-    setImageUrl(url);
-    setPreviewUrl(url);
-    setActiveTab('gallery');
-  };
-
   return (
     <section className="admin-page">
       <div className="admin-header">
         <h2 className="page-title">Admin Panel</h2>
         <button className="logout-btn" onClick={handleLogout}>
-          <FaSignOutAlt /> <span>Logout</span>
+          <FaSignOutAlt /> Logout
         </button>
       </div>
 
-      {/* ===== TABS ===== */}
+      {/* Tabs */}
       <div className="admin-tabs">
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`}
           onClick={() => setActiveTab('gallery')}
         >
-          <FaImage /> Gallery ({images ? images.length : 0})
+          <FaImage /> Gallery ({images.length})
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'photography' ? 'active' : ''}`}
           onClick={() => setActiveTab('photography')}
         >
-          <FaCamera /> Photography ({photographyImages ? photographyImages.length : 0})
+          <FaCamera /> Photography ({photographyImages.length})
         </button>
       </div>
 
-      {/* ===== GALLERY TAB ===== */}
+      {/* Gallery Tab */}
       {activeTab === 'gallery' && (
         <div className="admin-card gallery-card">
-          <div className="card-header">
-            <FaImage className="card-icon" />
-            <h3>Gallery</h3>
-            <span className="badge">{images ? images.length : 0}</span>
-          </div>
-          <p className="card-subtitle">Add images via URL</p>
-          
+          <h3>Add Gallery Image via URL</h3>
           <form onSubmit={handleGallerySubmit} className="admin-form">
-            <div className="url-upload-container">
-              <input
-                type="url"
-                placeholder="Enter image URL"
-                value={imageUrl}
-                onChange={handleUrlChange}
-                required
-                disabled={isUploading}
-                className="url-input"
-              />
-              <div className="sample-urls">
-                <span className="sample-label">Quick:</span>
-                {sampleUrls.map((url, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className="sample-url-btn"
-                    onClick={() => fillSampleUrl(url)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
+            <input
+              type="url"
+              placeholder="Image URL"
+              value={imageUrl}
+              onChange={handleUrlChange}
+              disabled={isUploading}
+              className="url-input"
+            />
+            <div className="sample-urls">
+              <span>Quick:</span>
+              {sampleUrls.map((url, i) => (
+                <button type="button" key={i} onClick={() => { setImageUrl(url); setPreviewUrl(url); }}>
+                  Sample {i+1}
+                </button>
+              ))}
             </div>
-            
             {previewUrl && (
               <div className="image-preview">
                 <img src={previewUrl} alt="Preview" />
               </div>
             )}
-            
-            <div className="form-row">
-              <input
-                type="text"
-                placeholder="Image Title"
-                value={newImageTitle}
-                onChange={(e) => setNewImageTitle(e.target.value)}
-                required
-                disabled={isUploading}
-                className="title-input"
-              />
-              
-              <button 
-                type="submit" 
-                className="btn-primary"
-                disabled={isUploading}
-              >
-                {isUploading ? (
-                  <span className="spinner"></span>
-                ) : (
-                  <>
-                    <FaLink /> Add
-                  </>
-                )}
-              </button>
-            </div>
+            <input
+              type="text"
+              placeholder="Image Title"
+              value={newImageTitle}
+              onChange={(e) => setNewImageTitle(e.target.value)}
+              disabled={isUploading}
+            />
+            <button type="submit" className="btn-primary" disabled={isUploading}>
+              {isUploading ? <span className="spinner"></span> : <><FaLink /> Add</>}
+            </button>
           </form>
-          
           <div className="admin-stats">
-            <span>Total: <strong>{images ? images.length : 0}</strong></span>
-            {images && images.length > 0 && (
+            <span>Total: <strong>{images.length}</strong></span>
+            {images.length > 0 && (
               <button className="btn-clear" onClick={() => handleClearAll('gallery')}>
                 <FaTrashAlt /> Clear All
               </button>
             )}
           </div>
-          
           <div className="admin-list">
-            {images && images.length === 0 ? (
-              <p className="empty-message">No photos in gallery</p>
+            {images.length === 0 ? (
+              <p className="empty-message">No gallery images</p>
             ) : (
-              images && images.map(img => (
+              images.map(img => (
                 <div key={img.id} className="admin-list-item">
                   <div className="admin-thumb">
                     <img src={img.url} alt={img.title} />
                   </div>
                   <span className="admin-title">{img.title}</span>
-                  <button
-                    className="btn-danger"
-                    onClick={() => handleDeleteGallery(img.id, img.title)}
-                  >
+                  <button className="btn-danger" onClick={() => handleDeleteGallery(img.id, img.title)}>
                     <FaTrash />
                   </button>
                 </div>
@@ -446,16 +408,10 @@ function Admin({
         </div>
       )}
 
-      {/* ===== PHOTOGRAPHY TAB ===== */}
+      {/* Photography Tab with Drag‑and‑Drop */}
       {activeTab === 'photography' && (
         <div className="admin-card photography-card">
-          <div className="card-header">
-            <FaCamera className="card-icon" />
-            <h3>Photography</h3>
-            <span className="badge">{photographyImages ? photographyImages.length : 0}</span>
-          </div>
-          <p className="card-subtitle">Upload JPEG images (Stored in Neon DB)</p>
-          
+          <h3>Upload Photography (JPEG)</h3>
           <form onSubmit={handlePhotographySubmit} className="admin-form">
             <div className="file-upload-container">
               <input
@@ -464,105 +420,76 @@ function Admin({
                 accept="image/jpeg,image/jpg"
                 onChange={handleFileChange}
                 ref={fileInputRef}
-                required
-                className="file-input"
                 disabled={isPhotoUploading || isCompressing}
+                className="file-input"
               />
               <label htmlFor="photoUpload" className={`file-label ${isPhotoUploading || isCompressing ? 'disabled' : ''}`}>
                 <FaCloudUploadAlt />
-                <span className="file-text">
-                  {isCompressing ? '🔄 Compressing...' : photoFile ? photoFile.name : 'Choose JPEG image...'}
-                </span>
+                {isCompressing ? '🔄 Compressing...' : photoFile ? photoFile.name : 'Choose JPEG'}
                 {photoFile && !isCompressing && (
-                  <span className="file-size">
-                    ({(photoFile.size / 1024 / 1024).toFixed(2)} MB)
-                  </span>
+                  <span className="file-size">({(photoFile.size / 1024 / 1024).toFixed(2)} MB)</span>
                 )}
               </label>
-              <p className="file-hint">📌 JPEG only | Max 10MB | Stored in Neon DB</p>
             </div>
-            
             {photoPreview && (
               <div className="image-preview">
                 <img src={photoPreview} alt="Preview" />
               </div>
             )}
-            
-            <div className="form-row">
-              <input
-                type="text"
-                placeholder="Photo Title *"
-                value={photoTitle}
-                onChange={(e) => setPhotoTitle(e.target.value)}
-                required
-                disabled={isPhotoUploading}
-                className="title-input"
-              />
-            </div>
-            
-            <div className="form-row">
-              <input
-                type="text"
-                placeholder="Photo Description (optional)"
-                value={photoDescription}
-                onChange={(e) => setPhotoDescription(e.target.value)}
-                disabled={isPhotoUploading}
-                className="title-input"
-              />
-            </div>
-            
-            <div className="form-row">
-              <button 
-                type="submit" 
-                className="btn-primary photography-btn"
-                disabled={isPhotoUploading || isCompressing || !photoFile}
-              >
-                {isPhotoUploading ? (
-                  <span className="spinner"></span>
-                ) : isCompressing ? (
-                  '🔄 Compressing...'
-                ) : (
-                  <>
-                    <FaCloudUploadAlt /> Upload to Photography
-                  </>
-                )}
-              </button>
-            </div>
+            <input
+              type="text"
+              placeholder="Photo Title *"
+              value={photoTitle}
+              onChange={(e) => setPhotoTitle(e.target.value)}
+              disabled={isPhotoUploading}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Description (optional)"
+              value={photoDescription}
+              onChange={(e) => setPhotoDescription(e.target.value)}
+              disabled={isPhotoUploading}
+            />
+            <button type="submit" className="btn-primary" disabled={isPhotoUploading || isCompressing || !photoFile}>
+              {isPhotoUploading ? <span className="spinner"></span> : <><FaCloudUploadAlt /> Upload</>}
+            </button>
           </form>
-          
+
           <div className="admin-stats">
-            <span>Total: <strong>{photographyImages ? photographyImages.length : 0}</strong></span>
-            {photographyImages && photographyImages.length > 0 && (
+            <span>Total: <strong>{photographyImages.length}</strong></span>
+            {photographyImages.length > 0 && (
               <button className="btn-clear" onClick={() => handleClearAll('photography')}>
                 <FaTrashAlt /> Clear All
               </button>
             )}
           </div>
-          
+
+          <h4>Drag to reorder</h4>
           <div className="admin-list">
-            {photographyImages && photographyImages.length === 0 ? (
-              <p className="empty-message">No photos in photography</p>
+            {photographyImages.length === 0 ? (
+              <p className="empty-message">No photography images</p>
             ) : (
-              photographyImages && photographyImages.map(img => (
-                <div key={img.id} className="admin-list-item">
-                  <div className="admin-thumb">
-                    <img src={img.url} alt={img.title} />
-                  </div>
-                  <div className="admin-info">
-                    <span className="admin-title">{img.title}</span>
-                    {img.description && (
-                      <span className="admin-desc">{img.description}</span>
-                    )}
-                  </div>
-                  <span className="admin-badge">JPEG</span>
-                  <button
-                    className="btn-danger"
-                    onClick={() => handleDeletePhotography(img.id, img.title)}
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={photographyImages.map(img => img.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {photographyImages.map((img) => (
+                    <SortablePhotoItem
+                      key={img.id}
+                      id={img.id}
+                      url={img.url}
+                      title={img.title}
+                      onDelete={(id, title) => handleDeletePhotography(id, title)}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
             )}
           </div>
         </div>

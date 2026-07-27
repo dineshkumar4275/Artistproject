@@ -232,3 +232,13 @@ export const deleteAllImages = async () => {
 };
 
 export default api;
+// Add to api.js
+export const getPhotographyImages = async () => {
+  const response = await api.get('/images/photography');
+  return response.data;
+};
+
+export const deletePhotographyImage = async (id) => {
+  const response = await api.delete(`/images/photography/${id}`);
+  return response.data;
+};
