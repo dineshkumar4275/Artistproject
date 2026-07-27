@@ -1,15 +1,13 @@
-// frontend/src/services/api.js
 import axios from 'axios';
 
 // Backend API URL
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   'https://artistproject-backend.vercel.app/api';
-  
 
 console.log('🌐 API URL:', API_BASE_URL);
 
-// ✅ Secret key for URL uploads
+// Secret key for URL uploads
 const UPLOAD_SECRET = import.meta.env.VITE_UPLOAD_SECRET || 'my-super-secret-upload-key-2026-xyz789';
 
 const api = axios.create({
@@ -38,7 +36,6 @@ export const authAPI = {
       throw error.response?.data || { success: false, error: error.message };
     }
   },
-  
   register: async (userData) => {
     try {
       const response = await api.post('/auth/register', userData);
@@ -48,7 +45,6 @@ export const authAPI = {
       throw error.response?.data || { success: false, error: error.message };
     }
   },
-  
   logout: async () => {
     try {
       localStorage.removeItem('token');
@@ -62,7 +58,6 @@ export const authAPI = {
       throw error.response?.data || { success: false, error: error.message };
     }
   },
-  
   getCurrentUser: async () => {
     try {
       const token = localStorage.getItem('token');
@@ -79,7 +74,7 @@ export const authAPI = {
 };
 
 // =======================
-// GET ALL GALLERY IMAGES
+// GALLERY IMAGES
 // =======================
 export const getImages = async () => {
   try {
@@ -91,36 +86,6 @@ export const getImages = async () => {
   }
 };
 
-// =======================
-// GET PHOTOGRAPHY IMAGES (with URL fix)
-// =======================
-export const getPhotographyImages = async () => {
-  try {
-    const response = await api.get('/images/photography');
-    const data = response.data;
-    
-    // ✅ Fix: Convert relative URLs to full URLs
-    const fixedData = data.map(img => {
-      if (img.url && img.url.startsWith('/api/')) {
-        return {
-          ...img,
-          url: `${API_BASE_URL}${img.url}`,
-          imageUrl: `${API_BASE_URL}${img.url}`
-        };
-      }
-      return img;
-    });
-    
-    return fixedData;
-  } catch (error) {
-    console.error('❌ Error fetching photography images:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// UPLOAD GALLERY IMAGE FILE
-// =======================
 export const uploadImageFile = async (file, title) => {
   const formData = new FormData();
   formData.append('image', file);
@@ -142,13 +107,9 @@ export const uploadImageFile = async (file, title) => {
   }
 };
 
-// =======================
-// UPLOAD GALLERY IMAGE USING URL
-// =======================
 export const uploadImageByUrl = async (imageUrl, title) => {
   try {
     console.log('📤 Uploading image by URL:', imageUrl);
-    
     const response = await api.post('/images/url', {
       imageUrl,
       title,
@@ -156,7 +117,6 @@ export const uploadImageByUrl = async (imageUrl, title) => {
       isFeatured: false,
       secret: UPLOAD_SECRET
     });
-    
     console.log('✅ Upload successful:', response.data);
     return response.data;
   } catch (error) {
@@ -166,9 +126,63 @@ export const uploadImageByUrl = async (imageUrl, title) => {
   }
 };
 
+export const deleteImage = async (id) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.delete(`/images/${id}`, {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : undefined,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error deleting image:', error);
+    throw error.response?.data || { success: false, error: error.message };
+  }
+};
+
+export const deleteAllImages = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.delete('/images', {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : undefined,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error deleting all images:', error);
+    throw error.response?.data || { success: false, error: error.message };
+  }
+};
+
 // =======================
-// UPLOAD PHOTOGRAPHY IMAGE - JPEG ONLY
+// PHOTOGRAPHY IMAGES
 // =======================
+export const getPhotographyImages = async () => {
+  try {
+    const response = await api.get('/images/photography');
+    const data = response.data;
+    
+    // Fix relative URLs to absolute
+    const fixedData = data.map(img => {
+      if (img.url && img.url.startsWith('/api/')) {
+        return {
+          ...img,
+          url: `${API_BASE_URL}${img.url}`,
+          imageUrl: `${API_BASE_URL}${img.url}`
+        };
+      }
+      return img;
+    });
+    
+    return fixedData;
+  } catch (error) {
+    console.error('❌ Error fetching photography images:', error);
+    throw error.response?.data || { success: false, error: error.message };
+  }
+};
+
 export const uploadPhotographyImage = async (file, title) => {
   const formData = new FormData();
   formData.append('image', file);
@@ -197,49 +211,21 @@ export const uploadPhotographyImage = async (file, title) => {
 };
 
 // =======================
-// DELETE SINGLE IMAGE
+// DELETE PHOTOGRAPHY IMAGE
 // =======================
-export const deleteImage = async (id) => {
+export const deletePhotographyImage = async (id) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await api.delete(`/images/${id}`, {
+    const response = await api.delete(`/images/photography/${id}`, {
       headers: {
         'Authorization': token ? `Bearer ${token}` : undefined,
       },
     });
     return response.data;
   } catch (error) {
-    console.error('❌ Error deleting image:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// DELETE ALL IMAGES
-// =======================
-export const deleteAllImages = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await api.delete('/images', {
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : undefined,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error deleting all images:', error);
+    console.error('❌ Error deleting photography image:', error);
     throw error.response?.data || { success: false, error: error.message };
   }
 };
 
 export default api;
-// Add to api.js
-export const getPhotographyImages = async () => {
-  const response = await api.get('/images/photography');
-  return response.data;
-};
-
-export const deletePhotographyImage = async (id) => {
-  const response = await api.delete(`/images/photography/${id}`);
-  return response.data;
-};
