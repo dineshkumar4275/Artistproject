@@ -1,6 +1,6 @@
-// frontend/src/components/Photography.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight, FaTimes, FaExpand } from 'react-icons/fa';
+import SEO from './SEO';
 import './Photography.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
@@ -14,19 +14,6 @@ function Photography({ images }) {
   const [touchEnd, setTouchEnd] = useState(0);
   const [imageErrors, setImageErrors] = useState({});
 
-  useEffect(() => {
-    if (images && images.length > 0) {
-      images.forEach(img => {
-        const imgObj = new Image();
-        const src = getImageUrl(img);
-        if (src) {
-          imgObj.src = src;
-        }
-      });
-    }
-  }, [images]);
-
-  // Group images into rows of 2
   const imagePairs = [];
   for (let i = 0; i < images.length; i += 2) {
     imagePairs.push({
@@ -35,36 +22,25 @@ function Photography({ images }) {
     });
   }
 
-  // ✅ Get full image URL
- // frontend/src/components/Photography.jsx - Update getImageUrl
-
-const getImageUrl = (image) => {
-  if (!image) return "";
-  
-  // If there's a direct URL, use it
-  if (image.url) {
-    // If it's a relative URL starting with /api/, make it absolute
-    if (image.url.startsWith('/api/')) {
-      return `${API_BASE_URL}${image.url}`;
+  const getImageUrl = (image) => {
+    if (!image) return "";
+    if (image.url) {
+      if (image.url.startsWith('/api/')) {
+        return `${API_BASE_URL}${image.url}`;
+      }
+      return image.url;
     }
-    return image.url;
-  }
-  
-  // If there's an imageUrl, use it
-  if (image.imageUrl) {
-    if (image.imageUrl.startsWith('/api/')) {
-      return `${API_BASE_URL}${image.imageUrl}`;
+    if (image.imageUrl) {
+      if (image.imageUrl.startsWith('/api/')) {
+        return `${API_BASE_URL}${image.imageUrl}`;
+      }
+      return image.imageUrl;
     }
-    return image.imageUrl;
-  }
-  
-  // If we have an ID, construct the URL
-  if (image.id) {
-    return `${API_BASE_URL}/images/photography/image/${image.id}`;
-  }
-  
-  return "";
-};
+    if (image.id) {
+      return `${API_BASE_URL}/images/photography/image/${image.id}`;
+    }
+    return "";
+  };
 
   const getThumbnailUrl = (image) => {
     const url = getImageUrl(image);
@@ -89,7 +65,6 @@ const getImageUrl = (image) => {
   };
 
   const handleImageError = (id) => {
-    console.error('❌ Image failed to load:', id);
     setImageErrors(prev => ({ ...prev, [id]: true }));
   };
 
@@ -124,7 +99,7 @@ const getImageUrl = (image) => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isModalOpen, currentIndex, images.length]);
+  }, [isModalOpen, currentIndex]);
 
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -148,87 +123,51 @@ const getImageUrl = (image) => {
   };
 
   return (
-    <section className="page photography-page">
-      <h2 className="page-title">Photography</h2>
-      
-      {images.length === 0 ? (
-        <p className="empty-message">No photography images yet. Upload via the Admin panel.</p>
-      ) : (
-        <>
-          <div className="photography-pairs">
-            {imagePairs.map((pair, index) => (
-              <div key={index} className="photography-pair">
-                {/* Left Image */}
-                <div className="photography-image-wrapper left-image">
-                  <div className="photography-image-container" onClick={() => openModal(pair.left, getImageIndex(pair.left))}>
-                    {!loadingImages[pair.left.id] && !imageErrors[pair.left.id] && (
-                      <div className="image-placeholder-loading">
-                        <div className="image-loading-spinner"></div>
-                      </div>
-                    )}
-                    {imageErrors[pair.left.id] ? (
-                      <div className="image-error-placeholder">
-                        <span>⚠️ Image not available</span>
-                      </div>
-                    ) : (
-                      <img
-                        src={getThumbnailUrl(pair.left)}
-                        alt={pair.left.title || 'Photography'}
-                        loading="eager"
-                        className={`photography-image ${
-                          loadingImages[pair.left.id] ? "image-fade-in" : ""
-                        }`}
-                        onLoad={() => handleImageLoad(pair.left.id)}
-                        onError={() => handleImageError(pair.left.id)}
-                        style={{
-                          display: loadingImages[pair.left.id] && !imageErrors[pair.left.id] ? "block" : "none",
-                        }}
-                      />
-                    )}
-                    <div className="photography-image-overlay">
-                      <h3>{pair.left.title || 'Untitled'}</h3>
-                      {pair.left.description && (
-                        <p className="photography-description">{pair.left.description}</p>
-                      )}
-                      <span className="view-hint">
-                        <FaExpand /> Click to view
-                      </span>
-                    </div>
-                  </div>
-                </div>
+    <>
+      <SEO 
+        title="Photography Portfolio - kameshfineart | Capturing Moments"
+        description="Explore the photography portfolio of kameshfineart. Stunning images capturing moments, landscapes, portraits, and creative photography."
+        keywords="photography, photographer, portrait photography, landscape photography, kameshfineart"
+        url="https://kameshfineart.com/photography"
+      />
 
-                {/* Right Image */}
-                {pair.right && (
-                  <div className="photography-image-wrapper right-image">
-                    <div className="photography-image-container" onClick={() => openModal(pair.right, getImageIndex(pair.right))}>
-                      {!loadingImages[pair.right.id] && !imageErrors[pair.right.id] && (
+      <section className="page photography-page">
+        <h2 className="page-title">Photography</h2>
+        
+        {images.length === 0 ? (
+          <p className="empty-message">No photography images yet. Upload via the Admin panel.</p>
+        ) : (
+          <>
+            <div className="photography-pairs">
+              {imagePairs.map((pair, index) => (
+                <div key={index} className="photography-pair">
+                  {/* Left Image */}
+                  <div className="photography-image-wrapper left-image">
+                    <div className="photography-image-container" onClick={() => openModal(pair.left, getImageIndex(pair.left))}>
+                      {!loadingImages[pair.left.id] && !imageErrors[pair.left.id] && (
                         <div className="image-placeholder-loading">
                           <div className="image-loading-spinner"></div>
                         </div>
                       )}
-                      {imageErrors[pair.right.id] ? (
+                      {imageErrors[pair.left.id] ? (
                         <div className="image-error-placeholder">
                           <span>⚠️ Image not available</span>
                         </div>
                       ) : (
                         <img
-                          src={getThumbnailUrl(pair.right)}
-                          alt={pair.right.title || 'Photography'}
+                          src={getThumbnailUrl(pair.left)}
+                          alt={pair.left.title || 'Photography'}
                           loading="eager"
-                          className={`photography-image ${
-                            loadingImages[pair.right.id] ? "image-fade-in" : ""
-                          }`}
-                          onLoad={() => handleImageLoad(pair.right.id)}
-                          onError={() => handleImageError(pair.right.id)}
-                          style={{
-                            display: loadingImages[pair.right.id] && !imageErrors[pair.right.id] ? "block" : "none",
-                          }}
+                          className={`photography-image ${loadingImages[pair.left.id] ? "image-fade-in" : ""}`}
+                          onLoad={() => handleImageLoad(pair.left.id)}
+                          onError={() => handleImageError(pair.left.id)}
+                          style={{ display: loadingImages[pair.left.id] && !imageErrors[pair.left.id] ? "block" : "none" }}
                         />
                       )}
                       <div className="photography-image-overlay">
-                        <h3>{pair.right.title || 'Untitled'}</h3>
-                        {pair.right.description && (
-                          <p className="photography-description">{pair.right.description}</p>
+                        <h3>{pair.left.title || 'Untitled'}</h3>
+                        {pair.left.description && (
+                          <p className="photography-description">{pair.left.description}</p>
                         )}
                         <span className="view-hint">
                           <FaExpand /> Click to view
@@ -236,78 +175,114 @@ const getImageUrl = (image) => {
                       </div>
                     </div>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
 
-          <div className="photography-indicator">
-            {images.length} {images.length === 1 ? 'Photo' : 'Photos'}
-          </div>
-        </>
-      )}
-
-      {/* Modal for full image view */}
-      {isModalOpen && selectedImage && (
-        <div 
-          className="photography-modal" 
-          onClick={closeModal}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div className="photography-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={closeModal}>
-              <FaTimes />
-            </button>
-            
-            {images.length > 1 && (
-              <>
-                <button 
-                  className="modal-nav modal-nav-left" 
-                  onClick={(e) => { e.stopPropagation(); navigateImage(-1); }}
-                  disabled={currentIndex === 0}
-                >
-                  <FaChevronLeft />
-                </button>
-                <button 
-                  className="modal-nav modal-nav-right" 
-                  onClick={(e) => { e.stopPropagation(); navigateImage(1); }}
-                  disabled={currentIndex === images.length - 1}
-                >
-                  <FaChevronRight />
-                </button>
-              </>
-            )}
-            
-            <div className="modal-image-wrapper">
-              <img
-                src={getFullImageUrl(selectedImage)}
-                alt={selectedImage.title || 'Photography'}
-                className="modal-image"
-                loading="eager"
-                onError={(e) => {
-                  console.error('Modal image error:', selectedImage.id);
-                  e.target.src = "https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found";
-                }}
-              />
+                  {/* Right Image */}
+                  {pair.right && (
+                    <div className="photography-image-wrapper right-image">
+                      <div className="photography-image-container" onClick={() => openModal(pair.right, getImageIndex(pair.right))}>
+                        {!loadingImages[pair.right.id] && !imageErrors[pair.right.id] && (
+                          <div className="image-placeholder-loading">
+                            <div className="image-loading-spinner"></div>
+                          </div>
+                        )}
+                        {imageErrors[pair.right.id] ? (
+                          <div className="image-error-placeholder">
+                            <span>⚠️ Image not available</span>
+                          </div>
+                        ) : (
+                          <img
+                            src={getThumbnailUrl(pair.right)}
+                            alt={pair.right.title || 'Photography'}
+                            loading="eager"
+                            className={`photography-image ${loadingImages[pair.right.id] ? "image-fade-in" : ""}`}
+                            onLoad={() => handleImageLoad(pair.right.id)}
+                            onError={() => handleImageError(pair.right.id)}
+                            style={{ display: loadingImages[pair.right.id] && !imageErrors[pair.right.id] ? "block" : "none" }}
+                          />
+                        )}
+                        <div className="photography-image-overlay">
+                          <h3>{pair.right.title || 'Untitled'}</h3>
+                          {pair.right.description && (
+                            <p className="photography-description">{pair.right.description}</p>
+                          )}
+                          <span className="view-hint">
+                            <FaExpand /> Click to view
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
 
-            <div className="modal-info">
-              <div className="modal-info-left">
-                <span className="modal-number">
-                  {currentIndex + 1} / {images.length}
-                </span>
-                <h3>{selectedImage.title || 'Untitled'}</h3>
-                {selectedImage.description && (
-                  <p className="modal-description">{selectedImage.description}</p>
-                )}
+            <div className="photography-indicator">
+              {images.length} {images.length === 1 ? 'Photo' : 'Photos'}
+            </div>
+          </>
+        )}
+
+        {/* Modal */}
+        {isModalOpen && selectedImage && (
+          <div 
+            className="photography-modal" 
+            onClick={closeModal}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className="photography-modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="modal-close" onClick={closeModal}>
+                <FaTimes />
+              </button>
+              
+              {images.length > 1 && (
+                <>
+                  <button 
+                    className="modal-nav modal-nav-left" 
+                    onClick={(e) => { e.stopPropagation(); navigateImage(-1); }}
+                    disabled={currentIndex === 0}
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  <button 
+                    className="modal-nav modal-nav-right" 
+                    onClick={(e) => { e.stopPropagation(); navigateImage(1); }}
+                    disabled={currentIndex === images.length - 1}
+                  >
+                    <FaChevronRight />
+                  </button>
+                </>
+              )}
+              
+              <div className="modal-image-wrapper">
+                <img
+                  src={getFullImageUrl(selectedImage)}
+                  alt={selectedImage.title || 'Photography'}
+                  className="modal-image"
+                  loading="eager"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found";
+                  }}
+                />
+              </div>
+
+              <div className="modal-info">
+                <div className="modal-info-left">
+                  <span className="modal-number">
+                    {currentIndex + 1} / {images.length}
+                  </span>
+                  <h3>{selectedImage.title || 'Untitled'}</h3>
+                  {selectedImage.description && (
+                    <p className="modal-description">{selectedImage.description}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </section>
+        )}
+      </section>
+    </>
   );
 }
 

@@ -1,4 +1,3 @@
-// frontend/src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -13,29 +12,11 @@ import Login from './components/Login';
 import Loading from './components/Loading';
 import ToastProvider from './components/ToastProvider';
 import SEO from './components/SEO';
-import useImages from './utils/useImages';
-import usePhotographyImages from './utils/usePhotographyImages';
+import useImages from './hooks/useImages';
 import './App.css';
 
 function App() {
-  // Gallery images (URL uploads)
-  const { 
-    images, 
-    loading, 
-    addImageFromUrl, 
-    removeImage, 
-    clearAllImages 
-  } = useImages();
-  
-  // Photography images (JPG file uploads)
-  const { 
-    photographyImages, 
-    photographyLoading, 
-    addPhotographyImage, 
-    removePhotographyImage, 
-    clearAllPhotographyImages 
-  } = usePhotographyImages();
-  
+  const { images, loading, addImageFromFile, addImageFromUrl, removeImage, clearAllImages } = useImages();
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoading, setIsLoading] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -88,54 +69,54 @@ function App() {
   };
 
   const getSEOData = () => {
-    const baseUrl = 'https://framora.com';
+    const baseUrl = 'https://kameshfineart.com';
     
     switch(currentPageName) {
       case 'home':
         return {
-          title: 'FRAMORA - Art Studio & Photography Portfolio',
-          description: 'Explore stunning art and photography by FRAMORA.',
-          keywords: 'art, photography, portfolio, artist, gallery, visual art',
+          title: 'kameshfineart - Art Studio & Photography Portfolio | Home',
+          description: 'Welcome to kameshfineart art studio. Explore stunning paintings, digital art, and photography. Discover unique artwork and creative expressions.',
+          keywords: 'art, paintings, digital art, photography, artist portfolio, kameshfineart, art studio, Chennai artist',
           url: baseUrl
         };
       case 'gallery':
         return {
-          title: 'Gallery - FRAMORA Art Portfolio',
-          description: 'Browse through our collection of stunning art and photography.',
-          keywords: 'art gallery, photography gallery, portfolio, artwork',
+          title: 'Art Gallery - kameshfineart | Paintings & Digital Art',
+          description: 'Browse through the stunning art gallery of kameshfineart. View original paintings, digital artwork, and creative visual art pieces.',
+          keywords: 'art gallery, paintings, digital art, artwork, kameshfineart gallery, visual art, fine art',
           url: `${baseUrl}/gallery`
         };
       case 'photography':
         return {
-          title: 'Photography - FRAMORA Art Studio',
-          description: 'Explore stunning photography collection by FRAMORA.',
-          keywords: 'photography, photo gallery, visual art, photographs',
+          title: 'Photography Portfolio - kameshfineart | Capturing Moments',
+          description: 'Explore the photography portfolio of kameshfineart. Stunning images capturing moments, landscapes, portraits, and creative photography.',
+          keywords: 'photography, photographer, portrait photography, landscape photography, kameshfineart photography',
           url: `${baseUrl}/photography`
         };
       case 'about':
         return {
-          title: 'About the Artist - FRAMORA',
-          description: 'Learn about the artist behind FRAMORA.',
-          keywords: 'artist bio, visual artist, photographer, digital artist',
+          title: 'About the Artist - kameshfineart | Visual Artist & Photographer',
+          description: 'Learn about kameshfineart, a visual artist and photographer based in Chennai. Discover the creative journey and artistic vision.',
+          keywords: 'artist bio, visual artist, photographer, digital artist, about kameshfineart',
           url: `${baseUrl}/about`
         };
       case 'contact':
         return {
-          title: 'Contact - FRAMORA Art Studio',
-          description: 'Get in touch with FRAMORA for commissions or collaborations.',
-          keywords: 'contact artist, art commissions, photography booking',
+          title: 'Contact - kameshfineart | Get in Touch for Art & Photography',
+          description: 'Get in touch with kameshfineart for art commissions, photography services, or collaborations. We\'d love to hear from you.',
+          keywords: 'contact artist, art commissions, photography booking, kameshfineart contact',
           url: `${baseUrl}/contact`
         };
       case 'admin':
         return {
-          title: 'Admin Panel - FRAMORA',
-          description: 'Manage your gallery and portfolio.',
-          keywords: 'admin, manage gallery, upload art',
+          title: 'Admin Panel - kameshfineart',
+          description: 'Manage your gallery, add new artwork, and update your portfolio.',
+          keywords: 'admin, manage gallery, upload art, portfolio management',
           url: `${baseUrl}/admin`
         };
       default:
         return {
-          title: 'FRAMORA - Art Studio',
+          title: 'kameshfineart - Art Studio & Photography Portfolio',
           description: 'Art and photography portfolio',
           keywords: 'art, photography, portfolio',
           url: baseUrl
@@ -145,12 +126,12 @@ function App() {
 
   const seoData = getSEOData();
 
-  // If not logged in and trying to access admin
   if (currentPageName === 'admin' && !isAdminLoggedIn) {
     return (
       <div className="app">
         <Helmet>
-          <title>Admin Login - FRAMORA</title>
+          <title>Admin Login - kameshfineart</title>
+          <meta name="robots" content="noindex, nofollow" />
         </Helmet>
         <Navbar 
           currentPage={currentPageName} 
@@ -163,7 +144,7 @@ function App() {
         </main>
         <ToastProvider />
         <footer className="footer">
-          <p>© 2026 FRAMORA · built with React</p>
+          <p>© 2026 kameshfineart · built with React</p>
         </footer>
       </div>
     );
@@ -195,49 +176,25 @@ function App() {
           <Loading type="page" />
         ) : (
           <Routes>
-            {/* ✅ FIXED: Pass photographyImages to Home component */}
-            <Route 
-              path="/" 
-              element={
-                <Home 
-                  images={images} 
-                  photographyImages={photographyImages}
-                  setCurrentPage={handlePageChange} 
-                />
-              } 
-            />
-            <Route 
-              path="/home" 
-              element={
-                <Home 
-                  images={images} 
-                  photographyImages={photographyImages}
-                  setCurrentPage={handlePageChange} 
-                />
-              } 
-            />
+            <Route path="/" element={<Home images={images} setCurrentPage={handlePageChange} />} />
+            <Route path="/home" element={<Home images={images} setCurrentPage={handlePageChange} />} />
             <Route path="/gallery" element={<Gallery images={images} />} />
-            <Route path="/photography" element={<Photography images={photographyImages} />} />
-            <Route path="/about" element={<About imageCount={images.length + photographyImages.length} />} />
+            <Route path="/photography" element={<Photography images={images} />} />
+            <Route path="/about" element={<About imageCount={images.length} />} />
             <Route path="/contact" element={<Contact />} />
-            <Route 
-              path="/admin" 
-              element={
-                isAdminLoggedIn ? (
-                  <Admin 
-                    images={images} 
-                    addImageFromUrl={addImageFromUrl}
-                    deleteImage={removeImage}
-                    photographyImages={photographyImages}
-                    addPhotographyImage={addPhotographyImage}
-                    deletePhotographyImage={removePhotographyImage}
-                    onLogout={handleLogout}
-                  />
-                ) : (
-                  <Login onLogin={handleLogin} />
-                )
-              } 
-            />
+            <Route path="/admin" element={
+              isAdminLoggedIn ? (
+                <Admin 
+                  images={images} 
+                  addImageFromFile={addImageFromFile}
+                  addImageFromUrl={addImageFromUrl}
+                  deleteImage={removeImage}
+                  onLogout={handleLogout}
+                />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            } />
           </Routes>
         )}
       </main>
@@ -245,7 +202,7 @@ function App() {
       <ToastProvider />
       
       <footer className="footer">
-        <p>© 2026 FRAMORA · built with React</p>
+        <p>© 2026 kameshfineart · built with React</p>
       </footer>
     </div>
   );

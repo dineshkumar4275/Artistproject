@@ -1,0 +1,29 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Redirect to HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Redirect www to non-www (or vice versa)
+RewriteCond %{HTTP_HOST} ^www\.kameshfineart\.com [NC]
+RewriteRule ^(.*)$ https://kameshfineart.com/$1 [R=301,L]
+
+# Remove trailing slashes
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [R=301,L]
+
+# Cache static files
+<FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot|webp)$">
+  Header set Cache-Control "max-age=31536000, public"
+</FilesMatch>
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# Prevent directory listing
+Options -Indexes
+
+# Custom error pages
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
