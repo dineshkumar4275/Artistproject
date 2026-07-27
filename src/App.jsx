@@ -16,8 +16,7 @@ import ToastProvider from './components/ToastProvider';
 import SEO from './components/SEO';
 
 // Hooks & API
-import { getImages, getPhotographyImages, deleteImage, deletePhotographyImage } from './services/api';
-import useLocalStorage from './hooks/useLocalStorage';
+import { getImages, getPhotographyImages, deleteImage, deletePhotographyImage, uploadImageByUrl } from './services/api';
 import showToast from './utils/toastConfig';
 import './App.css';
 
@@ -80,12 +79,12 @@ function App() {
     navigate('/');
   };
 
-  // Delete functions for Admin
+  // Delete functions
   const handleDeleteGallery = async (id) => {
     try {
       await deleteImage(id);
       setGalleryImages(prev => prev.filter(img => img.id !== id));
-      showToast.success('Image deleted');
+      showToast.success('Gallery image deleted');
     } catch (error) {
       showToast.error('Delete failed');
     }
@@ -95,23 +94,35 @@ function App() {
     try {
       await deletePhotographyImage(id);
       setPhotographyImages(prev => prev.filter(img => img.id !== id));
-      showToast.success('Photography deleted');
+      showToast.success('Photography image deleted');
     } catch (error) {
       showToast.error('Delete failed');
     }
   };
 
-  // Reorder photography (for Admin drag‑and‑drop)
-  const handleReorderPhotography = (newOrder) => {
-    setPhotographyImages(newOrder);
-    // Optionally persist to backend / localStorage
+  // Reorder handlers for drag-and-drop
+  const handleReorderGallery = (newOrder) => {
+    setGalleryImages(newOrder);
+    // Optionally persist to backend or localStorage
+    // localStorage.setItem('galleryOrder', JSON.stringify(newOrder.map(img => img.id)));
   };
 
-  // Add image from URL (for Gallery)
+  const handleReorderPhotography = (newOrder) => {
+    setPhotographyImages(newOrder);
+    // Optionally persist to backend or localStorage
+    // localStorage.setItem('photographyOrder', JSON.stringify(newOrder.map(img => img.id)));
+  };
+
+  // Add gallery image from URL (used by Admin)
   const addImageFromUrl = async (url, title) => {
-    // This would call your API – implement if needed.
-    // For now, just refresh the gallery list after upload.
-    await loadImages();
+    try {
+      await uploadImageByUrl(url, title);
+      showToast.success('Image added successfully');
+      await loadImages(); // Refresh the list
+    } catch (error) {
+      showToast.error(error.message || 'Failed to add image');
+      throw error;
+    }
   };
 
   // Determine current route
@@ -146,13 +157,13 @@ function App() {
         <html lang="en" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Helmet>
-      <SEO 
+      <SEO
         title="kameshfineart – Art & Photography"
         description="Art and photography portfolio"
         url="https://kameshfineart.com"
       />
 
-      <Navbar 
+      <Navbar
         currentPage={currentRoute}
         setCurrentPage={handlePageChange}
         isAdminLoggedIn={isAdminLoggedIn}
@@ -164,36 +175,46 @@ function App() {
           <Loading type="page" />
         ) : (
           <Routes>
-            <Route path="/" element={
-              <Home 
-                images={galleryImages}
-                photographyImages={photographyImages}
-                setCurrentPage={handlePageChange}
-              />
-            } />
-            <Route path="/home" element={
-              <Home 
-                images={galleryImages}
-                photographyImages={photographyImages}
-                setCurrentPage={handlePageChange}
-              />
-            } />
+            <Route
+              path="/"
+              element={
+                <Home
+                  images={galleryImages}
+                  photographyImages={photographyImages}
+                  setCurrentPage={handlePageChange}
+                />
+              }
+            />
+            <Route
+              path="/home"
+              element={
+                <Home
+                  images={galleryImages}
+                  photographyImages={photographyImages}
+                  setCurrentPage={handlePageChange}
+                />
+              }
+            />
             <Route path="/gallery" element={<Gallery images={galleryImages} />} />
             <Route path="/photography" element={<Photography images={photographyImages} />} />
             <Route path="/about" element={<About imageCount={galleryImages.length + photographyImages.length} />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={
-              <Admin
-                images={galleryImages}
-                photographyImages={photographyImages}
-                addImageFromUrl={addImageFromUrl}
-                deleteImage={handleDeleteGallery}
-                deletePhotographyImage={handleDeletePhotography}
-                onReorderPhotography={handleReorderPhotography}
-                refreshPhotography={loadImages}
-                onLogout={handleLogout}
-              />
-            } />
+            <Route
+              path="/admin"
+              element={
+                <Admin
+                  images={galleryImages}
+                  photographyImages={photographyImages}
+                  addImageFromUrl={addImageFromUrl}
+                  deleteImage={handleDeleteGallery}
+                  deletePhotographyImage={handleDeletePhotography}
+                  onReorderGallery={handleReorderGallery}
+                  onReorderPhotography={handleReorderPhotography}
+                  refreshPhotography={loadImages}
+                  onLogout={handleLogout}
+                />
+              }
+            />
           </Routes>
         )}
       </main>
