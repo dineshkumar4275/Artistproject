@@ -78,7 +78,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
                   <img
                     src={getImageUrl(img)}
                     alt={`${img.title} | Kamesh Fine Art`}
-                    loading="lazy"
+                    loading={getImageIndex(pair.right) < 16 ? "eager" : "lazy"}
                     width="600"
                     height="600"
                   />
