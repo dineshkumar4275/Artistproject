@@ -1,109 +1,62 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FaExpand, FaEnvelope, FaPhone, FaMapMarkerAlt, 
-  FaInstagram, FaBehance, FaLinkedin, FaCamera,
-  FaWhatsapp
+  FaInstagram, FaBehance, FaLinkedin, FaCamera 
 } from 'react-icons/fa';
 import './Home.css';
-import SEO from './SEO';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
 
-function Home({ images = [], photographyImages = [], setCurrentPage }) {
+function Home({ images, photographyImages = [], setCurrentPage }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loadedImages, setLoadedImages] = useState({});
 
-  // ===== MEMOIZED FEATURED IMAGES =====
-  const featuredImages = useMemo(() => images.slice(0, 8), [images]);
-  const featuredPhotography = useMemo(() => photographyImages.slice(0, 4), [photographyImages]);
+  const featuredImages = images.slice(0, 8);
+  const featuredPhotography = photographyImages.slice(0, 4);
 
-  // ===== IMAGE URL OPTIMIZATION =====
-  const getImageUrl = useCallback((image) => {
-    if (!image) return '';
-    if (image.url?.startsWith('/api/')) {
-      return `${API_BASE_URL}${image.url}`;
-    }
-    return image.url || image.imageUrl || '';
-  }, []);
-
-  // ===== CLOUDINARY OPTIMIZATION =====
-  const optimizeImage = useCallback((url, width = 600) => {
-    if (!url) return '';
-    if (url.includes('cloudinary.com') || url.includes('res.cloudinary.com')) {
-      const parts = url.split('/upload/');
-      if (parts.length === 2) {
-        return `${parts[0]}/upload/f_auto,q_auto:good,w_${width},c_limit,dpr_auto/${parts[1]}`;
-      }
-    }
-    return url;
-  }, []);
-
-  // ===== GET IMAGE INDEX =====
-  const getImageIndex = useCallback((image) => {
-    if (!image) return -1;
-    return images.findIndex(img => img.id === image.id);
-  }, [images]);
-
-  // ===== MODAL FUNCTIONS =====
-  const openModal = useCallback((image) => {
+  const openModal = (image) => {
     setSelectedImage(image);
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
-  }, []);
+  };
 
-  const closeModal = useCallback(() => {
+  const closeModal = () => {
     setIsModalOpen(false);
     setSelectedImage(null);
     document.body.style.overflow = 'auto';
-  }, []);
+  };
 
-  // ===== KEYBOARD ESCAPE =====
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (isModalOpen && e.key === 'Escape') closeModal();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isModalOpen, closeModal]);
+  }, [isModalOpen]);
 
-  // ===== HANDLE IMAGE LOAD =====
-  const handleImageLoad = useCallback((id) => {
-    setLoadedImages(prev => ({ ...prev, [id]: true }));
-  }, []);
-
-  // ===== WHATSAPP LINK =====
-  const whatsappNumber = '919345933994';
-  const whatsappMessage = 'Hi Kamesh, I would like to know more about your art!';
-  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-
-  // ===== TOTAL WORKS =====
-  const totalWorks = images.length + photographyImages.length;
+  const getImageUrl = (image) => {
+    if (!image) return '';
+    if (image.url?.startsWith('/api/')) {
+      return `${API_BASE_URL}${image.url}`;
+    }
+    return image.url || image.imageUrl || '';
+  };
 
   return (
     <div className="home-page">
-      {/* ===== SEO - MOVED TO TOP ===== */}
-      <SEO
-        page="home"
-        title="Kamesh Fine Art | Original Paintings, Portraits & Photography"
-        description="Kamesh Fine Art - Original paintings, realistic portraits, sketches and fine art photography by artist Kamesh from Chennai, Tamil Nadu, India."
-        url="https://www.kameshfineart.com/"
-        image="https://www.kameshfineart.com/assets/og-image.jpg"
-      />
-
-      {/* ===== HERO SECTION ===== */}
-      <section className="hero-section" aria-label="Hero banner">
+      {/* Hero Section */}
+      <section className="hero-section">
         <div className="hero">
-          <h1>Kamesh Fine Art</h1>
-          <p>
-            Original Fine Art, Realistic Portraits, Sketches and Photography by
-            artist Kamesh.
-          </p>
+          <h1>Welcome to <strong>kameshfineart</strong></h1>
+          <p>Capturing moments, creating stories — explore the gallery.</p>
+          <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
+            View Gallery →
+          </button>
         </div>
       </section>
 
-      {/* ===== FEATURED GALLERY ===== */}
-      <section className="home-gallery-section" aria-label="Featured gallery">
+      {/* Featured Gallery */}
+      <section className="home-gallery-section">
         <div className="section-header">
           <h2>Featured Gallery</h2>
           <p>Explore our latest works</p>
@@ -112,82 +65,37 @@ function Home({ images = [], photographyImages = [], setCurrentPage }) {
           <p className="empty-message">No images yet. Add some via the Admin panel.</p>
         ) : (
           <div className="featured-grid">
-            {featuredImages.map((img, index) => {
-              const imgIndex = getImageIndex(img);
-              const isPriority = index < 4;
-              const imageUrl = getImageUrl(img);
-              const optimizedUrl = optimizeImage(imageUrl, 600);
-              
-              return (
-                <div 
-                  key={img.id} 
-                  className="featured-card" 
-                  onClick={() => openModal(img)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`View ${img.title || 'artwork'}`}
-                  onKeyDown={(e) => e.key === 'Enter' && openModal(img)}
-                >
-                  <div className="featured-image-wrapper">
-                    {!loadedImages[img.id] && (
-                      <div className="image-placeholder-loading">
-                        <div className="image-loading-spinner"></div>
-                      </div>
-                    )}
-                    <img
-                      src={optimizedUrl}
-                      alt={`${img.title || 'Artwork'} - Original painting by Kamesh Fine Art`}
-                      title={`${img.title || 'Artwork'} by Kamesh Fine Art`}
-                      loading={isPriority ? "eager" : "lazy"}
-                      fetchPriority={isPriority ? "high" : "auto"}
-                      decoding="async"
-                      width="600"
-                      height="600"
-                      className={`gallery-image ${loadedImages[img.id] ? 'image-fade-in' : ''}`}
-                      onLoad={() => handleImageLoad(img.id)}
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/600x600/1c1c1c/c9ad93?text=Image+Not+Found';
-                        handleImageLoad(img.id);
-                      }}
-                      style={{
-                        display: loadedImages[img.id] ? 'block' : 'none',
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
-                    />
+            {featuredImages.map((img) => (
+              <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
+                <div className="featured-image-wrapper">
+                  <img src={getImageUrl(img)} alt={img.title} />
+                  <div className="featured-overlay">
+                    <span className="featured-number">#{img.id}</span>
+                    <h3>{img.title}</h3>
+                    <span className="featured-hint">
+                      <FaExpand /> Click to enlarge
+                    </span>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         )}
         <div className="view-all-wrapper">
-          <button 
-            className="btn-primary" 
-            onClick={() => setCurrentPage('gallery')}
-            aria-label="View all gallery artworks"
-          >
+          <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
             View All Gallery →
           </button>
         </div>
       </section>
 
-      {/* ===== FEATURED VIDEO ===== */}
-      <section className="featured-video-section" aria-label="Featured video">
+      {/* Featured Video */}
+      <section className="featured-video-section">
         <div className="section-header">
           <h2>Featured Video</h2>
           <p>Watch our latest artwork showcase</p>
         </div>
         <div className="video-container">
-          <video 
-            className="featured-video" 
-            controls 
-            playsInline 
-            preload="metadata"
-            aria-label="Artwork showcase video"
-            poster="/assets/video-poster.jpg"
-          >
+          <video className="featured-video" controls playsInline preload="metadata">
             <source
               src="https://res.cloudinary.com/dj5limxeb/video/upload/v1783353086/WhatsApp_Video_2026-07-04_at_5.18.58_PM_gb6q45_ydzrql.mp4"
               type="video/mp4"
@@ -197,78 +105,39 @@ function Home({ images = [], photographyImages = [], setCurrentPage }) {
         </div>
       </section>
 
-      {/* ===== PHOTOGRAPHY SECTION ===== */}
-      <section className="home-photography-section" aria-label="Featured photography">
+      {/* Photography Section */}
+      <section className="home-photography-section">
         <div className="section-header">
-          <h2><FaCamera aria-hidden="true" /> Photography</h2>
+          <h2><FaCamera /> Photography</h2>
           <p>Explore our stunning photography collection</p>
         </div>
         {featuredPhotography.length === 0 ? (
           <p className="empty-message">No photography images yet. Upload via the Admin panel.</p>
         ) : (
           <div className="photography-featured-grid">
-            {featuredPhotography.map((img, index) => {
-              const isPriority = index < 2;
-              const imageUrl = getImageUrl(img);
-              const optimizedUrl = optimizeImage(imageUrl, 600);
-              
-              return (
-                <div 
-                  key={img.id} 
-                  className="photography-featured-card" 
-                  onClick={() => openModal(img)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`View ${img.title || 'photograph'}`}
-                  onKeyDown={(e) => e.key === 'Enter' && openModal(img)}
-                >
-                  <div className="photography-featured-image-wrapper">
-                    {!loadedImages[img.id] && (
-                      <div className="image-placeholder-loading">
-                        <div className="image-loading-spinner"></div>
-                      </div>
-                    )}
-                    <img
-                      src={optimizedUrl}
-                      alt={`${img.title || 'Photograph'} - Fine art photography by Kamesh Fine Art`}
-                      title={`${img.title || 'Photograph'} by Kamesh Fine Art`}
-                      loading={isPriority ? "eager" : "lazy"}
-                      fetchPriority={isPriority ? "high" : "auto"}
-                      decoding="async"
-                      width="600"
-                      height="600"
-                      className={`gallery-image ${loadedImages[img.id] ? 'image-fade-in' : ''}`}
-                      onLoad={() => handleImageLoad(img.id)}
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/600x600/1c1c1c/8b6b4f?text=Photo+Not+Found';
-                        handleImageLoad(img.id);
-                      }}
-                      style={{
-                        display: loadedImages[img.id] ? 'block' : 'none',
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
-                    />
-                  </div>
+            {featuredPhotography.map((img) => (
+              <div key={img.id} className="photography-featured-card" onClick={() => openModal(img)}>
+                <div className="photography-featured-image-wrapper">
+                  <img src={getImageUrl(img)} alt={img.title} />
                 </div>
-              );
-            })}
+                <div className="photography-featured-overlay">
+                  <span className="photography-badge">📸</span>
+                  <h3>{img.title}</h3>
+                  {img.description && <p className="photography-featured-desc">{img.description}</p>}
+                </div>
+              </div>
+            ))}
           </div>
         )}
         <div className="view-all-wrapper">
-          <button 
-            className="btn-primary photography-btn" 
-            onClick={() => setCurrentPage('photography')}
-            aria-label="View all photography"
-          >
-            <FaCamera aria-hidden="true" /> View All Photography →
+          <button className="btn-primary photography-btn" onClick={() => setCurrentPage('photography')}>
+            <FaCamera /> View All Photography →
           </button>
         </div>
       </section>
 
-      {/* ===== ABOUT SECTION ===== */}
-      <section className="home-about-section" aria-label="About the artist">
+      {/* About Section */}
+      <section className="home-about-section">
         <div className="section-header">
           <h2>About the Artist</h2>
           <p>Learn more about my journey</p>
@@ -285,23 +154,19 @@ function Home({ images = [], photographyImages = [], setCurrentPage }) {
           </p>
           <div className="about-stats">
             <span>📸 10+ years</span>
-            <span>🖼️ {totalWorks} works</span>
+            <span>🖼️ {images.length + photographyImages.length} works</span>
             <span>🌎 exhibited internationally</span>
           </div>
           <div className="about-button-wrapper">
-            <button 
-              className="btn-primary" 
-              onClick={() => setCurrentPage('about')}
-              aria-label="Read more about the artist"
-            >
+            <button className="btn-primary" onClick={() => setCurrentPage('about')}>
               Read More →
             </button>
           </div>
         </div>
       </section>
 
-      {/* ===== CONTACT SECTION ===== */}
-      <section className="home-contact-section" aria-label="Contact information">
+      {/* Contact Section */}
+      <section className="home-contact-section">
         <div className="section-header">
           <h2>Get in Touch</h2>
           <p>I'd love to hear from you</p>
@@ -309,26 +174,24 @@ function Home({ images = [], photographyImages = [], setCurrentPage }) {
         <div className="contact-card-wrapper">
           <div className="contact-card">
             <p>
-              <FaEnvelope aria-hidden="true" /> 
+              <FaEnvelope /> 
               <a href="mailto:kameshfineart@gmail.com" className="contact-link">
                 kameshfineart@gmail.com
               </a>
             </p>
             <p>
-              <FaPhone aria-hidden="true" /> 
+              <FaPhone /> 
               <a href="tel:+919345933994" className="contact-link">
                 +91 93459 33994
               </a>
             </p>
-            <p><FaMapMarkerAlt aria-hidden="true" /> Chennai, Tamil Nadu, India</p>
-            
-            {/* ===== SOCIAL LINKS ===== */}
+            <p><FaMapMarkerAlt /> Chennai, Tamil Nadu</p>
             <div className="social-links">
               <a 
                 href="https://www.instagram.com/urbaninkpen?igsh=MTlwbDgzdDgxd2xyMQ%3D%3D&utm_source=qr" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                aria-label="Follow Kamesh Fine Art on Instagram"
+                aria-label="Instagram"
               >
                 <FaInstagram />
               </a>
@@ -336,7 +199,7 @@ function Home({ images = [], photographyImages = [], setCurrentPage }) {
                 href="https://www.behance.net/kameshfineart" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                aria-label="View Kamesh Fine Art on Behance"
+                aria-label="Behance"
               >
                 <FaBehance />
               </a>
@@ -344,18 +207,13 @@ function Home({ images = [], photographyImages = [], setCurrentPage }) {
                 href="https://www.linkedin.com/in/kamesh-p-a89abb267?utm_source=share_via&utm_content=profile&utm_medium=member_android" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                aria-label="Connect with Kamesh on LinkedIn"
+                aria-label="LinkedIn"
               >
                 <FaLinkedin />
               </a>
             </div>
-            
             <div className="contact-button-wrapper">
-              <button 
-                className="btn-primary" 
-                onClick={() => setCurrentPage('contact')}
-                aria-label="Go to contact page"
-              >
+              <button className="btn-primary" onClick={() => setCurrentPage('contact')}>
                 Contact Me →
               </button>
             </div>
@@ -363,55 +221,20 @@ function Home({ images = [], photographyImages = [], setCurrentPage }) {
         </div>
       </section>
 
-      {/* ===== WHATSAPP FLOATING BUTTON ===== */}
-      <a
-        href={whatsappLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="whatsapp-float-btn"
-        aria-label="Chat with Kamesh on WhatsApp"
-      >
-        <FaWhatsapp aria-hidden="true" />
-        <span className="whatsapp-tooltip">Chat with me</span>
-      </a>
-
-      {/* ===== IMAGE MODAL ===== */}
+      {/* Modal for enlarged image */}
       {isModalOpen && selectedImage && (
-        <div 
-          className="image-modal" 
-          onClick={closeModal}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Image viewer"
-        >
+        <div className="image-modal" onClick={closeModal}>
           <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button 
-              className="modal-close" 
-              onClick={closeModal}
-              aria-label="Close image viewer"
-            >
-              ✕
-            </button>
+            <button className="modal-close" onClick={closeModal}>✕</button>
             <img 
-              src={optimizeImage(getImageUrl(selectedImage), 1200)} 
-              alt={`${selectedImage.title || 'Artwork'} by Kamesh Fine Art`}
-              title={`${selectedImage.title || 'Artwork'} by Kamesh Fine Art`}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              width="1200"
-              height="1200"
+              src={getImageUrl(selectedImage)} 
+              alt={selectedImage.title}
               onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/1200x1200/1c1c1c/c9ad93?text=Image+Not+Found';
-              }}
-              style={{
-                maxWidth: '90vw',
-                maxHeight: '85vh',
-                objectFit: 'contain'
+                e.target.src = 'https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found';
               }}
             />
             <div className="modal-info">
-              <h3>{selectedImage.title || 'Untitled'}</h3>
+              <h3>{selectedImage.title}</h3>
               <span className="modal-number">#{selectedImage.id}</span>
             </div>
           </div>
