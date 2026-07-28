@@ -185,7 +185,7 @@ const getImageUrl = (image) => {
                         }}
                       />
                     )}
-                    <div className="photography-image-overlay">
+                    {/* <div className="photography-image-overlay">
                       <h3>{pair.left.title || 'Untitled'}</h3>
                       {pair.left.description && (
                         <p className="photography-description">{pair.left.description}</p>
@@ -193,7 +193,7 @@ const getImageUrl = (image) => {
                       <span className="view-hint">
                         <FaExpand /> Click to view
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -225,7 +225,7 @@ const getImageUrl = (image) => {
                           }}
                         />
                       )}
-                      <div className="photography-image-overlay">
+                      {/* <div className="photography-image-overlay">
                         <h3>{pair.right.title || 'Untitled'}</h3>
                         {pair.right.description && (
                           <p className="photography-description">{pair.right.description}</p>
@@ -233,7 +233,7 @@ const getImageUrl = (image) => {
                         <span className="view-hint">
                           <FaExpand /> Click to view
                         </span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 )}
