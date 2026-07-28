@@ -10,6 +10,48 @@ function Gallery({ images }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [visibleImages, setVisibleImages] = useState(new Set());
+
+  // ===== LAZY LOAD WITH INTERSECTION OBSERVER =====
+  const imageRefs = useRef({});
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    // Intersection Observer for lazy loading
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.dataset.id;
+            if (id) {
+              setVisibleImages(prev => new Set([...prev, id]));
+              // Unobserve after loaded
+              observerRef.current.unobserve(entry.target);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '200px', // Load 200px before visible
+        threshold: 0.01
+      }
+    );
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Register image elements for lazy loading
+  useEffect(() => {
+    Object.values(imageRefs.current).forEach((el) => {
+      if (el && observerRef.current) {
+        observerRef.current.observe(el);
+      }
+    });
+  }, [images]);
 
   const imagePairs = [];
   for (let i = 0; i < images.length; i += 2) {
@@ -77,29 +119,56 @@ function Gallery({ images }) {
     return images.findIndex(img => img.id === image.id);
   };
 
+  // ===== OPTIMIZED IMAGE URL =====
   const optimizeImage = (url, width = 800) => {
     if (!url) return "";
+    
+    // Cloudinary optimization with WebP
     if (url.includes("cloudinary.com")) {
-      return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+      return url.replace(
+        "/upload/", 
+        `/upload/f_auto,q_auto:low,w_${width},c_scale/`
+      );
+    }
+    
+    // For other URLs, try to use smaller size
+    if (url.includes("res.cloudinary.com")) {
+      return url.replace(
+        "/upload/", 
+        `/upload/f_auto,q_auto:eco,w_${width},c_scale/`
+      );
+    }
+    
+    return url;
+  };
+
+  // ===== BLUR UP PREVIEW =====
+  const getBlurImage = (url) => {
+    if (!url) return "";
+    if (url.includes("cloudinary.com")) {
+      return url.replace(
+        "/upload/", 
+        `/upload/f_auto,q_auto:low,w_40,c_scale/`
+      );
     }
     return url;
   };
 
   return (
     <>
-   <SEO
-  title="Kamesh Fine Art Gallery | Original Paintings, Portraits & Artwork"
-  description="Explore the Kamesh Fine Art gallery featuring original paintings, realistic portraits, sketches, digital art and creative visual artworks."
-  keywords="Kamesh Fine Art, Art Gallery, Paintings, Portraits, Sketches, Digital Art, Chennai Artist"
-  url="https://www.kameshfineart.com/gallery"
-/>
+      <SEO
+        title="Kamesh Fine Art Gallery | Original Paintings, Portraits & Artwork"
+        description="Explore the Kamesh Fine Art gallery featuring original paintings, realistic portraits, sketches, digital art and creative visual artworks."
+        keywords="Kamesh Fine Art, Art Gallery, Paintings, Portraits, Sketches, Digital Art, Chennai Artist"
+        url="https://www.kameshfineart.com/gallery"
+      />
 
       <section className="page gallery-page">
         <h1 className="page-title">Kamesh Fine Art Gallery</h1>
         <p className="gallery-intro">
-  Browse original paintings, portraits, sketches and fine art created by
-  Kamesh Fine Art.
-</p>
+          Browse original paintings, portraits, sketches and fine art created by
+          Kamesh Fine Art.
+        </p>
         
         {images.length === 0 ? (
           <p className="empty-message">No images yet. Add some via the Admin panel.</p>
@@ -110,23 +179,63 @@ function Gallery({ images }) {
                 <div key={index} className="gallery-pair">
                   {/* Left Image */}
                   <div className="gallery-image-wrapper left-image">
-                    <div className="gallery-image-container" onClick={() => openModal(pair.left, getImageIndex(pair.left))}>
+                    <div 
+                      className="gallery-image-container" 
+                      onClick={() => openModal(pair.left, getImageIndex(pair.left))}
+                    >
+                      {/* ===== BLUR UP PLACEHOLDER ===== */}
+                      <img
+                        src={getBlurImage(pair.left.url || pair.left.imageUrl)}
+                        alt=""
+                        className="image-blur-placeholder"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          filter: 'blur(20px)',
+                          transform: 'scale(1.1)',
+                          zIndex: 0,
+                          opacity: loadingImages[pair.left.id] ? 0 : 1,
+                          transition: 'opacity 0.5s ease'
+                        }}
+                      />
+                      
                       {!loadingImages[pair.left.id] && (
                         <div className="image-placeholder-loading">
                           <div className="image-loading-spinner"></div>
                         </div>
                       )}
+                      
                       <img
-                        src={optimizeImage(pair.left.url || pair.left.imageUrl, 800)}
-              alt={`${pair.left.title || "Artwork"} | Kamesh Fine Art`}
+                        ref={(el) => {
+                          if (el) {
+                            imageRefs.current[pair.left.id] = el;
+                            el.dataset.id = pair.left.id;
+                          }
+                        }}
+                        src={visibleImages.has(pair.left.id) ? optimizeImage(pair.left.url || pair.left.imageUrl, 600) : ''}
+                        data-src={optimizeImage(pair.left.url || pair.left.imageUrl, 600)}
+                        alt={`${pair.left.title || "Artwork"} | Kamesh Fine Art`}
                         loading="lazy"
+                        decoding="async"
                         className={`gallery-image ${loadingImages[pair.left.id] ? "image-fade-in" : ""}`}
                         onLoad={() => handleImageLoad(pair.left.id)}
                         onError={(e) => {
                           e.target.src = "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
                         }}
-                        style={{ display: loadingImages[pair.left.id] ? "block" : "none" }}
+                        style={{
+                          display: loadingImages[pair.left.id] ? "block" : "none",
+                          position: 'relative',
+                          zIndex: 1,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
                       />
+                      
                       <div className="gallery-image-overlay">
                         <span className="image-number">#{getImageIndex(pair.left) + 1}</span>
                         <h3>{pair.left.title || 'Untitled'}</h3>
@@ -140,32 +249,66 @@ function Gallery({ images }) {
                   {/* Right Image */}
                   {pair.right && (
                     <div className="gallery-image-wrapper right-image">
-                      <div className="gallery-image-container" onClick={() => openModal(pair.right, getImageIndex(pair.right))}>
+                      <div 
+                        className="gallery-image-container" 
+                        onClick={() => openModal(pair.right, getImageIndex(pair.right))}
+                      >
+                        {/* ===== BLUR UP PLACEHOLDER ===== */}
+                        <img
+                          src={getBlurImage(pair.right.url || pair.right.imageUrl)}
+                          alt=""
+                          className="image-blur-placeholder"
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            filter: 'blur(20px)',
+                            transform: 'scale(1.1)',
+                            zIndex: 0,
+                            opacity: loadingImages[pair.right.id] ? 0 : 1,
+                            transition: 'opacity 0.5s ease'
+                          }}
+                        />
+                        
                         {!loadingImages[pair.right.id] && (
                           <div className="image-placeholder-loading">
                             <div className="image-loading-spinner"></div>
                           </div>
                         )}
-                     <img
-  src={optimizeImage(pair.right.url || pair.right.imageUrl, 800)}
-  alt={`${pair.right.title || "Artwork"} | Kamesh Fine Art`}
-  title={pair.right.title || "Kamesh Fine Art"}
-  loading="lazy"
-  decoding="async"
-  width="600"
-  height="800"
-  className={`gallery-image ${
-    loadingImages[pair.right.id] ? "image-fade-in" : ""
-  }`}
-  onLoad={() => handleImageLoad(pair.right.id)}
-  onError={(e) => {
-    e.target.src =
-      "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
-  }}
-  style={{
-    display: loadingImages[pair.right.id] ? "block" : "none",
-  }}
-/>
+                        
+                        <img
+                          ref={(el) => {
+                            if (el) {
+                              imageRefs.current[pair.right.id] = el;
+                              el.dataset.id = pair.right.id;
+                            }
+                          }}
+                          src={visibleImages.has(pair.right.id) ? optimizeImage(pair.right.url || pair.right.imageUrl, 600) : ''}
+                          data-src={optimizeImage(pair.right.url || pair.right.imageUrl, 600)}
+                          alt={`${pair.right.title || "Artwork"} | Kamesh Fine Art`}
+                          title={pair.right.title || "Kamesh Fine Art"}
+                          loading="lazy"
+                          decoding="async"
+                          width="600"
+                          height="800"
+                          className={`gallery-image ${loadingImages[pair.right.id] ? "image-fade-in" : ""}`}
+                          onLoad={() => handleImageLoad(pair.right.id)}
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
+                          }}
+                          style={{
+                            display: loadingImages[pair.right.id] ? "block" : "none",
+                            position: 'relative',
+                            zIndex: 1,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                        
                         <div className="gallery-image-overlay">
                           <span className="image-number">#{getImageIndex(pair.right) + 1}</span>
                           <h3>{pair.right.title || 'Untitled'}</h3>
@@ -182,7 +325,7 @@ function Gallery({ images }) {
           </>
         )}
 
-        {/* Modal */}
+        {/* Modal - Optimized with higher quality */}
         {isModalOpen && selectedImage && (
           <div 
             className="image-modal" 
@@ -216,9 +359,10 @@ function Gallery({ images }) {
               )}
               
               <img
-                src={optimizeImage(selectedImage.url || selectedImage.imageUrl, 1600)}
+                src={optimizeImage(selectedImage.url || selectedImage.imageUrl, 1200)}
                 alt={selectedImage.title}
                 className="modal-image"
+                loading="eager"
                 onError={(e) => {
                   e.target.src = "https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found";
                 }}
