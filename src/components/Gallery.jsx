@@ -236,13 +236,7 @@ function Gallery({ images }) {
                         }}
                       />
                       
-                      <div className="gallery-image-overlay">
-                        <span className="image-number">#{getImageIndex(pair.left) + 1}</span>
-                        <h3>{pair.left.title || 'Untitled'}</h3>
-                        <span className="view-hint">
-                          <FaExpand /> Click to view
-                        </span>
-                      </div>
+                     
                     </div>
                   </div>
 
@@ -309,13 +303,13 @@ function Gallery({ images }) {
                           }}
                         />
                         
-                        <div className="gallery-image-overlay">
+                        {/* <div className="gallery-image-overlay">
                           <span className="image-number">#{getImageIndex(pair.right) + 1}</span>
                           <h3>{pair.right.title || 'Untitled'}</h3>
                           <span className="view-hint">
                             <FaExpand /> Click to view
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   )}
