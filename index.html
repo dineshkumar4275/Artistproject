@@ -1,90 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- ===== CHARACTER SET & VIEWPORT ===== -->
   <meta charset="UTF-8" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>Kamesh Fine Art | Original Paintings, Portraits & Photography</title>
+  <!-- ===== PRIMARY TITLE ===== -->
+  <title>Kamesh Fine Art | Original Paintings, Portraits &amp; Photography</title>
 
+  <!-- ===== PRIMARY DESCRIPTION ===== -->
   <meta
     name="description"
-    content="Explore original paintings, realistic portraits, sketches and fine art photography by Kamesh Fine Art."
+    content="Kamesh Fine Art - Original paintings, realistic portraits, sketches and fine art photography by artist Kamesh. Explore the creative portfolio from Chennai, Tamil Nadu, India."
   />
 
+  <!-- ===== KEYWORDS ===== -->
   <meta
     name="keywords"
-    content="Kamesh Fine Art, Kamesh, Fine Art, Artist, Paintings, Portraits, Sketches, Photography, Chennai Artist"
+    content="Kamesh Fine Art, Kamesh artist, Kamesh paintings, Kamesh portraits, Kamesh sketches, Kamesh photography, original art, fine art, Chennai artist, Tamil Nadu art, Indian artist"
   />
 
+  <!-- ===== AUTHOR ===== -->
   <meta name="author" content="Kamesh Fine Art" />
 
-  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <!-- ===== ROBOTS ===== -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
-  <meta name="googlebot" content="index,follow" />
-
+  <!-- ===== THEME COLOR ===== -->
   <meta name="theme-color" content="#1c1c1c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
+  <!-- ===== LANGUAGE ===== -->
   <meta name="language" content="English" />
-<meta name="google-site-verification" content="zPawPmcGTfFXp1WlR3k7ZZghKSf_gbSWcZCmr4peoe4" />
+
+  <!-- ===== GOOGLE SITE VERIFICATION ===== -->
+  <meta name="google-site-verification" content="zPawPmcGTfFXp1WlR3k7ZZghKSf_gbSWcZCmr4peoe4" />
+
+  <!-- ===== CANONICAL URL ===== -->
   <link rel="canonical" href="https://www.kameshfineart.com/" />
 
-  <!-- Favicons -->
+  <!-- ===== FAVICONS ===== -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <link rel="icon" href="/assets/staticwebsite.png" />
   <link rel="apple-touch-icon" href="/assets/staticwebsite.png" />
 
-  <!-- Open Graph -->
+  <!-- ===== OPEN GRAPH / FACEBOOK ===== -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Kamesh Fine Art | Original Paintings, Portraits & Photography" />
+  <meta property="og:title" content="Kamesh Fine Art | Original Paintings, Portraits &amp; Photography" />
   <meta
     property="og:description"
-    content="Explore original paintings, sketches and photography by Kamesh Fine Art."
+    content="Kamesh Fine Art - Original paintings, realistic portraits, sketches and fine art photography by artist Kamesh from Chennai, Tamil Nadu, India."
   />
   <meta property="og:url" content="https://www.kameshfineart.com/" />
   <meta
     property="og:image"
     content="https://www.kameshfineart.com/assets/og-image.jpg"
   />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:site_name" content="Kamesh Fine Art" />
+  <meta property="og:locale" content="en_US" />
 
-  <!-- Twitter -->
+  <!-- ===== TWITTER CARD ===== -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Kamesh Fine Art | Original Paintings, Portraits & Photography" />
+  <meta name="twitter:title" content="Kamesh Fine Art | Original Paintings, Portraits &amp; Photography" />
   <meta
     name="twitter:description"
-    content="Explore original paintings, sketches and photography by Kamesh Fine Art."
+    content="Kamesh Fine Art - Original paintings, realistic portraits, sketches and fine art photography by artist Kamesh."
   />
   <meta
     name="twitter:image"
     content="https://www.kameshfineart.com/assets/og-image.jpg"
   />
+  <meta name="twitter:site" content="@urbaninkpen" />
+  <meta name="twitter:creator" content="@urbaninkpen" />
 
-  <!-- Manifest -->
-  <link rel="manifest" href="/site.webmanifest" />
-
-  <!-- Font Awesome -->
+  <!-- ===== FONT AWESOME ===== -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
   />
+
+  <!-- ===== PRELOAD CRITICAL RESOURCES ===== -->
+  <link rel="preconnect" href="https://res.cloudinary.com" />
+  <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+  <link rel="preload" href="/assets/og-image.jpg" as="image" fetchpriority="high" />
+
+  <!-- ===== SECURITY ===== -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- ===== GOOGLE ANALYTICS ===== -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPGMQJMT38"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-LPGMQJMT38', {
+      'page_title': 'Kamesh Fine Art',
+      'page_location': window.location.href,
+      'send_page_view': true
+    });
+  </script>
+
+  <!-- ===== SCHEMA.ORG - ORGANIZATION ===== -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Kamesh Fine Art",
+      "alternateName": "Kamesh Fine Art Studio",
+      "description": "Original paintings, realistic portraits, sketches and fine art photography by artist Kamesh.",
+      "url": "https://www.kameshfineart.com/",
+      "logo": "https://www.kameshfineart.com/assets/logo.png",
+      "image": "https://www.kameshfineart.com/assets/og-image.jpg",
+      "email": "kameshfineart@gmail.com",
+      "telephone": "+919345933994",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Chennai",
+        "addressRegion": "Tamil Nadu",
+        "addressCountry": "India"
+      },
+      "sameAs": [
+        "https://www.instagram.com/urbaninkpen",
+        "https://www.behance.net/kameshfineart",
+        "https://www.linkedin.com/in/kamesh-p-a89abb267"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+919345933994",
+        "contactType": "Customer Service",
+        "availableLanguage": ["English", "Tamil"],
+        "areaServed": "Worldwide"
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "Kamesh",
+        "jobTitle": "Visual Artist & Photographer"
+      }
+    }
+  </script>
+
+  <!-- ===== SCHEMA.ORG - PERSON/ARTIST ===== -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Kamesh",
+      "alternateName": "Kamesh Fine Art",
+      "description": "Visual artist and photographer based in Chennai, Tamil Nadu, India. Specializing in original paintings, realistic portraits, sketches and fine art photography.",
+      "url": "https://www.kameshfineart.com/",
+      "image": "https://www.kameshfineart.com/assets/og-image.jpg",
+      "jobTitle": "Visual Artist & Photographer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Kamesh Fine Art"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Chennai",
+        "addressRegion": "Tamil Nadu",
+        "addressCountry": "India"
+      },
+      "sameAs": [
+        "https://www.instagram.com/urbaninkpen",
+        "https://www.behance.net/kameshfineart",
+        "https://www.linkedin.com/in/kamesh-p-a89abb267"
+      ],
+      "nationality": {
+        "@type": "Country",
+        "name": "India"
+      }
+    }
+  </script>
+
+  <!-- ===== SCHEMA.ORG - WEBSITE ===== -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Kamesh Fine Art",
+      "alternateName": "Kamesh Fine Art Studio",
+      "url": "https://www.kameshfineart.com/",
+      "description": "Original paintings, realistic portraits, sketches and fine art photography by artist Kamesh.",
+      "inLanguage": "en-US",
+      "about": {
+        "@type": "Thing",
+        "name": "Fine Art, Paintings, Portraits, Photography"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.kameshfineart.com/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+
+  <!-- ===== SCHEMA.ORG - BREADCRUMB ===== -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.kameshfineart.com/"
+        }
+      ]
+    }
+  </script>
 </head>
 
 <body>
   <div id="root"></div>
 
+  <!-- ===== REACT APP ENTRY ===== -->
   <script type="module" src="/src/main.jsx"></script>
-
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LPGMQJMT38"></script>
-
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-LPGMQJMT38');
-</script>
 </body>
 </html>

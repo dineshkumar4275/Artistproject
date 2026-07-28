@@ -5,12 +5,12 @@ import './About.css';
 function About({ imageCount }) {
   return (
     <>
-      <SEO 
-        title="About the Artist - kameshfineart | Visual Artist & Photographer"
-        description="Learn about kameshfineart, a visual artist and photographer based in Chennai. Discover the creative journey and artistic vision."
-        keywords="artist bio, visual artist, photographer, digital artist, about kameshfineart"
-        url="https://www.kameshfineart.com/about"
-      />
+    <SEO
+  page="about"
+  title="About Kamesh Fine Art | Artist Portfolio & Creative Journey"
+  description="Learn about artist Kamesh, his artistic journey, creative style, inspiration and fine art portfolio based in Chennai, Tamil Nadu, India."
+  url="https://www.kameshfineart.com/about"
+/>
 
       <section className="page">
         <h2 className="page-title">About the Artist</h2>

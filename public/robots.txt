@@ -1,25 +1,63 @@
-# www.robotstxt.org
+# ============================================================
+# ROBOTS.TXT - KAMESH FINE ART
+# https://www.kameshfineart.com/robots.txt
+# ============================================================
 
+# ===== ALL BOTS =====
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /private/
+Allow: /gallery
+Allow: /photography
+Allow: /about
+Allow: /contact
+Disallow: /admin
+Disallow: /api
+Disallow: /assets
+Disallow: /search
+Disallow: /*?*
+Disallow: /404
 
-# Sitemap
-Sitemap: https://www.kameshfineart.com/sitemap.xml
-
-# Allow all robots
-User-agent: *
-
+# ===== GOOGLE BOT =====
+User-agent: Googlebot
 Allow: /
+Allow: /gallery
+Allow: /photography
+Allow: /about
+Allow: /contact
+Disallow: /admin
+Disallow: /api
+Disallow: /assets
+Disallow: /search
+Disallow: /*?*
 
-Disallow: /admin/
+# ===== GOOGLE IMAGE BOT =====
+User-agent: Googlebot-Image
+Allow: /
+Allow: /assets/
 
-Disallow: /private/
+# ===== BING BOT =====
+User-agent: Bingbot
+Allow: /
+Allow: /gallery
+Allow: /photography
+Allow: /about
+Allow: /contact
+Disallow: /admin
+Disallow: /api
+Disallow: /assets
+Disallow: /search
 
-Disallow: /api/
+# ===== OTHER SEARCH ENGINES =====
+User-agent: DuckDuckBot
+User-agent: Slurp
+User-agent: Baiduspider
+User-agent: YandexBot
+Allow: /
+Disallow: /admin
+Disallow: /api
 
+# ===== CRAWL DELAY =====
+Crawl-delay: 2
+
+# ===== SITEMAP =====
 Sitemap: https://www.kameshfineart.com/sitemap.xml
-
-# Crawl delay for heavy sites
-Crawl-delay: 10

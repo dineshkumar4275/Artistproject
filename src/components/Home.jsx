@@ -54,6 +54,12 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero">
+          <SEO
+  page="home"
+  title="Kamesh Fine Art | Original Paintings, Portraits & Photography"
+  description="Kamesh Fine Art - Original paintings, realistic portraits, sketches and fine art photography by artist Kamesh from Chennai, Tamil Nadu, India."
+  url="https://www.kameshfineart.com/"
+/>
           <h1>Kamesh Fine Art</h1>
           <p>
             Original Fine Art, Realistic Portraits, Sketches and Photography by

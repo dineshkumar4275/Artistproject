@@ -6,12 +6,12 @@ import './Contact.css';
 function Contact() {
   return (
     <>
-      <SEO 
-        title="Contact - kameshfineart | Get in Touch for Art & Photography"
-        description="Get in touch with kameshfineart for art commissions, photography services, or collaborations. We'd love to hear from you."
-        keywords="contact artist, art commissions, photography booking, kameshfineart contact"
-        url="https://www.kameshfineart.com/contact"
-      />
+    <SEO
+  page="contact"
+  title="Contact Kamesh Fine Art | Art Commissions & Inquiries"
+  description="Get in touch with Kamesh Fine Art for art commissions, collaborations, inquiries or just to say hello."
+  url="https://www.kameshfineart.com/contact"
+/>
 
       <section className="page">
         <h2 className="page-title">Contact</h2>

@@ -150,7 +150,12 @@ const getImageUrl = (image) => {
   return (
     <section className="page photography-page">
       <h2 className="page-title">Photography</h2>
-      
+      <SEO
+  page="photography"
+  title="Kamesh Photography | Fine Art Photography Portfolio"
+  description="Explore fine art photography by Kamesh - creative visual stories captured through the lens."
+  url="https://www.kameshfineart.com/photography"
+/>
       {images.length === 0 ? (
         <p className="empty-message">No photography images yet. Upload via the Admin panel.</p>
       ) : (
