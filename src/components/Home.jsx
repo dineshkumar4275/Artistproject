@@ -1,20 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  FaExpand, FaEnvelope, FaPhone, FaMapMarkerAlt, 
-  FaInstagram, FaBehance, FaLinkedin, FaCamera,
-  FaWhatsapp
-} from 'react-icons/fa';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { FaChevronLeft, FaChevronRight, FaExpand } from 'react-icons/fa';
 import './Home.css';
-import SEO from './SEO';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
-
-function Home({ images, photographyImages = [], setCurrentPage }) {
+function Home({ images, setCurrentPage }) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const slideInterval = useRef(null);
 
-  const featuredImages = images.slice(0, 8);
-  const featuredPhotography = photographyImages.slice(0, 4);
+  // Get featured images (first 6 or all if less)
+  const featuredImages = images.slice(0, 6);
+  const slidesToShow = Math.min(3, featuredImages.length);
+  const totalSlides = Math.ceil(featuredImages.length / slidesToShow);
+
+  // Auto-slide
+  useEffect(() => {
+    if (!isHovering && featuredImages.length > slidesToShow) {
+      slideInterval.current = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % totalSlides);
+      }, 4000);
+    }
+    return () => clearInterval(slideInterval.current);
+  }, [isHovering, featuredImages.length, totalSlides]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
 
   const openModal = (image) => {
     setSelectedImage(image);
@@ -28,129 +45,98 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
     document.body.style.overflow = 'auto';
   };
 
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (isModalOpen && e.key === 'Escape') closeModal();
+      if (isModalOpen) {
+        if (e.key === 'Escape') closeModal();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isModalOpen]);
 
-  const getImageUrl = (image) => {
-    if (!image) return '';
-    if (image.url?.startsWith('/api/')) {
-      return `${API_BASE_URL}${image.url}`;
-    }
-    return image.url || image.imageUrl || '';
+  const getVisibleImages = () => {
+    const start = currentSlide * slidesToShow;
+    return featuredImages.slice(start, start + slidesToShow);
   };
-
-  // WhatsApp link
-  const whatsappNumber = '919345933994';
-  const whatsappMessage = 'Hi Kamesh, I would like to know more about your art!';
-  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div className="home-page">
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero">
-          <SEO
-  page="home"
-  title="Kamesh Fine Art | Original Paintings, Portraits & Photography"
-  description="Kamesh Fine Art - Original paintings, realistic portraits, sketches and fine art photography by artist Kamesh from Chennai, Tamil Nadu, India."
-  url="https://www.kameshfineart.com/"
-/>
-          <h1>Kamesh Fine Art</h1>
-          <p>
-            Original Fine Art, Realistic Portraits, Sketches and Photography by
-            artist Kamesh.
-          </p>
+          <h1>Welcome to <strong>ArtStudio</strong></h1>
+          <p>Capturing moments, creating stories — explore the gallery.</p>
+          <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
+            View Gallery →
+          </button>
         </div>
       </section>
 
-      {/* Featured Gallery */}
+      {/* Featured Gallery Carousel Section */}
       <section className="home-gallery-section">
         <div className="section-header">
           <h2>Featured Gallery</h2>
           <p>Explore our latest works</p>
         </div>
+
         {featuredImages.length === 0 ? (
           <p className="empty-message">No images yet. Add some via the Admin panel.</p>
         ) : (
-          <div className="featured-grid">
-            {featuredImages.map((img) => (
-              <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
-                <div className="featured-image-wrapper">
-                  <img
-                    src={getImageUrl(img)}
-                    alt={`${img.title} | Kamesh Fine Art`}
-                    loading={getImageIndex(pair.right) < 16 ? "eager" : "lazy"}
-                    width="600"
-                    height="600"
-                  />
-                  {/* <div className="featured-overlay">
-                    <span className="featured-number">#{img.id}</span>
-                    <h3>{img.title}</h3>
-                    <span className="featured-hint">
-                      <FaExpand /> Click to enlarge
-                    </span>
-                  </div> */}
-                </div>
+          <div 
+            className="featured-carousel"
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+          >
+            <div className="carousel-container">
+              {featuredImages.length > slidesToShow && (
+                <>
+                  <button className="carousel-nav carousel-prev" onClick={prevSlide}>
+                    <FaChevronLeft />
+                  </button>
+                  <button className="carousel-nav carousel-next" onClick={nextSlide}>
+                    <FaChevronRight />
+                  </button>
+                </>
+              )}
+              
+              <div className="carousel-track">
+                {getVisibleImages().map((img) => (
+                  <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
+                    <div className="featured-image-wrapper">
+                      <img src={img.url} alt={img.title} />
+                      <div className="featured-overlay">
+                        <span className="featured-number">#{img.id}</span>
+                        <h3>{img.title}</h3>
+                        <span className="featured-hint">
+                          <FaExpand /> Click to enlarge
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              {/* Dot indicators */}
+              {featuredImages.length > slidesToShow && (
+                <div className="carousel-dots">
+                  {Array.from({ length: totalSlides }).map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={`dot ${idx === currentSlide ? 'active' : ''}`}
+                      onClick={() => setCurrentSlide(idx)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
+
         <div className="view-all-wrapper">
           <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
             View All Gallery →
-          </button>
-        </div>
-      </section>
-
-      {/* Featured Video */}
-      <section className="featured-video-section">
-        <div className="section-header">
-          <h2>Featured Video</h2>
-          <p>Watch our latest artwork showcase</p>
-        </div>
-        <div className="video-container">
-          <video className="featured-video" controls playsInline preload="metadata">
-            <source
-              src="https://res.cloudinary.com/dj5limxeb/video/upload/v1783353086/WhatsApp_Video_2026-07-04_at_5.18.58_PM_gb6q45_ydzrql.mp4"
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      </section>
-
-      {/* Photography Section */}
-      <section className="home-photography-section">
-        <div className="section-header">
-          <h2><FaCamera /> Photography</h2>
-          <p>Explore our stunning photography collection</p>
-        </div>
-        {featuredPhotography.length === 0 ? (
-          <p className="empty-message">No photography images yet. Upload via the Admin panel.</p>
-        ) : (
-          <div className="photography-featured-grid">
-            {featuredPhotography.map((img) => (
-              <div key={img.id} className="photography-featured-card" onClick={() => openModal(img)}>
-                <div className="photography-featured-image-wrapper">
-                  <img src={getImageUrl(img)} alt={img.title} />
-                </div>
-                {/* <div className="photography-featured-overlay">
-                  <span className="photography-badge">📸</span>
-                  <h3>{img.title}</h3>
-                  {img.description && <p className="photography-featured-desc">{img.description}</p>}
-                </div> */}
-              </div>
-            ))}
-          </div>
-        )}
-        <div className="view-all-wrapper">
-          <button className="btn-primary photography-btn" onClick={() => setCurrentPage('photography')}>
-            <FaCamera /> View All Photography →
           </button>
         </div>
       </section>
@@ -163,8 +149,8 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
         </div>
         <div className="about-content">
           <p>
-            I'm a visual artist based in Chennai, Tamil Nadu, working with 
-            traditional and digital media. My work explores the interplay of 
+            I'm a visual artist based in the Pacific Northwest, working with 
+            photography and digital media. My work explores the interplay of 
             light, texture, and everyday moments.
           </p>
           <p>
@@ -173,7 +159,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
           </p>
           <div className="about-stats">
             <span>📸 10+ years</span>
-            <span>🖼️ {images.length + photographyImages.length} works</span>
+            <span>🖼️ {images.length} works</span>
             <span>🌎 exhibited internationally</span>
           </div>
           <div className="about-button-wrapper">
@@ -184,7 +170,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
         </div>
       </section>
 
-      {/* Contact Section - All Social Links Here */}
+      {/* Contact Section */}
       <section className="home-contact-section">
         <div className="section-header">
           <h2>Get in Touch</h2>
@@ -192,48 +178,14 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
         </div>
         <div className="contact-card-wrapper">
           <div className="contact-card">
-            <p>
-              <FaEnvelope /> 
-              <a href="mailto:kameshfineart@gmail.com" className="contact-link">
-                kameshfineart@gmail.com
-              </a>
-            </p>
-            <p>
-              <FaPhone /> 
-              <a href="tel:+919345933994" className="contact-link">
-                +91 93459 33994
-              </a>
-            </p>
-            <p><FaMapMarkerAlt /> Chennai, Tamil Nadu</p>
-            
-            {/* ===== SOCIAL LINKS - Instagram, Behance, LinkedIn ===== */}
+            <p><i className="fas fa-envelope"></i> hello@artstudio.com</p>
+            <p><i className="fas fa-phone"></i> +1 (555) 123-4567</p>
+            <p><i className="fas fa-map-pin"></i> Seattle, WA</p>
             <div className="social-links">
-              <a 
-                href="https://www.instagram.com/urbaninkpen?igsh=MTlwbDgzdDgxd2xyMQ%3D%3D&utm_source=qr" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-              >
-                <FaInstagram />
-              </a>
-              <a 
-                href="https://www.behance.net/kameshfineart" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                aria-label="Behance"
-              >
-                <FaBehance />
-              </a>
-              <a 
-                href="https://www.linkedin.com/in/kamesh-p-a89abb267?utm_source=share_via&utm_content=profile&utm_medium=member_android" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-              >
-                <FaLinkedin />
-              </a>
+              <a href="#"><i className="fab fa-instagram"></i></a>
+              <a href="#"><i className="fab fa-behance"></i></a>
+              <a href="#"><i className="fab fa-github"></i></a>
             </div>
-            
             <div className="contact-button-wrapper">
               <button className="btn-primary" onClick={() => setCurrentPage('contact')}>
                 Contact Me →
@@ -243,30 +195,12 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
         </div>
       </section>
 
-      {/* ===== WHATSAPP FLOATING BUTTON - BOTTOM RIGHT ===== */}
-      <a
-        href={whatsappLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="whatsapp-float-btn"
-        aria-label="Chat on WhatsApp"
-      >
-        <FaWhatsapp />
-        <span className="whatsapp-tooltip">Chat with me</span>
-      </a>
-
       {/* Modal for enlarged image */}
       {isModalOpen && selectedImage && (
         <div className="image-modal" onClick={closeModal}>
           <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={closeModal}>✕</button>
-            <img 
-              src={getImageUrl(selectedImage)} 
-              alt={selectedImage.title}
-              onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/800x600/1c1c1c/c9ad93?text=Image+Not+Found';
-              }}
-            />
+            <img src={selectedImage.url} alt={selectedImage.title} />
             <div className="modal-info">
               <h3>{selectedImage.title}</h3>
               <span className="modal-number">#{selectedImage.id}</span>
