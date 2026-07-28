@@ -115,7 +115,7 @@ function Gallery({ images }) {
                       <img
                         src={optimizeImage(pair.left.url || pair.left.imageUrl, 800)}
                         alt={pair.left.title}
-                        loading="lazy"
+                        loading={getImageIndex(pair.right) < 16 ? "eager" : "lazy"}
                         className={`gallery-image ${loadingImages[pair.left.id] ? "image-fade-in" : ""}`}
                         onLoad={() => handleImageLoad(pair.left.id)}
                         onError={(e) => {
@@ -145,7 +145,7 @@ function Gallery({ images }) {
                         <img
                           src={optimizeImage(pair.right.url || pair.right.imageUrl, 800)}
                           alt={pair.right.title}
-                          loading="lazy"
+                          loading={getImageIndex(pair.right) < 16 ? "eager" : "lazy"}
                           className={`gallery-image ${loadingImages[pair.right.id] ? "image-fade-in" : ""}`}
                           onLoad={() => handleImageLoad(pair.right.id)}
                           onError={(e) => {
