@@ -6,7 +6,7 @@ Disallow: /admin/
 Disallow: /private/
 
 # Sitemap
-Sitemap: https://kameshfineart.com/sitemap.xml
+Sitemap: https://www.kameshfineart.com/sitemap.xml
 
 # Allow all robots
 User-agent: *

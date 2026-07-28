@@ -160,7 +160,7 @@ function App() {
       <SEO
         title="kameshfineart – Art & Photography"
         description="Art and photography portfolio"
-        url="https://kameshfineart.com"
+        url="https://www.kameshfineart.com"
       />
 
       <Navbar

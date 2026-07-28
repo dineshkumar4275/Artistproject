@@ -10,7 +10,7 @@ function Contact() {
         title="Contact - kameshfineart | Get in Touch for Art & Photography"
         description="Get in touch with kameshfineart for art commissions, photography services, or collaborations. We'd love to hear from you."
         keywords="contact artist, art commissions, photography booking, kameshfineart contact"
-        url="https://kameshfineart.com/contact"
+        url="https://www.kameshfineart.com/contact"
       />
 
       <section className="page">

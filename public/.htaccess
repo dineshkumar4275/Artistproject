@@ -7,7 +7,7 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
 
 # Redirect www to non-www (or vice versa)
 RewriteCond %{HTTP_HOST} ^www\.kameshfineart\.com [NC]
-RewriteRule ^(.*)$ https://kameshfineart.com/$1 [R=301,L]
+RewriteRule ^(.*)$ https://www.kameshfineart.com/$1 [R=301,L]
 
 # Remove trailing slashes
 RewriteCond %{REQUEST_FILENAME} !-d

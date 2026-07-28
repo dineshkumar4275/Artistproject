@@ -9,7 +9,7 @@ function About({ imageCount }) {
         title="About the Artist - kameshfineart | Visual Artist & Photographer"
         description="Learn about kameshfineart, a visual artist and photographer based in Chennai. Discover the creative journey and artistic vision."
         keywords="artist bio, visual artist, photographer, digital artist, about kameshfineart"
-        url="https://kameshfineart.com/about"
+        url="https://www.kameshfineart.com/about"
       />
 
       <section className="page">
