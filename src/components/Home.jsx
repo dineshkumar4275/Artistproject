@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FaExpand, FaEnvelope, FaPhone, FaMapMarkerAlt, 
-  FaInstagram, FaBehance, FaLinkedin, FaCamera 
+  FaInstagram, FaBehance, FaLinkedin, FaCamera,
+  FaWhatsapp  // ← WhatsApp Icon சேர்க்கப்பட்டது
 } from 'react-icons/fa';
 import './Home.css';
 import SEO from './SEO';
@@ -43,20 +44,21 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
     return image.url || image.imageUrl || '';
   };
 
+  // WhatsApp link
+  const whatsappNumber = '919345933994'; // Without + symbol
+  const whatsappMessage = 'Hi Kamesh, I would like to know more about your art!';
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
   return (
     <div className="home-page">
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero">
           <h1>Kamesh Fine Art</h1>
-
-<p>
-Original Fine Art, Realistic Portraits, Sketches and Photography by
-artist Kamesh.
-</p>
-          {/* <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
-            View Gallery →
-          </button> */}
+          <p>
+            Original Fine Art, Realistic Portraits, Sketches and Photography by
+            artist Kamesh.
+          </p>
         </div>
       </section>
 
@@ -73,14 +75,13 @@ artist Kamesh.
             {featuredImages.map((img) => (
               <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
                 <div className="featured-image-wrapper">
-                  {/* <img src={getImageUrl(img)} alt={img.title} /> */}
                   <img
-  src={getImageUrl(img)}
-  alt={`${img.title} | Kamesh Fine Art`}
-  loading="lazy"
-  width="600"
-  height="600"
-/>
+                    src={getImageUrl(img)}
+                    alt={`${img.title} | Kamesh Fine Art`}
+                    loading="lazy"
+                    width="600"
+                    height="600"
+                  />
                   <div className="featured-overlay">
                     <span className="featured-number">#{img.id}</span>
                     <h3>{img.title}</h3>
@@ -198,6 +199,8 @@ artist Kamesh.
               </a>
             </p>
             <p><FaMapMarkerAlt /> Chennai, Tamil Nadu</p>
+            
+            {/* ===== SOCIAL LINKS - WhatsApp சேர்க்கப்பட்டது ===== */}
             <div className="social-links">
               <a 
                 href="https://www.instagram.com/urbaninkpen?igsh=MTlwbDgzdDgxd2xyMQ%3D%3D&utm_source=qr" 
@@ -206,6 +209,15 @@ artist Kamesh.
                 aria-label="Instagram"
               >
                 <FaInstagram />
+              </a>
+              <a 
+                href={whatsappLink}
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="whatsapp-link"
+              >
+                <FaWhatsapp />
               </a>
               <a 
                 href="https://www.behance.net/kameshfineart" 
@@ -224,6 +236,7 @@ artist Kamesh.
                 <FaLinkedin />
               </a>
             </div>
+            
             <div className="contact-button-wrapper">
               <button className="btn-primary" onClick={() => setCurrentPage('contact')}>
                 Contact Me →
