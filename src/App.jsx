@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { AnimatePresence, motion } from 'framer-motion';
 
 // Components
 import Navbar from './components/Navbar';
@@ -19,6 +20,90 @@ import SEO from './components/SEO';
 import { getImages, getPhotographyImages, deleteImage, deletePhotographyImage, uploadImageByUrl } from './services/api';
 import showToast from './utils/toastConfig';
 import './App.css';
+
+// ===== PAGE TRANSITION VARIANTS =====
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    y: 30,
+    scale: 0.98
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeInOut"
+    }
+  },
+  exit: {
+    opacity: 0,
+    y: -30,
+    scale: 0.98,
+    transition: {
+      duration: 0.4,
+      ease: "easeInOut"
+    }
+  }
+};
+
+// Different transitions for different pages
+const pageTransitions = {
+  home: {
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -30 },
+    transition: { duration: 0.5, ease: "easeInOut" }
+  },
+  gallery: {
+    initial: { opacity: 0, x: -50 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 50 },
+    transition: { duration: 0.4, ease: "easeInOut" }
+  },
+  photography: {
+    initial: { opacity: 0, scale: 0.9 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.9 },
+    transition: { duration: 0.4, ease: "easeInOut" }
+  },
+  about: {
+    initial: { opacity: 0, y: 40 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -40 },
+    transition: { duration: 0.5, ease: "easeInOut" }
+  },
+  contact: {
+    initial: { opacity: 0, x: 50 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -50 },
+    transition: { duration: 0.4, ease: "easeInOut" }
+  },
+  admin: {
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.95 },
+    transition: { duration: 0.4, ease: "easeInOut" }
+  }
+};
+
+// Page wrapper with transition
+const PageWrapper = ({ children, route }) => {
+  const variant = pageTransitions[route] || pageTransitions.home;
+  
+  return (
+    <motion.div
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={variant}
+      className="page-transition-wrapper"
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 function App() {
   const [galleryImages, setGalleryImages] = useState([]);
@@ -103,22 +188,18 @@ function App() {
   // Reorder handlers for drag-and-drop
   const handleReorderGallery = (newOrder) => {
     setGalleryImages(newOrder);
-    // Optionally persist to backend or localStorage
-    // localStorage.setItem('galleryOrder', JSON.stringify(newOrder.map(img => img.id)));
   };
 
   const handleReorderPhotography = (newOrder) => {
     setPhotographyImages(newOrder);
-    // Optionally persist to backend or localStorage
-    // localStorage.setItem('photographyOrder', JSON.stringify(newOrder.map(img => img.id)));
   };
 
-  // Add gallery image from URL (used by Admin)
+  // Add gallery image from URL
   const addImageFromUrl = async (url, title) => {
     try {
       await uploadImageByUrl(url, title);
       showToast.success('Image added successfully');
-      await loadImages(); // Refresh the list
+      await loadImages();
     } catch (error) {
       showToast.error(error.message || 'Failed to add image');
       throw error;
@@ -127,6 +208,7 @@ function App() {
 
   // Determine current route
   const currentRoute = location.pathname.replace('/', '') || 'home';
+  const routeKey = location.pathname + location.search;
 
   // Loading state
   if (loading) {
@@ -174,48 +256,84 @@ function App() {
         {isPageLoading ? (
           <Loading type="page" />
         ) : (
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  images={galleryImages}
-                  photographyImages={photographyImages}
-                  setCurrentPage={handlePageChange}
-                />
-              }
-            />
-            <Route
-              path="/home"
-              element={
-                <Home
-                  images={galleryImages}
-                  photographyImages={photographyImages}
-                  setCurrentPage={handlePageChange}
-                />
-              }
-            />
-            <Route path="/gallery" element={<Gallery images={galleryImages} />} />
-            <Route path="/photography" element={<Photography images={photographyImages} />} />
-            <Route path="/about" element={<About imageCount={galleryImages.length + photographyImages.length} />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route
-              path="/admin"
-              element={
-                <Admin
-                  images={galleryImages}
-                  photographyImages={photographyImages}
-                  addImageFromUrl={addImageFromUrl}
-                  deleteImage={handleDeleteGallery}
-                  deletePhotographyImage={handleDeletePhotography}
-                  onReorderGallery={handleReorderGallery}
-                  onReorderPhotography={handleReorderPhotography}
-                  refreshPhotography={loadImages}
-                  onLogout={handleLogout}
-                />
-              }
-            />
-          </Routes>
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={routeKey}>
+              <Route
+                path="/"
+                element={
+                  <PageWrapper route="home">
+                    <Home
+                      images={galleryImages}
+                      photographyImages={photographyImages}
+                      setCurrentPage={handlePageChange}
+                    />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/home"
+                element={
+                  <PageWrapper route="home">
+                    <Home
+                      images={galleryImages}
+                      photographyImages={photographyImages}
+                      setCurrentPage={handlePageChange}
+                    />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/gallery"
+                element={
+                  <PageWrapper route="gallery">
+                    <Gallery images={galleryImages} />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/photography"
+                element={
+                  <PageWrapper route="photography">
+                    <Photography images={photographyImages} />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <PageWrapper route="about">
+                    <About imageCount={galleryImages.length + photographyImages.length} />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <PageWrapper route="contact">
+                    <Contact />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <PageWrapper route="admin">
+                    <Admin
+                      images={galleryImages}
+                      photographyImages={photographyImages}
+                      addImageFromUrl={addImageFromUrl}
+                      deleteImage={handleDeleteGallery}
+                      deletePhotographyImage={handleDeletePhotography}
+                      onReorderGallery={handleReorderGallery}
+                      onReorderPhotography={handleReorderPhotography}
+                      refreshPhotography={loadImages}
+                      onLogout={handleLogout}
+                    />
+                  </PageWrapper>
+                }
+              />
+            </Routes>
+          </AnimatePresence>
         )}
       </main>
 
