@@ -171,15 +171,19 @@ const getImageUrl = (image) => {
                         <span>⚠️ Image not available</span>
                       </div>
                     ) : (
-                   <img
-  src={getThumbnailUrl(pair.left)}
-  alt={`${pair.left.title || "Artwork"} | Kamesh Fine Art Photography`}
-  title={pair.left.title || "Kamesh Fine Art"}
-  loading="lazy"
-  width="600"
-  height="800"
-  decoding="async"
-/>
+                      <img
+                        src={getThumbnailUrl(pair.left)}
+                        alt={pair.left.title || 'Photography'}
+                        loading="eager"
+                        className={`photography-image ${
+                          loadingImages[pair.left.id] ? "image-fade-in" : ""
+                        }`}
+                        onLoad={() => handleImageLoad(pair.left.id)}
+                        onError={() => handleImageError(pair.left.id)}
+                        style={{
+                          display: loadingImages[pair.left.id] && !imageErrors[pair.left.id] ? "block" : "none",
+                        }}
+                      />
                     )}
                     <div className="photography-image-overlay">
                       <h3>{pair.left.title || 'Untitled'}</h3>
