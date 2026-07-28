@@ -82,13 +82,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
                     width="600"
                     height="600"
                   />
-                  <div className="featured-overlay">
-                    <span className="featured-number">#{img.id}</span>
-                    <h3>{img.title}</h3>
-                    <span className="featured-hint">
-                      <FaExpand /> Click to enlarge
-                    </span>
-                  </div>
+              
                 </div>
               </div>
             ))}
