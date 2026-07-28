@@ -87,15 +87,19 @@ function Gallery({ images }) {
 
   return (
     <>
-      <SEO 
-        title="Art Gallery - kameshfineart | Paintings & Digital Art"
-        description="Browse through the stunning art gallery of kameshfineart. View original paintings, digital artwork, and creative visual art pieces."
-        keywords="art gallery, paintings, digital art, artwork, kameshfineart gallery"
-        url="https://kameshfineart.com/gallery"
-      />
+   <SEO
+  title="Kamesh Fine Art Gallery | Original Paintings, Portraits & Artwork"
+  description="Explore the Kamesh Fine Art gallery featuring original paintings, realistic portraits, sketches, digital art and creative visual artworks."
+  keywords="Kamesh Fine Art, Art Gallery, Paintings, Portraits, Sketches, Digital Art, Chennai Artist"
+  url="https://www.kameshfineart.com/gallery"
+/>
 
       <section className="page gallery-page">
-        <h2 className="page-title">Gallery</h2>
+        <h1 className="page-title">Kamesh Fine Art Gallery</h1>
+        <p className="gallery-intro">
+  Browse original paintings, portraits, sketches and fine art created by
+  Kamesh Fine Art.
+</p>
         
         {images.length === 0 ? (
           <p className="empty-message">No images yet. Add some via the Admin panel.</p>
@@ -114,7 +118,7 @@ function Gallery({ images }) {
                       )}
                       <img
                         src={optimizeImage(pair.left.url || pair.left.imageUrl, 800)}
-                        alt={pair.left.title}
+              alt={`${pair.left.title || "Artwork"} | Kamesh Fine Art`}
                         loading="lazy"
                         className={`gallery-image ${loadingImages[pair.left.id] ? "image-fade-in" : ""}`}
                         onLoad={() => handleImageLoad(pair.left.id)}
@@ -142,17 +146,26 @@ function Gallery({ images }) {
                             <div className="image-loading-spinner"></div>
                           </div>
                         )}
-                        <img
-                          src={optimizeImage(pair.right.url || pair.right.imageUrl, 800)}
-                          alt={pair.right.title}
-                          loading="lazy"
-                          className={`gallery-image ${loadingImages[pair.right.id] ? "image-fade-in" : ""}`}
-                          onLoad={() => handleImageLoad(pair.right.id)}
-                          onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
-                          }}
-                          style={{ display: loadingImages[pair.right.id] ? "block" : "none" }}
-                        />
+                     <img
+  src={optimizeImage(pair.right.url || pair.right.imageUrl, 800)}
+  alt={`${pair.right.title || "Artwork"} | Kamesh Fine Art`}
+  title={pair.right.title || "Kamesh Fine Art"}
+  loading="lazy"
+  decoding="async"
+  width="600"
+  height="800"
+  className={`gallery-image ${
+    loadingImages[pair.right.id] ? "image-fade-in" : ""
+  }`}
+  onLoad={() => handleImageLoad(pair.right.id)}
+  onError={(e) => {
+    e.target.src =
+      "https://via.placeholder.com/400x300/1c1c1c/c9ad93?text=Image+Not+Found";
+  }}
+  style={{
+    display: loadingImages[pair.right.id] ? "block" : "none",
+  }}
+/>
                         <div className="gallery-image-overlay">
                           <span className="image-number">#{getImageIndex(pair.right) + 1}</span>
                           <h3>{pair.right.title || 'Untitled'}</h3>

@@ -4,6 +4,7 @@ import {
   FaInstagram, FaBehance, FaLinkedin, FaCamera 
 } from 'react-icons/fa';
 import './Home.css';
+import SEO from './SEO';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
 
@@ -47,8 +48,12 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero">
-          <h1>Welcome to <strong>kameshfineart</strong></h1>
-          <p>Capturing moments, creating stories — explore the gallery.</p>
+          <h1>Kamesh Fine Art</h1>
+
+<p>
+Original Fine Art, Realistic Portraits, Sketches and Photography by
+artist Kamesh.
+</p>
           <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
             View Gallery →
           </button>
@@ -68,7 +73,14 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
             {featuredImages.map((img) => (
               <div key={img.id} className="featured-card" onClick={() => openModal(img)}>
                 <div className="featured-image-wrapper">
-                  <img src={getImageUrl(img)} alt={img.title} />
+                  {/* <img src={getImageUrl(img)} alt={img.title} /> */}
+                  <img
+  src={getImageUrl(img)}
+  alt={`${img.title} | Kamesh Fine Art`}
+  loading="lazy"
+  width="600"
+  height="600"
+/>
                   <div className="featured-overlay">
                     <span className="featured-number">#{img.id}</span>
                     <h3>{img.title}</h3>

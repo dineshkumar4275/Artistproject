@@ -10,13 +10,16 @@ Sitemap: https://kameshfineart.com/sitemap.xml
 
 # Allow all robots
 User-agent: *
+
 Allow: /
+
 Disallow: /admin/
+
 Disallow: /private/
+
 Disallow: /api/
 
-# Sitemap location
-Sitemap: https://kameshfineart.com/sitemap.xml
+Sitemap: https://www.kameshfineart.com/sitemap.xml
 
 # Crawl delay for heavy sites
 Crawl-delay: 10
