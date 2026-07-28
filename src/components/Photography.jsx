@@ -1,6 +1,6 @@
-// frontend/src/components/Photography.jsx
 import React, { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight, FaTimes, FaExpand } from 'react-icons/fa';
+import SEO from './SEO';
 import './Photography.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject-backend.vercel.app/api';
@@ -14,8 +14,12 @@ function Photography({ images }) {
   const [touchEnd, setTouchEnd] = useState(0);
   const [imageErrors, setImageErrors] = useState({});
 
+  // Debug log to check if images are being passed
+  console.log('📸 Photography component received images:', images);
+
   useEffect(() => {
     if (images && images.length > 0) {
+      console.log('✅ Photography images loaded:', images.length);
       images.forEach(img => {
         const imgObj = new Image();
         const src = getImageUrl(img);
@@ -23,6 +27,8 @@ function Photography({ images }) {
           imgObj.src = src;
         }
       });
+    } else {
+      console.log('⚠️ No photography images received');
     }
   }, [images]);
 
@@ -35,36 +41,30 @@ function Photography({ images }) {
     });
   }
 
-  // ✅ Get full image URL
- // frontend/src/components/Photography.jsx - Update getImageUrl
-
-const getImageUrl = (image) => {
-  if (!image) return "";
-  
-  // If there's a direct URL, use it
-  if (image.url) {
-    // If it's a relative URL starting with /api/, make it absolute
-    if (image.url.startsWith('/api/')) {
-      return `${API_BASE_URL}${image.url}`;
+  // Get full image URL
+  const getImageUrl = (image) => {
+    if (!image) return "";
+    
+    if (image.url) {
+      if (image.url.startsWith('/api/')) {
+        return `${API_BASE_URL}${image.url}`;
+      }
+      return image.url;
     }
-    return image.url;
-  }
-  
-  // If there's an imageUrl, use it
-  if (image.imageUrl) {
-    if (image.imageUrl.startsWith('/api/')) {
-      return `${API_BASE_URL}${image.imageUrl}`;
+    
+    if (image.imageUrl) {
+      if (image.imageUrl.startsWith('/api/')) {
+        return `${API_BASE_URL}${image.imageUrl}`;
+      }
+      return image.imageUrl;
     }
-    return image.imageUrl;
-  }
-  
-  // If we have an ID, construct the URL
-  if (image.id) {
-    return `${API_BASE_URL}/images/photography/image/${image.id}`;
-  }
-  
-  return "";
-};
+    
+    if (image.id) {
+      return `${API_BASE_URL}/images/photography/image/${image.id}`;
+    }
+    
+    return "";
+  };
 
   const getThumbnailUrl = (image) => {
     const url = getImageUrl(image);
@@ -150,12 +150,14 @@ const getImageUrl = (image) => {
   return (
     <section className="page photography-page">
       <h2 className="page-title">Photography</h2>
+      
       <SEO
-  page="photography"
-  title="Kamesh Photography | Fine Art Photography Portfolio"
-  description="Explore fine art photography by Kamesh - creative visual stories captured through the lens."
-  url="https://www.kameshfineart.com/photography"
-/>
+        page="photography"
+        title="Kamesh Photography | Fine Art Photography Portfolio"
+        description="Explore fine art photography by Kamesh - creative visual stories captured through the lens."
+        url="https://www.kameshfineart.com/photography"
+      />
+      
       {images.length === 0 ? (
         <p className="empty-message">No photography images yet. Upload via the Admin panel.</p>
       ) : (
@@ -190,15 +192,6 @@ const getImageUrl = (image) => {
                         }}
                       />
                     )}
-                    {/* <div className="photography-image-overlay">
-                      <h3>{pair.left.title || 'Untitled'}</h3>
-                      {pair.left.description && (
-                        <p className="photography-description">{pair.left.description}</p>
-                      )}
-                      <span className="view-hint">
-                        <FaExpand /> Click to view
-                      </span>
-                    </div> */}
                   </div>
                 </div>
 
@@ -230,15 +223,6 @@ const getImageUrl = (image) => {
                           }}
                         />
                       )}
-                      {/* <div className="photography-image-overlay">
-                        <h3>{pair.right.title || 'Untitled'}</h3>
-                        {pair.right.description && (
-                          <p className="photography-description">{pair.right.description}</p>
-                        )}
-                        <span className="view-hint">
-                          <FaExpand /> Click to view
-                        </span>
-                      </div> */}
                     </div>
                   </div>
                 )}
