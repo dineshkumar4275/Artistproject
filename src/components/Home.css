@@ -824,74 +824,277 @@
     font-size: 0.5rem;
   }
 }
-/* ===== WHATSAPP SOCIAL LINK - ADD THIS TO Home.css ===== */
-.social-links .whatsapp-link {
-  color: #25D366;
-  background: rgba(37, 211, 102, 0.08);
-}
-
-.social-links .whatsapp-link:hover {
-  color: #fff;
-  background: #25D366;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
-}
-
-/* WhatsApp Pulse Animation */
-@keyframes whatsappPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 12px rgba(37, 211, 102, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
-  }
-}
-
-.social-links .whatsapp-link {
-  animation: whatsappPulse 2s infinite;
-}
-
-/* ===== MODAL INFO - ADD THIS ===== */
-.modal-info {
-  padding: 1rem 1.5rem;
-  background: rgba(28, 28, 28, 0.95);
-  color: #f5f2ed;
+/* ======================================== */
+/* ===== HOME PAGE - ROOT ===== */
+/* ======================================== */
+.home-page {
+  animation: fadeIn 0.5s ease;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
   display: flex;
-  justify-content: space-between;
+  gap: 2rem;
+  position: relative;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ======================================== */
+/* ===== SOCIAL SIDEBAR - STICKY ===== */
+/* ======================================== */
+.social-sidebar {
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.8rem;
+  padding: 1.2rem 0.6rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(201, 173, 147, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  z-index: 10;
+  min-width: 56px;
 }
 
-.modal-info h3 {
+.sidebar-social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sidebar-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: #7a6e60;
+  background: transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.2rem;
+  text-decoration: none;
+  position: relative;
+}
+
+.sidebar-social-link:hover {
+  transform: translateX(4px) scale(1.05);
+  color: var(--social-color, #c9ad93);
+  background: rgba(201, 173, 147, 0.06);
+}
+
+/* ===== TOOLTIP ===== */
+.sidebar-tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.8);
+  background: #1c1c1c;
+  color: #f5f2ed;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 6px solid #1c1c1c;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.sidebar-social-link:hover .sidebar-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+/* ===== SIDEBAR DIVIDER ===== */
+.sidebar-divider {
+  width: 30px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 173, 147, 0.2), transparent);
+  margin: 0.2rem 0;
+}
+
+/* ===== SIDEBAR EMAIL ===== */
+.sidebar-email a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: #7a6e60;
+  transition: all 0.3s ease;
   font-size: 1.1rem;
-  font-weight: 400;
-  margin: 0;
+  position: relative;
+  text-decoration: none;
 }
 
-.modal-number {
-  font-size: 0.8rem;
+.sidebar-email a:hover {
   color: #c9ad93;
-  background: rgba(201, 173, 147, 0.1);
-  padding: 0.2rem 0.8rem;
-  border-radius: 20px;
+  background: rgba(201, 173, 147, 0.06);
+  transform: translateX(4px) scale(1.05);
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 480px) {
-  .modal-info {
-    padding: 0.8rem 1rem;
+/* ======================================== */
+/* ===== MAIN CONTENT WRAPPER ===== */
+/* ======================================== */
+.home-content-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ======================================== */
+/* ===== RESPONSIVE - TABLETS ===== */
+/* ======================================== */
+@media (max-width: 1024px) {
+  .social-sidebar {
+    min-width: 48px;
+    padding: 1rem 0.4rem;
   }
   
-  .modal-info h3 {
+  .sidebar-social-link,
+  .sidebar-email a {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+}
+
+/* ======================================== */
+/* ===== RESPONSIVE - MOBILE ===== */
+/* ======================================== */
+@media (max-width: 768px) {
+  .home-page {
+    padding: 0 0.5rem;
+    flex-direction: column;
+  }
+  
+  .social-sidebar {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    top: auto;
+    flex-direction: row;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    background: rgba(28, 28, 28, 0.92);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(201, 173, 147, 0.08);
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+    gap: 0.2rem;
+    z-index: 100;
+    min-width: auto;
+  }
+  
+  .sidebar-social-links {
+    flex-direction: row;
+    gap: 0.2rem;
+  }
+  
+  .sidebar-social-link,
+  .sidebar-email a {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+  }
+  
+  .sidebar-social-link:hover {
+    transform: scale(1.1);
+    color: var(--social-color, #c9ad93);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  
+  .sidebar-email a {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .sidebar-email a:hover {
+    color: #c9ad93;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  
+  .sidebar-divider {
+    width: 1px;
+    height: 30px;
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    margin: 0 0.2rem;
+  }
+  
+  .sidebar-tooltip {
+    display: none;
+  }
+}
+
+/* ======================================== */
+/* ===== RESPONSIVE - VERY SMALL ===== */
+/* ======================================== */
+@media (max-width: 480px) {
+  .social-sidebar {
+    bottom: 1rem;
+    padding: 0.4rem 0.8rem;
+    gap: 0.1rem;
+  }
+  
+  .sidebar-social-link,
+  .sidebar-email a {
+    width: 34px;
+    height: 34px;
     font-size: 0.9rem;
   }
+}
+
+/* ======================================== */
+/* ===== DARK THEME SUPPORT ===== */
+/* ======================================== */
+@media (prefers-color-scheme: dark) {
+  .social-sidebar {
+    background: rgba(28, 28, 28, 0.85);
+    border-color: rgba(201, 173, 147, 0.06);
+  }
   
-  .modal-number {
-    font-size: 0.7rem;
-    padding: 0.1rem 0.6rem;
+  .sidebar-social-link {
+    color: #888;
+  }
+  
+  .sidebar-social-link:hover {
+    color: var(--social-color, #c9ad93);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  
+  .sidebar-email a {
+    color: #888;
+  }
+  
+  .sidebar-email a:hover {
+    color: #c9ad93;
   }
 }
