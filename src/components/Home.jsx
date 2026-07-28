@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FaExpand, FaEnvelope, FaPhone, FaMapMarkerAlt, 
-  FaInstagram, FaBehance, FaLinkedin, FaCamera 
+  FaInstagram, FaBehance, FaLinkedin, FaCamera, FaWhatsapp 
 } from 'react-icons/fa';
 import './Home.css';
 
@@ -10,9 +10,18 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://artistproject
 function Home({ images, photographyImages = [], setCurrentPage }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(false);
 
   const featuredImages = images.slice(0, 8);
   const featuredPhotography = photographyImages.slice(0, 4);
+
+  // Show WhatsApp button with animation after page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWhatsApp(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const openModal = (image) => {
     setSelectedImage(image);
@@ -41,6 +50,10 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
     }
     return image.url || image.imageUrl || '';
   };
+
+  // WhatsApp number (replace with your number)
+  const whatsappNumber = '919345933994'; // Without + sign
+  const whatsappMessage = 'Hi! I saw your artwork on your website and would like to know more.';
 
   return (
     <div className="home-page">
@@ -220,6 +233,20 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
           </div>
         </div>
       </section>
+
+      {/* WhatsApp Floating Button */}
+      <div className={`whatsapp-float ${showWhatsApp ? 'show' : ''}`}>
+        <a 
+          href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="whatsapp-button"
+          aria-label="Chat on WhatsApp"
+        >
+          <FaWhatsapp />
+          <span className="whatsapp-tooltip">Chat with me!</span>
+        </a>
+      </div>
 
       {/* Modal for enlarged image */}
       {isModalOpen && selectedImage && (
