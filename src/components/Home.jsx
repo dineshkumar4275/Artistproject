@@ -82,7 +82,13 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
                     width="600"
                     height="600"
                   />
-              
+                  {/* <div className="featured-overlay">
+                    <span className="featured-number">#{img.id}</span>
+                    <h3>{img.title}</h3>
+                    <span className="featured-hint">
+                      <FaExpand /> Click to enlarge
+                    </span>
+                  </div> */}
                 </div>
               </div>
             ))}
@@ -127,11 +133,11 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
                 <div className="photography-featured-image-wrapper">
                   <img src={getImageUrl(img)} alt={img.title} />
                 </div>
-                <div className="photography-featured-overlay">
+                {/* <div className="photography-featured-overlay">
                   <span className="photography-badge">📸</span>
                   <h3>{img.title}</h3>
                   {img.description && <p className="photography-featured-desc">{img.description}</p>}
-                </div>
+                </div> */}
               </div>
             ))}
           </div>
