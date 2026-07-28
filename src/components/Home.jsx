@@ -79,34 +79,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
 
   return (
     <div className="home-page">
-      {/* ===== SOCIAL SIDEBAR - STICKY ===== */}
-      <aside className="social-sidebar">
-        <div className="sidebar-social-links">
-          {socialLinks.map((social, index) => (
-            <a
-              key={index}
-              href={social.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sidebar-social-link"
-              style={{ '--social-color': social.color }}
-              aria-label={social.name}
-            >
-              <social.icon />
-              <span className="sidebar-tooltip">{social.name}</span>
-            </a>
-          ))}
-        </div>
-        <div className="sidebar-divider"></div>
-        <div className="sidebar-email">
-          <a href="mailto:kameshfineart@gmail.com" aria-label="Email">
-            <FaEnvelope />
-            <span className="sidebar-tooltip">Email</span>
-          </a>
-        </div>
-      </aside>
-
-      {/* ===== MAIN CONTENT WRAPPER ===== */}
+      {/* ===== MAIN CONTENT ===== */}
       <div className="home-content-wrapper">
         {/* Hero Section */}
         <section className="hero-section">
@@ -265,6 +238,33 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
           </div>
         </section>
       </div>
+
+      {/* ===== SOCIAL SIDEBAR - RIGHT SIDE STICKY ===== */}
+      <aside className="social-sidebar-right">
+        <div className="sidebar-social-links">
+          {socialLinks.map((social, index) => (
+            <a
+              key={index}
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sidebar-social-link"
+              style={{ '--social-color': social.color }}
+              aria-label={social.name}
+            >
+              <social.icon />
+              <span className="sidebar-tooltip">{social.name}</span>
+            </a>
+          ))}
+        </div>
+        <div className="sidebar-divider"></div>
+        <div className="sidebar-email">
+          <a href="mailto:kameshfineart@gmail.com" aria-label="Email">
+            <FaEnvelope />
+            <span className="sidebar-tooltip">Email</span>
+          </a>
+        </div>
+      </aside>
 
       {/* Modal for enlarged image */}
       {isModalOpen && selectedImage && (
