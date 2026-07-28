@@ -54,9 +54,9 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
 Original Fine Art, Realistic Portraits, Sketches and Photography by
 artist Kamesh.
 </p>
-          <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
+          {/* <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
             View Gallery →
-          </button>
+          </button> */}
         </div>
       </section>
 
