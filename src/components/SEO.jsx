@@ -107,7 +107,7 @@ export default function SEO({
   ].filter(Boolean).join(', ');
 
   // ===== ABSOLUTE IMAGE URL =====
-  const imageUrl = image.startsWith('http') ? image : `https://www.kameshfineart.com${image}`;
+  const imageUrl = image.startsWith('https') ? image : `https://www.kameshfineart.com${image}`;
 
   // ===== SCHEMA BUILDER =====
   const schemas = [];

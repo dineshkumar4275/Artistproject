@@ -1,12 +1,12 @@
 # Enable rewrite engine
 RewriteEngine On
 
-# Redirect to HTTPS
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+# Redirect to https
+RewriteCond %{https} off
+RewriteRule ^(.*)$ https://%{https_HOST}/$1 [R=301,L]
 
 # Redirect www to non-www (or vice versa)
-RewriteCond %{HTTP_HOST} ^www\.kameshfineart\.com [NC]
+RewriteCond %{https_HOST} ^www\.kameshfineart\.com [NC]
 RewriteRule ^(.*)$ https://www.kameshfineart.com/$1 [R=301,L]
 
 # Remove trailing slashes
