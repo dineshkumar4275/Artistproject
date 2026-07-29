@@ -15,7 +15,7 @@ function Photography({ images }) {
   const [imageErrors, setImageErrors] = useState({});
 
   // Debug log to check if images are being passed
-  console.log('📸 Photography component received images:', images);
+  // console.log('📸 Photography component received images:', images);
 
   useEffect(() => {
     if (images && images.length > 0) {
