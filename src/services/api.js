@@ -227,5 +227,87 @@ export const deletePhotographyImage = async (id) => {
     throw error.response?.data || { success: false, error: error.message };
   }
 };
+// =======================
+// DELETE SINGLE GALLERY IMAGE
+// =======================
+export const deleteImage = async (id) => {
+  try {
+    console.log(`🗑️ Deleting image with ID: ${id}`);
+    const token = localStorage.getItem('token');
+    const response = await api.delete(`/images/${id}`, {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : undefined,
+      },
+    });
+    console.log('✅ Delete response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error deleting image:', error);
+    console.error('❌ Error response:', error.response?.data);
+    throw error.response?.data || { success: false, error: error.message };
+  }
+};
 
+// =======================
+// DELETE ALL GALLERY IMAGES
+// =======================
+export const deleteAllImages = async () => {
+  try {
+    console.log('🗑️ Deleting all gallery images');
+    const token = localStorage.getItem('token');
+    const response = await api.delete('/images', {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : undefined,
+      },
+    });
+    console.log('✅ Delete all response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error deleting all images:', error);
+    console.error('❌ Error response:', error.response?.data);
+    throw error.response?.data || { success: false, error: error.message };
+  }
+};
+
+// =======================
+// DELETE PHOTOGRAPHY IMAGE
+// =======================
+export const deletePhotographyImage = async (id) => {
+  try {
+    console.log(`🗑️ Deleting photography image with ID: ${id}`);
+    const token = localStorage.getItem('token');
+    const response = await api.delete(`/images/photography/${id}`, {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : undefined,
+      },
+    });
+    console.log('✅ Delete response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error deleting photography image:', error);
+    console.error('❌ Error response:', error.response?.data);
+    throw error.response?.data || { success: false, error: error.message };
+  }
+};
+
+// =======================
+// DELETE ALL PHOTOGRAPHY IMAGES
+// =======================
+export const deleteAllPhotographyImages = async () => {
+  try {
+    console.log('🗑️ Deleting all photography images');
+    const token = localStorage.getItem('token');
+    const response = await api.delete('/images/photography', {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : undefined,
+      },
+    });
+    console.log('✅ Delete all response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error deleting all photography images:', error);
+    console.error('❌ Error response:', error.response?.data);
+    throw error.response?.data || { success: false, error: error.message };
+  }
+};
 export default api;
