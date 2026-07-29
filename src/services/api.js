@@ -5,7 +5,7 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   'https://api.kameshfineart.com/api';
 
-console.log('🌐 API URL:', API_BASE_URL);
+// console.log('🌐 API URL:', API_BASE_URL);
 
 // Secret key for URL uploads
 const UPLOAD_SECRET = import.meta.env.VITE_UPLOAD_SECRET || 'my-super-secret-upload-key-2026-xyz789';
