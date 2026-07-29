@@ -112,6 +112,21 @@ function App() {
     // Optionally persist to backend or localStorage
     // localStorage.setItem('photographyOrder', JSON.stringify(newOrder.map(img => img.id)));
   };
+  // Refresh both galleries
+const refreshPhotography = async () => {
+  try {
+    console.log('🔄 Refreshing images...');
+    const [galleryData, photoData] = await Promise.all([
+      getImages(),
+      getPhotographyImages()
+    ]);
+    setGalleryImages(galleryData || []);
+    setPhotographyImages(photoData || []);
+    console.log(`✅ Refreshed: ${galleryData.length} gallery, ${photoData.length} photography`);
+  } catch (error) {
+    console.error('❌ Failed to refresh images:', error);
+  }
+};
 
   // Add gallery image from URL (used by Admin)
   const addImageFromUrl = async (url, title) => {
