@@ -41,6 +41,7 @@ function App() {
       ]);
       setGalleryImages(galleryData || []);
       setPhotographyImages(photoData || []);
+      console.log(`✅ Loaded: ${galleryData.length} gallery, ${photoData.length} photography`);
     } catch (error) {
       console.error('Failed to load images:', error);
       showToast.error('Failed to load images');
@@ -79,40 +80,41 @@ function App() {
     navigate('/');
   };
 
-  // Delete functions
+  // ✅ FIXED: Delete functions with proper refresh
   const handleDeleteGallery = async (id) => {
     try {
+      console.log(`🗑️ Deleting gallery image ID: ${id}`);
       await deleteImage(id);
-      setGalleryImages(prev => prev.filter(img => img.id !== id));
       showToast.success('Gallery image deleted');
+      // Refresh images after deletion
+      await loadImages();
     } catch (error) {
-      showToast.error('Delete failed');
+      console.error('Delete failed:', error);
+      showToast.error(error.message || 'Delete failed');
     }
   };
 
   const handleDeletePhotography = async (id) => {
     try {
+      console.log(`🗑️ Deleting photography image ID: ${id}`);
       await deletePhotographyImage(id);
-      setPhotographyImages(prev => prev.filter(img => img.id !== id));
       showToast.success('Photography image deleted');
+      // Refresh images after deletion
+      await loadImages();
     } catch (error) {
-      showToast.error('Delete failed');
+      console.error('Delete failed:', error);
+      showToast.error(error.message || 'Delete failed');
     }
   };
 
   // Reorder handlers for drag-and-drop
   const handleReorderGallery = (newOrder) => {
     setGalleryImages(newOrder);
-    // Optionally persist to backend or localStorage
-    // localStorage.setItem('galleryOrder', JSON.stringify(newOrder.map(img => img.id)));
   };
 
   const handleReorderPhotography = (newOrder) => {
     setPhotographyImages(newOrder);
-    // Optionally persist to backend or localStorage
-    // localStorage.setItem('photographyOrder', JSON.stringify(newOrder.map(img => img.id)));
   };
-  
 
   // Add gallery image from URL (used by Admin)
   const addImageFromUrl = async (url, title) => {
