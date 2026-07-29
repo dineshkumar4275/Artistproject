@@ -247,42 +247,91 @@ function Admin({
     }
   };
 
-  // ----- Delete Handlers -----
-  const handleDeleteGallery = (id, title) => {
-    toast.dangerConfirm(
-      `Delete "${title}"?`,
-      () => {
-        deleteImage(id);
-        toast.success(`"${title}" deleted`);
-      },
-      () => toast.info(`"${title}" kept`)
-    );
-  };
+// ----- Delete Handlers -----
+const handleDeleteGallery = async (id, title) => {
+  console.log(`🗑️ Delete clicked for: ${title} (ID: ${id})`);
+  
+  toast.dangerConfirm(
+    `Delete "${title}"?`,
+    async () => {
+      try {
+        console.log('📤 Sending delete request...');
+        const result = await deleteImage(id);
+        console.log('✅ Delete result:', result);
+        
+        toast.success(`"${title}" deleted successfully`);
+        
+        // Refresh the images list
+        if (refreshPhotography) {
+          await refreshPhotography();
+        }
+      } catch (error) {
+        console.error('❌ Delete error:', error);
+        toast.error(error.message || 'Failed to delete image');
+      }
+    },
+    () => toast.info(`"${title}" kept`)
+  );
+};
 
-  const handleDeletePhotography = (id, title) => {
-    toast.dangerConfirm(
-      `Delete "${title}"?`,
-      () => {
-        deletePhotographyImage(id);
-        toast.success(`"${title}" deleted`);
-      },
-      () => toast.info(`"${title}" kept`)
-    );
-  };
+const handleDeletePhotography = async (id, title) => {
+  console.log(`🗑️ Delete clicked for photography: ${title} (ID: ${id})`);
+  
+  toast.dangerConfirm(
+    `Delete "${title}"?`,
+    async () => {
+      try {
+        console.log('📤 Sending delete request for photography...');
+        const result = await deletePhotographyImage(id);
+        console.log('✅ Delete result:', result);
+        
+        toast.success(`"${title}" deleted from Photography`);
+        
+        // Refresh the images list
+        if (refreshPhotography) {
+          await refreshPhotography();
+        }
+      } catch (error) {
+        console.error('❌ Delete error:', error);
+        toast.error(error.message || 'Failed to delete photography image');
+      }
+    },
+    () => toast.info(`"${title}" kept`)
+  );
+};
 
-  const handleClearAll = (type) => {
-    const items = type === 'gallery' ? images : photographyImages;
-    const deleteFn = type === 'gallery' ? deleteImage : deletePhotographyImage;
-    if (!items.length) { toast.info(`No ${type} photos`); return; }
-    toast.dangerConfirm(
-      `Delete all ${items.length} ${type} photos?`,
-      () => {
-        items.forEach(img => deleteFn(img.id));
+const handleClearAll = (type) => {
+  const items = type === 'gallery' ? images : photographyImages;
+  const deleteFn = type === 'gallery' ? deleteAllImages : deleteAllPhotographyImages;
+  
+  if (!items.length) { 
+    toast.info(`No ${type} photos`); 
+    return; 
+  }
+  
+  toast.dangerConfirm(
+    `Delete all ${items.length} ${type} photos?`,
+    async () => {
+      try {
+        console.log(`📤 Deleting all ${type} photos...`);
+        const result = await deleteFn();
+        console.log('✅ Delete result:', result);
+        
         toast.success(`All ${type} photos deleted`);
-      },
-      () => toast.info('Cancelled')
-    );
-  };
+        
+        // Refresh the images list
+        if (refreshPhotography) {
+          await refreshPhotography();
+        }
+      } catch (error) {
+        console.error('❌ Delete error:', error);
+        toast.error(error.message || 'Failed to delete all');
+      }
+    },
+    () => toast.info('Cancelled')
+  );
+};
+ 
 
   const handleLogout = () => {
     toast.info('Logging out...');
