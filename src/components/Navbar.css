@@ -326,3 +326,28 @@
     background: #e8e0d6;
   }
 }
+/* ===== LOGO - BIGGER VERSION ===== */
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ✅ MUCH BIGGER LOGO */
+.logo-image {
+  height: 80px;        /* Increased from 45px to 80px */
+  width: auto;
+  display: block;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
+}
