@@ -58,15 +58,24 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
   return (
     <div className="home-page">
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero">
-          <h1>Welcome to <strong>kameshfineart</strong></h1>
-          <p>Capturing moments, creating stories — explore the gallery.</p>
-          <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
-            View Gallery →
-          </button>
-        </div>
-      </section>
+    <section className="hero-section">
+  <div className="hero">
+    <img
+      src="/Logo if.png"
+      alt="Kamesh Fine Art"
+      className="hero-logo"
+    />
+
+    <p>Capturing moments, creating stories — explore the gallery.</p>
+
+    <button
+      className="btn-primary"
+      onClick={() => setCurrentPage("gallery")}
+    >
+      View Gallery →
+    </button>
+  </div>
+</section>
 
       {/* Featured Gallery */}
       <section className="home-gallery-section">
