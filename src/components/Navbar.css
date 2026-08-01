@@ -28,7 +28,7 @@
 
 /* ✅ NEW - Logo Image Styles */
 .logo-image {
-  height: 65px;        /* Adjust height as needed */
+  height: 75px;        /* Adjust height as needed */
   width: auto;
   display: block;
   object-fit: contain;
