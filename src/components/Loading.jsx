@@ -9,7 +9,7 @@ function Loading({ type = 'page', message = 'Loading...' }) {
           <div className="spinner"></div>
           <a href="/">
             <img 
-              src="/staticwebsite.png" 
+              src="/favicon.ico" 
               alt="KameshFineArt" 
               className="loading-logo-img"
               onError={(e) => {
