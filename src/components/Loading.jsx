@@ -19,7 +19,7 @@ function Loading({ type = 'page', message = 'Loading...' }) {
           
           <a href="/">
             <img 
-              src="/favicon.ico" 
+              src="/assets/og-image.png" 
               alt="KameshFineArt" 
               className={`loading-logo-img ${imageLoaded ? 'image-fade-in' : ''}`}
               style={{ display: imageLoaded ? 'block' : 'none' }}
