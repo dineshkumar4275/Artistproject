@@ -61,7 +61,7 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
     <section className="hero-section">
   <div className="hero">
     <img
-      src="/Logo if.png"
+      src="/staticwebsite.png"
       alt="Kamesh Fine Art"
       className="hero-logo"
     />
