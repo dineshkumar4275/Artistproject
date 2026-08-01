@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
 import { 
   HiMenu, 
   HiX, 
@@ -58,8 +57,12 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
       <nav className="navbar">
         <div className="logo">
           <a href="/" onClick={handleLogoClick} className="logo-link">
-            {/* ✅ REPLACED TEXT WITH IMAGE */}
-            <img src={logo} alt="KameshFineArt" className="logo-image" />
+            {/* ✅ Use public folder path - NO import needed */}
+            <img 
+              src="/logo.png" 
+              alt="KameshFineArt" 
+              className="logo-image"
+            />
           </a>
         </div>
         
