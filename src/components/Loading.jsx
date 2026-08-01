@@ -4,13 +4,19 @@ import './Loading.css';
 function Loading({ type = 'page' }) {
   if (type === 'page') {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <div className="loading-logo">KameshFineArt</div>
-          <p className="loading-text">Loading...</p>
-        </div>
-      </div>
+    <div className="loading-container">
+  <div className="loading-spinner">
+    <div className="spinner"></div>
+    <a href="/">
+      <img 
+        src="/staticwebsite.png" 
+        alt="KameshFineArt" 
+        className="loading-logo-img"
+      />
+    </a>
+    <p className="loading-text">Loading...</p>
+  </div>
+</div>
     );
   }
 
