@@ -5,8 +5,6 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   'https://api.kameshfineart.com/api';
 
-// console.log('🌐 API URL:', API_BASE_URL);
-
 // Secret key for URL uploads
 const UPLOAD_SECRET = import.meta.env.VITE_UPLOAD_SECRET || 'my-super-secret-upload-key-2026-xyz789';
 
@@ -126,32 +124,44 @@ export const uploadImageByUrl = async (imageUrl, title) => {
   }
 };
 
+// =======================
+// DELETE SINGLE GALLERY IMAGE (KEEP ONLY THIS ONE)
+// =======================
 export const deleteImage = async (id) => {
   try {
+    console.log(`🗑️ Deleting image with ID: ${id}`);
     const token = localStorage.getItem('token');
     const response = await api.delete(`/images/${id}`, {
       headers: {
         'Authorization': token ? `Bearer ${token}` : undefined,
       },
     });
+    console.log('✅ Delete response:', response.data);
     return response.data;
   } catch (error) {
     console.error('❌ Error deleting image:', error);
+    console.error('❌ Error response:', error.response?.data);
     throw error.response?.data || { success: false, error: error.message };
   }
 };
 
+// =======================
+// DELETE ALL GALLERY IMAGES (KEEP ONLY THIS ONE)
+// =======================
 export const deleteAllImages = async () => {
   try {
+    console.log('🗑️ Deleting all gallery images');
     const token = localStorage.getItem('token');
     const response = await api.delete('/images', {
       headers: {
         'Authorization': token ? `Bearer ${token}` : undefined,
       },
     });
+    console.log('✅ Delete all response:', response.data);
     return response.data;
   } catch (error) {
     console.error('❌ Error deleting all images:', error);
+    console.error('❌ Error response:', error.response?.data);
     throw error.response?.data || { success: false, error: error.message };
   }
 };
@@ -211,66 +221,7 @@ export const uploadPhotographyImage = async (file, title) => {
 };
 
 // =======================
-// DELETE PHOTOGRAPHY IMAGE
-// =======================
-export const deletePhotographyImage = async (id) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await api.delete(`/images/photography/${id}`, {
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : undefined,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error deleting photography image:', error);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-// =======================
-// DELETE SINGLE GALLERY IMAGE
-// =======================
-export const deleteImage = async (id) => {
-  try {
-    console.log(`🗑️ Deleting image with ID: ${id}`);
-    const token = localStorage.getItem('token');
-    const response = await api.delete(`/images/${id}`, {
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : undefined,
-      },
-    });
-    console.log('✅ Delete response:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error deleting image:', error);
-    console.error('❌ Error response:', error.response?.data);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// DELETE ALL GALLERY IMAGES
-// =======================
-export const deleteAllImages = async () => {
-  try {
-    console.log('🗑️ Deleting all gallery images');
-    const token = localStorage.getItem('token');
-    const response = await api.delete('/images', {
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : undefined,
-      },
-    });
-    console.log('✅ Delete all response:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error deleting all images:', error);
-    console.error('❌ Error response:', error.response?.data);
-    throw error.response?.data || { success: false, error: error.message };
-  }
-};
-
-// =======================
-// DELETE PHOTOGRAPHY IMAGE
+// DELETE PHOTOGRAPHY IMAGE (KEEP ONLY THIS ONE)
 // =======================
 export const deletePhotographyImage = async (id) => {
   try {
@@ -310,4 +261,5 @@ export const deleteAllPhotographyImages = async () => {
     throw error.response?.data || { success: false, error: error.message };
   }
 };
+
 export default api;
