@@ -26,6 +26,20 @@
   100% { transform: rotate(360deg); }
 }
 
+/* ✅ ADD THIS - Logo Image Styles */
+.loading-logo-img {
+  width: 180px;
+  height: auto;
+  display: block;
+  margin: 0 auto 15px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.loading-logo-img:hover {
+  transform: scale(1.05);
+}
+
 .loading-logo {
   font-size: 1.5rem;
   font-weight: 700;
@@ -50,6 +64,7 @@
   margin-top: 10px;
   font-size: 0.9rem;
   letter-spacing: 2px;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 /* ===== IMAGE LOADING ===== */
