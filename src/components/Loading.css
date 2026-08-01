@@ -26,18 +26,87 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ✅ ADD THIS - Logo Image Styles */
+/* ===== LOGO WRAPPER ===== */
+.logo-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 0 auto 15px;
+}
+
+/* ✅ Image Loading Overlay */
+.image-loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.image-loading-spinner-small {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f0ece4;
+  border-top: 3px solid #c9ad93;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ✅ Image Placeholder (while loading) */
+.image-placeholder-loading {
+  width: 180px;
+  height: 100px;
+  margin: 0 auto 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8f6f2;
+  border-radius: 8px;
+  border: 2px dashed #e5dfd6;
+}
+
+.image-placeholder-loading .image-loading-spinner-small {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f0ece4;
+  border-top: 3px solid #c9ad93;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ✅ Logo Image Styles */
 .loading-logo-img {
   width: 180px;
   height: auto;
   display: block;
-  margin: 0 auto 15px;
+  margin: 0 auto;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 
 .loading-logo-img:hover {
   transform: scale(1.05);
+}
+
+/* ✅ Image Fade In Animation */
+.image-fade-in {
+  animation: imageFadeIn 0.6s ease;
+}
+
+@keyframes imageFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .loading-logo {
@@ -67,7 +136,7 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* ===== IMAGE LOADING ===== */
+/* ===== IMAGE LOADING (for content images) ===== */
 .image-loading-container {
   width: 100%;
   height: 100%;

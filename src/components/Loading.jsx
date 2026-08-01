@@ -1,23 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Loading.css';
 
 function Loading({ type = 'page', message = 'Loading...' }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   if (type === 'page') {
     return (
       <div className="loading-container">
         <div className="loading-spinner">
           <div className="spinner"></div>
+          
+          {/* ✅ Show placeholder while image loads */}
+          {!imageLoaded && (
+            <div className="image-placeholder-loading">
+              <div className="image-loading-spinner-small"></div>
+            </div>
+          )}
+          
           <a href="/">
             <img 
               src="/favicon.ico" 
               alt="KameshFineArt" 
-              className="loading-logo-img"
+              className={`loading-logo-img ${imageLoaded ? 'image-fade-in' : ''}`}
+              style={{ display: imageLoaded ? 'block' : 'none' }}
+              onLoad={() => setImageLoaded(true)}
               onError={(e) => {
-                // Fallback if image doesn't load
                 e.target.style.display = 'none';
+                setImageLoaded(true); // Hide placeholder on error
               }}
             />
           </a>
+          
           <p className="loading-text">{message}</p>
         </div>
       </div>
