@@ -59,7 +59,7 @@ function Navbar({ currentPage, setCurrentPage, isAdminLoggedIn, onLogout }) {
           <a href="/" onClick={handleLogoClick} className="logo-link">
             {/* ✅ REPLACED TEXT WITH IMAGE */}
             <Link 
-              src="/logo.png" 
+              src="/public/logo.png" 
               alt="KameshFineArt" 
               className="logo-image"
             />
