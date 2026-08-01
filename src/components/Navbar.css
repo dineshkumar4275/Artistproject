@@ -13,7 +13,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== LOGO - IMAGE VERSION ===== */
+/* ===== LOGO - BIGGER VERSION ===== */
 .logo {
   display: flex;
   align-items: center;
@@ -26,10 +26,11 @@
   gap: 0.5rem;
 }
 
-/* ✅ NEW - Logo Image Styles */
+/* ✅ BIGGER LOGO */
 .logo-image {
-  height: 45px;        /* Adjust height as needed */
+  height: 75px;        /* Increased size */
   width: auto;
+  max-height: 80px;    /* Prevent from getting too big */
   display: block;
   object-fit: contain;
   transition: transform 0.3s ease;
@@ -38,9 +39,6 @@
 .logo-image:hover {
   transform: scale(1.05);
 }
-
-/* Remove old text styles since we're using image */
-/* .logo-tagline { ... } - REMOVED */
 
 /* ===== NAVIGATION LINKS ===== */
 .nav-links {
@@ -232,9 +230,9 @@
     margin-top: 0.5rem;
   }
 
-  /* ✅ Mobile Logo Size */
+  /* ✅ Tablet Logo Size */
   .logo-image {
-    height: 35px;
+    height: 55px;
   }
 }
 
@@ -243,8 +241,9 @@
     padding: 0.8rem 1rem;
   }
 
+  /* ✅ Mobile Logo Size */
   .logo-image {
-    height: 30px;
+    height: 42px;
   }
 
   .nav-links {
