@@ -62,9 +62,11 @@ function Home({ images, photographyImages = [], setCurrentPage }) {
         <div className="hero">
           <h1>Welcome to <strong>kameshfineart</strong></h1>
           <p>Capturing moments, creating stories — explore the gallery.</p>
+           <div className="view-all-wrapper">
           <button className="btn-primary" onClick={() => setCurrentPage('gallery')}>
-            View Gallery →
+            View All Gallery →
           </button>
+        </div>
         </div>
       </section>
 
